@@ -9,7 +9,6 @@ if (!DATABASE_URL) {
 let cached: Connection | null = null;
 
 export async function connectToMongoDB(){
-    console.log("IM BEING CALLED!")
     if (cached) {
         console.log("Using cached DB connection")
         return cached;

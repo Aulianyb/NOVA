@@ -8,7 +8,6 @@ import { Button } from "@/components/ui/button";
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -19,11 +18,16 @@ import { quantico } from "../fonts";
 import { useRouter } from "next/navigation";
 
 const formSchema = z.object({
-  username: z.string().min(3),
-  password: z.string().min(8),
+  username: z
+    .string()
+    .min(3, "Username must be at least 3 characters long")
+    .max(20, "Username must be at most 20 characters long")
+    .regex(/^[a-zA-Z0-9_]+$/, "Username can only contain letters, numbers, and underscores"),
+  password: z
+  .string()
+  .min(8, "Password must be at least 8 characters long")
+  .regex(/^(?=.*[0-9])(?=.*[_!@#$%^&*])/, "Password must include at least one special character and one number")
 });
-
-
 
 export function ProfileForm() {
   const form = useForm<z.infer<typeof formSchema>>({
