@@ -16,11 +16,14 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { quantico } from "../fonts";
+import { useRouter } from "next/navigation";
 
 const formSchema = z.object({
   username: z.string().min(3),
   password: z.string().min(8),
 });
+
+
 
 export function ProfileForm() {
   const form = useForm<z.infer<typeof formSchema>>({
@@ -72,10 +75,11 @@ export function ProfileForm() {
 }
 
 const LoginPage: React.FC = () => {
+  const router = useRouter();
   return (
     <main className="flex justify-center items-center min-h-screen bg-[var(--black)]">
-      <div className="bg-[var(--white)] w-fit h-fit p-10 rounded-xl space-y-4">
-        <Button size="icon" variant="ghost">
+      <div className="bg-[var(--white)] w-[500px] p-10 rounded-xl space-y-4">
+        <Button size="icon" variant="ghost" onClick={() => router.push("/")}>
           <svg
             xmlns="http://www.w3.org/2000/svg"
             fill="none"
