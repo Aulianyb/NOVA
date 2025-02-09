@@ -22,11 +22,17 @@ const formSchema = z.object({
     .string()
     .min(3, "Username must be at least 3 characters long")
     .max(20, "Username must be at most 20 characters long")
-    .regex(/^[a-zA-Z0-9_]+$/, "Username can only contain letters, numbers, and underscores"),
+    .regex(
+      /^[a-zA-Z0-9_]+$/,
+      "Username can only contain letters, numbers, and underscores"
+    ),
   password: z
-  .string()
-  .min(8, "Password must be at least 8 characters long")
-  .regex(/^(?=.*[0-9])(?=.*[_!@#$%^&*])/, "Password must include at least one special character and one number")
+    .string()
+    .min(8, "Password must be at least 8 characters long")
+    .regex(
+      /^(?=.*[0-9])(?=.*[_!@#$%^&*])/,
+      "Password must include at least one special character and one number"
+    ),
 });
 
 export function ProfileForm() {
@@ -37,8 +43,23 @@ export function ProfileForm() {
       password: "",
     },
   });
-  function onSubmit(values: z.infer<typeof formSchema>) {
-    console.log(values);
+  async function onSubmit(values: z.infer<typeof formSchema>) {
+    try {
+      const res = await fetch("/api/users", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(values),
+      });
+      if (!res.ok) {
+        //self note : fix this so it'll be more descriptive
+        throw new Error("Failed to register user");
+      }
+      console.log("User registered successfully!");
+    } catch (error) {
+      console.error(error);
+    }
   }
 
   return (

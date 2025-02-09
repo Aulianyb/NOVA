@@ -4,13 +4,16 @@ import user from '../../../../model/User';
 export async function POST(req: NextRequest){
     try {
         const data = await req.json();
+        const bcrypt = require('bcrypt');
+        const salt = await bcrypt.genSalt(11);
+        data.password = await bcrypt.hash(data.password, salt);
         const newUser = new user({
             username: data.username,
             password: data.password,
             ownedWorlds: []
         });
         await newUser.save();
-        return NextResponse.json({ done: true, user: newUser.username }, { status: 200 });
+        return NextResponse.json({ data : newUser, message : "New User Created!"}, { status: 200 });
     } catch(error){
         console.log(error)
         return NextResponse.json({ error : error }, { status: 500 });
