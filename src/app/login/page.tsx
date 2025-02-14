@@ -23,8 +23,6 @@ const formSchema = z.object({
   password: z.string().min(8),
 });
 
-
-
 export function ProfileForm() {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -33,8 +31,23 @@ export function ProfileForm() {
       password: "",
     },
   });
-  function onSubmit(values: z.infer<typeof formSchema>) {
-    console.log(values);
+  async function onSubmit(values: z.infer<typeof formSchema>) {
+    try {
+      const res = await fetch("/api/auth/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(values),
+      });
+      if (!res.ok) {
+        //self note : fix this so it'll be more descriptive
+        throw new Error("Failed to login");
+      }
+      console.log("Login successful!");
+    } catch (error) {
+      console.error(error);
+    }
   }
 
   return (

@@ -5,6 +5,10 @@ export async function GET(
   res : NextResponse
 ){
     const session = await getSession(); 
-    res = NextResponse.json({session : session}, {status: 200}) 
+    if (!session){
+        res = NextResponse.json({message : "No session found"}, {status: 401});
+    } else {
+        res = NextResponse.json({message : "User Authenticated", session : session}, {status: 200}) 
+    }
     return res;
 }
