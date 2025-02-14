@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import user from '../../../../model/User';
+import user from '../../../../../model/User';
 
 export async function POST(req: NextRequest){
     try {
@@ -16,6 +16,9 @@ export async function POST(req: NextRequest){
         return NextResponse.json({ data : newUser, message : "New User Created!"}, { status: 200 });
     } catch(error){
         console.log(error)
-        return NextResponse.json({ error : error }, { status: 500 });
+        return NextResponse.json(
+            { error: error instanceof Error ? error.message : "An unknown error occurred" },
+            { status: 500 }
+        );
     }
 }
