@@ -24,6 +24,7 @@ const formSchema = z.object({
 });
 
 export function ProfileForm() {
+  const router = useRouter();
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -45,6 +46,7 @@ export function ProfileForm() {
         throw new Error("Failed to login");
       }
       console.log("Login successful!");
+      router.push("/home")
     } catch (error) {
       console.error(error);
     }

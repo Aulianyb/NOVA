@@ -21,7 +21,7 @@ export default function Home() {
               Narrative Organization and Visualization Assistant
             </h2>
             <div className="flex justify-start gap-4 my-8">
-              <Button size="xl" onClick={() => router.push("/register")}>
+              <Button size="xl" onClick={() => router.push("/signup")}>
                 REGISTER
               </Button>
               <Button
