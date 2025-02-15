@@ -49,7 +49,7 @@ export function ProfileForm({setLoginError} : {setLoginError:(value:boolean)=>vo
       }
       console.log("Login successful!");
       router.push("/home");
-    } catch (error) {
+    } catch {
       setLoginError(true);
       // console.error(error);
     }
@@ -92,7 +92,7 @@ export function ProfileForm({setLoginError} : {setLoginError:(value:boolean)=>vo
   );
 }
 
-function showAlert(isError: Boolean) {
+function showAlert(isError: boolean) {
   if (isError) {
     return (
       <Alert variant="destructive">
@@ -105,7 +105,7 @@ function showAlert(isError: Boolean) {
 }
 
 const LoginPage: React.FC = () => {
-  const [loginError, setLoginError] = useState<Boolean>(false);
+  const [loginError, setLoginError] = useState<boolean>(false);
   const router = useRouter();
   return (
     <main className="flex justify-center items-center min-h-screen bg-[var(--black)]">

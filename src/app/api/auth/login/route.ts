@@ -2,15 +2,14 @@ import { NextRequest, NextResponse } from 'next/server';
 import User from '../../../../../model/User'
 import jwt from 'jsonwebtoken'
 import { Session, setSession } from '../session/route';
+import * as bcrypt from 'bcrypt';  
 
- 
 export async function POST(
-  req: NextRequest,
-  res: NextResponse
+  req: NextRequest
 ) {
   try {
     const data = await req.json();
-    const bcrypt = require('bcrypt');
+    // const bcrypt = require('bcrypt');
 
     console.log(data.username)
     const user = await User.where({ username : data.username }).findOne()

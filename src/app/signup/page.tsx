@@ -69,7 +69,7 @@ export function ProfileForm({setSignupError} : {setSignupError:(value:boolean)=>
         body: JSON.stringify(values),
       });
       router.push("/home");
-    } catch (error) {
+    } catch {
       // console.error(error);
       setSignupError(true); 
     }
@@ -112,7 +112,7 @@ export function ProfileForm({setSignupError} : {setSignupError:(value:boolean)=>
   );
 }
 
-function showAlert(isError: Boolean) {
+function showAlert(isError: boolean) {
   if (isError) {
     return (
       <Alert variant="destructive">
@@ -125,7 +125,7 @@ function showAlert(isError: Boolean) {
 }
 
 const SignupPage: React.FC = () => {
-  const [signupError, setSignupError] = useState<Boolean>(false);
+  const [signupError, setSignupError] = useState<boolean>(false);
   const router = useRouter();
   return (
     <main className="flex justify-center items-center min-h-screen bg-[var(--black)]">

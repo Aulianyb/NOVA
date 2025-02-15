@@ -1,5 +1,4 @@
 import { NextRequest, NextResponse } from "next/server";
-import {cookies} from "next/headers";
 import { getSession } from "./app/api/auth/session/route";
 
 const protectedRoutes = ['/home']

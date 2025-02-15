@@ -5,7 +5,8 @@ export const quantico = Quantico({
   subsets: ["latin"],
 });
 
-export const inter = Quantico({
-  weight: "400",
-  subsets: ["latin"],
-});
+// will use later
+// export const inter = Quantico({
+//   weight: "400",
+//   subsets: ["latin"],
+// });

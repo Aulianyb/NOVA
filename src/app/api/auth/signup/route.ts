@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import user from '../../../../../model/User';
+import * as bcrypt from 'bcrypt';
 
 export async function POST(req: NextRequest){
     try {
@@ -11,7 +12,7 @@ export async function POST(req: NextRequest){
             throw new Error('Username already exists');
         }
 
-        const bcrypt = require('bcrypt');
+        // const bcrypt = require('bcrypt');
         const salt = await bcrypt.genSalt(11);
         data.password = await bcrypt.hash(data.password, salt);
         const newUser = new user({
