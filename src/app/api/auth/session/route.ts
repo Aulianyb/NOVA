@@ -11,10 +11,8 @@ export const getSession = async (): Promise<Session | null> => {
     const cookieStore = await cookies(); 
     const session = cookieStore.get("session");
     if(session?.value){
-        console.log("nice one")
         return JSON.parse(session.value) as Session;
     }
-    console.log("retuned null")
     return null; 
 }; 
 

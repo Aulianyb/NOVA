@@ -1,5 +1,6 @@
 "use client";
 
+import { AlertCircle } from "lucide-react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -8,7 +9,6 @@ import { Button } from "@/components/ui/button";
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -17,13 +17,16 @@ import {
 import { Input } from "@/components/ui/input";
 import { quantico } from "../fonts";
 import { useRouter } from "next/navigation";
+import { useState } from "react";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { error } from "console";
 
 const formSchema = z.object({
   username: z.string().min(3),
   password: z.string().min(8),
 });
 
-export function ProfileForm() {
+export function ProfileForm({setLoginError} : {setLoginError:(value:boolean)=>void}) {
   const router = useRouter();
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -46,9 +49,10 @@ export function ProfileForm() {
         throw new Error("Failed to login");
       }
       console.log("Login successful!");
-      router.push("/home")
+      router.push("/home");
     } catch (error) {
-      console.error(error);
+      setLoginError(true);
+      // console.error(error);
     }
   }
 
@@ -89,7 +93,20 @@ export function ProfileForm() {
   );
 }
 
+function showAlert(isError: Boolean) {
+  if (isError) {
+    return (
+      <Alert variant="destructive">
+        <AlertCircle className="h-4 w-4" />
+        <AlertTitle>Error</AlertTitle>
+        <AlertDescription>Invalid username or password</AlertDescription>
+      </Alert>
+    );
+  }
+}
+
 const LoginPage: React.FC = () => {
+  const [loginError, setLoginError] = useState<Boolean>(false);
   const router = useRouter();
   return (
     <main className="flex justify-center items-center min-h-screen bg-[var(--black)]">
@@ -109,10 +126,11 @@ const LoginPage: React.FC = () => {
             />
           </svg>
         </Button>
+        {showAlert(loginError)}
         <h1 className={`${quantico.className} text-[var(--primary)]`}>
           WELCOME BACK!
         </h1>
-        <ProfileForm />
+        <ProfileForm setLoginError={setLoginError}/>
       </div>
     </main>
   );

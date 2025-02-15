@@ -35,13 +35,12 @@ export async function POST(
       token : token
     }
     await setSession(session)
-    // res.cookies.set("token", token, {httpOnly:true})
     return res;
 
   } catch (error) {
     console.log(error)
     return NextResponse.json(
-      { error: error instanceof Error ? error.message : "An unknown error occurred" },
+      { error: error instanceof Error ? error.message : error },
       { status: 500 }
     );
   }
