@@ -1,4 +1,4 @@
-import { Quantico, Inter } from 'next/font/google';
+import { Quantico } from 'next/font/google';
 
 export const quantico = Quantico({
   weight: "700",
