@@ -16,6 +16,9 @@ import {
 import { Input } from "@/components/ui/input";
 import { quantico } from "../fonts";
 import { useRouter } from "next/navigation";
+import { AlertCircle } from "lucide-react";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { useState } from "react";
 
 const formSchema = z.object({
   username: z
@@ -35,7 +38,7 @@ const formSchema = z.object({
     ),
 });
 
-export function ProfileForm() {
+export function ProfileForm({setSignupError} : {setSignupError:(value:boolean)=>void}) {
   const router = useRouter();
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -67,7 +70,8 @@ export function ProfileForm() {
       });
       router.push("/home");
     } catch (error) {
-      console.error(error);
+      // console.error(error);
+      setSignupError(true); 
     }
   }
 
@@ -108,7 +112,20 @@ export function ProfileForm() {
   );
 }
 
-const LoginPage: React.FC = () => {
+function showAlert(isError: Boolean) {
+  if (isError) {
+    return (
+      <Alert variant="destructive">
+        <AlertCircle className="h-4 w-4" />
+        <AlertTitle>Error</AlertTitle>
+        <AlertDescription>Username is already taken!</AlertDescription>
+      </Alert>
+    );
+  }
+}
+
+const SignupPage: React.FC = () => {
+  const [signupError, setSignupError] = useState<Boolean>(false);
   const router = useRouter();
   return (
     <main className="flex justify-center items-center min-h-screen bg-[var(--black)]">
@@ -128,13 +145,14 @@ const LoginPage: React.FC = () => {
             />
           </svg>
         </Button>
+        {showAlert(signupError)}
         <h1 className={`${quantico.className} text-[var(--primary)]`}>
           CREATE AN ACCOUNT
         </h1>
-        <ProfileForm />
+        <ProfileForm setSignupError={setSignupError}/>
       </div>
     </main>
   );
 };
 
-export default LoginPage;
+export default SignupPage;

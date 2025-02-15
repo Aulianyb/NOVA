@@ -4,6 +4,13 @@ import user from '../../../../../model/User';
 export async function POST(req: NextRequest){
     try {
         const data = await req.json();
+
+        // checking for unique username
+        const existingUser = await user.findOne({ username: data.username });
+        if (existingUser) {
+            throw new Error('Username already exists');
+        }
+
         const bcrypt = require('bcrypt');
         const salt = await bcrypt.genSalt(11);
         data.password = await bcrypt.hash(data.password, salt);
