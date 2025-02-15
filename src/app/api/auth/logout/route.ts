@@ -1,14 +1,11 @@
 import { NextResponse } from "next/server";
 import { getSession, removeSession } from "../session/route";
 
-export async function POST(
-  res : NextResponse
-){
+export async function POST(){
     const session = await getSession(); 
     if (!session) {
-        res = NextResponse.json({message : "No session found"}, {status: 401});
+        return NextResponse.json({message : "No session found"}, {status: 401});
     }
     await removeSession();
-    res = NextResponse.json({message : "Logout successful"}, {status: 200});
-    return res;
+    return NextResponse.json({message : "Logout successful"}, {status: 200});
 };
