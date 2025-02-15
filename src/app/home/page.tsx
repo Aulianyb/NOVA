@@ -76,7 +76,7 @@ export default function Home() {
           <br /> the authentication features first (login, signup, etc)
           <br /> as well as initiation of the project!
           <br />
-          <br /> Got feedback? Let me know okay!
+          <br /> Got feedback? Let me know!
           <br /><strong>Discord : TheVoidMask</strong>
         </p>
         <Button
