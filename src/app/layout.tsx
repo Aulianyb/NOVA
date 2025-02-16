@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import { Geist } from "next/font/google";
 import "./globals.css";
-import { connectToMongoDB } from "./lib/connect";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
