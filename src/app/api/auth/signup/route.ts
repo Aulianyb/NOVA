@@ -1,11 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server';
 import user from '../../../../../model/User';
 import * as bcrypt from 'bcrypt';
+import { connectToMongoDB } from '@/app/lib/connect';
 
 export async function POST(req: NextRequest){
     try {
+        await connectToMongoDB();
         const data = await req.json();
-
         // checking for unique username
         const existingUser = await user.findOne({ username: data.username });
         if (existingUser) {

@@ -3,11 +3,13 @@ import User from '../../../../../model/User'
 import jwt from 'jsonwebtoken'
 import { Session, setSession } from '../session';
 import * as bcrypt from 'bcrypt';  
+import { connectToMongoDB } from '@/app/lib/connect';
 
 export async function POST(
   req: NextRequest
 ) {
   try {
+    await connectToMongoDB();
     const data = await req.json();
     // const bcrypt = require('bcrypt');
     console.log(data.username)
