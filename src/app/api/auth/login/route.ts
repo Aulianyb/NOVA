@@ -3,7 +3,6 @@ import User from '../../../../../model/User'
 import jwt from 'jsonwebtoken'
 import { Session, setSession } from '../session';
 import * as bcrypt from 'bcrypt';  
-import { connectToMongoDB } from '@/app/lib/connect';
 
 export async function POST(
   req: NextRequest
