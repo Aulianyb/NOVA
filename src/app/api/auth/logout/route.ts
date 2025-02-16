@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { getSession, removeSession } from "../session/route";
+import { getSession, removeSession } from "../session";
 
 export async function POST(){
     const session = await getSession(); 
