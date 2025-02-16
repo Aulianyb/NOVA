@@ -8,7 +8,6 @@ import { connectToMongoDB } from '@/app/lib/connect';
 export async function POST(
   req: NextRequest
 ) {
-  connectToMongoDB()
   try {
     const data = await req.json();
     // const bcrypt = require('bcrypt');
