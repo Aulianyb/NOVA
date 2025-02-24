@@ -12,6 +12,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
+import { useState } from "react";
 
 const formSchema = z.object({
   username: z
@@ -37,6 +38,7 @@ export function SignupForm({
   setSignupError: (value: boolean) => void;
 }) {
   const router = useRouter();
+  const [disableButton, setDisableButton] = useState(false);
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -46,6 +48,7 @@ export function SignupForm({
   });
   async function onSubmit(values: z.infer<typeof formSchema>) {
     try {
+      setDisableButton(true); 
       const res = await fetch("/api/auth/signup", {
         method: "POST",
         headers: {
@@ -58,17 +61,12 @@ export function SignupForm({
         throw new Error("Failed to register user");
       }
       console.log("User registered successfully!");
-      await fetch("/api/auth/login", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(values),
-      });
       router.push("/home");
     } catch {
       // console.error(error);
       setSignupError(true);
+    } finally {
+      setDisableButton(false); 
     }
   }
 
@@ -101,7 +99,7 @@ export function SignupForm({
             </FormItem>
           )}
         />
-        <Button size="long" type="submit">
+        <Button size="long" type="submit" disabled={disableButton}>
           Register
         </Button>
       </form>
