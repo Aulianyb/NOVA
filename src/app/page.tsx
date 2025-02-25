@@ -13,7 +13,7 @@ export default function Home() {
       <div className="relative flex flex-wrap justify-center gap-8 min-h-[80vh] pt-24 px-20">
         <main className="flex flex-col row-start-2 ml-12">
           <div className="flex-shrink">
-            <Button className="mb-12" variant="outline">
+            <Button className="mb-12" variant="outline" onClick={() => router.push("/patchnotes")}>
               PATCH NOTES
             </Button>
             <h1
