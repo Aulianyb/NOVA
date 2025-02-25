@@ -56,9 +56,9 @@ export function LoginForm({setLoginError} : {setLoginError:(value:boolean)=>void
             name="username"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Username</FormLabel>
+                {/* <FormLabel>Username</FormLabel> */}
                 <FormControl>
-                  <Input {...field} />
+                  <Input {...field} placeholder="Username"/>
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -69,17 +69,19 @@ export function LoginForm({setLoginError} : {setLoginError:(value:boolean)=>void
             name="password"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Password</FormLabel>
+                {/* <FormLabel>Password</FormLabel> */}
                 <FormControl>
-                  <Input {...field} type="password" />
+                  <Input {...field} type="password" placeholder="Password"/>
                 </FormControl>
                 <FormMessage />
               </FormItem>
             )}
           />
-          <Button size="long" type="submit">
+        <div className="mt-6">
+          <Button size="long" type="submit" className="mt-10">
             Login
           </Button>
+        </div>
         </form>
       </Form>
     );

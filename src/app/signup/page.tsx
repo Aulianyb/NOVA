@@ -29,7 +29,7 @@ export default function SignupPage(){
   const router = useRouter();
   return (
     <main className="flex justify-center items-center min-h-screen bg-[var(--black)]">
-      <div className="bg-[var(--white)] w-[500px] p-10 rounded-xl space-y-4">
+      <div className="bg-[var(--white)] w-[70vh] p-6 rounded-xl space-y-6">
         <Button size="icon" variant="ghost" onClick={() => router.push("/")}>
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -50,6 +50,10 @@ export default function SignupPage(){
           CREATE AN ACCOUNT
         </h1>
         <SignupForm setSignupError={setSignupError}/>
+        <div className="text-center">
+        <span>Already have an account? </span>
+        <a onClick={() => router.push("/login")} className="font-bold text-[var(--primary)]">Login</a>
+        </div>
       </div>
     </main>
   );

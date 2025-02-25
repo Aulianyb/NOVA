@@ -17,7 +17,6 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  // await connectToMongoDB();
   return (
     <html lang="en">
       <head>

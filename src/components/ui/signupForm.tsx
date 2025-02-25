@@ -78,9 +78,9 @@ export function SignupForm({
           name="username"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Username</FormLabel>
+              {/* <FormLabel>Username</FormLabel> */}
               <FormControl>
-                <Input {...field} />
+                <Input {...field} placeholder="Username"/>
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -91,17 +91,19 @@ export function SignupForm({
           name="password"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Password</FormLabel>
+              {/* <FormLabel>Password</FormLabel> */}
               <FormControl>
-                <Input {...field} type="password" />
+                <Input {...field} type="password" placeholder="Password"/>
               </FormControl>
               <FormMessage />
             </FormItem>
           )}
         />
-        <Button size="long" type="submit" disabled={disableButton}>
-          Register
-        </Button>
+        <div className="mt-6">
+          <Button size="long" type="submit" disabled={disableButton} className="mt-10">
+            Sign Up
+          </Button>
+        </div>
       </form>
     </Form>
   );
