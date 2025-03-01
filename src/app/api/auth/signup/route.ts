@@ -20,7 +20,8 @@ export async function POST(req: NextRequest){
         const newUser = new User({
             username: data.username,
             password: data.password,
-            ownedWorlds: []
+            ownedWorlds: [],
+            changes : []
         });
         const user = await newUser.save();
         console.log(user)
