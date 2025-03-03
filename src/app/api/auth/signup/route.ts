@@ -10,6 +10,7 @@ export async function POST(req: NextRequest){
         await connectToMongoDB();
         const data = await req.json();
         // checking for unique username
+        // Note : might remove this, check if mongoose already done this for me
         const existingUser = await User.findOne({ username: data.username });
         if (existingUser) {
             throw new Error('Username already exists');
@@ -41,7 +42,7 @@ export async function POST(req: NextRequest){
         await setSession(session); 
         return NextResponse.json({ data : newUser, message : "New User Created!"}, { status: 200 });
     } catch(error){
-        console.log(error)
+        console.log(error);
         return NextResponse.json(
             { error: error instanceof Error ? error.message : error },
             { status: 500 }

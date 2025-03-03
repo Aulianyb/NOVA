@@ -4,7 +4,7 @@ const { Schema } = mongoose;
 const world = new Schema({
     worldName: { type: String, required: [true, "World name required"] },
     worldDescription: { type: String },
-    owners: [String],
+    owners: [{ type: Schema.Types.ObjectId, ref: 'User' }],
     categories: [{ type: Schema.Types.ObjectId, ref: 'Category' }],
     object: [{ type: Schema.Types.ObjectId, ref: 'Object' }],
     changes: [{ type: Schema.Types.ObjectId, ref: 'Changes' }],
