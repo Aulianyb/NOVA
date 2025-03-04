@@ -50,13 +50,13 @@ export default function Home() {
       </div>
       <div className="bg-[var(--white)] flex flex-col items-center gap-12 p-20">
         <div className="flex items-center gap-8">
-          <Star className="w-12 h-12 text-[var(--primary)]" />
+          <Star className="w-12 h-12 text-[var(--primary)]" style={{ fill: "var(--primary)" }}/>
           <h1
             className={`${quantico.className} text-center text-5xl text-[var(--primary)]`}
           >
             Things you can do with NOVA
           </h1>
-          <Star className="w-12 h-12 text-[var(--primary)]" />
+          <Star className="w-12 h-12 text-[var(--primary)]" style={{ fill: "var(--primary)" }}/>
         </div>
         <div className="flex gap-2">
           <div className="bg-[var(--primary)] text-[var(--white)] text-center p-8 rounded-xl max-w-[280px]">

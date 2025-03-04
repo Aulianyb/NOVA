@@ -6,6 +6,7 @@ import { useEffect, useState } from "react";
 import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
 import Image from "next/image";
 import { quantico } from "../fonts";
+import { Navbar } from "@/components/ui/navbar";
 
 export default function Home() {
   const [session, setSession] = useState<{ username: string } | null>(null);
@@ -59,6 +60,7 @@ export default function Home() {
 
   return (
     <main className="bg-[var(--white)]">
+      <Navbar username={session!.username}/>
       <div className="flex flex-col gap-4 justify-center items-center min-h-screen">
         <h1 className={`${quantico.className} font-bold text-[var(--primary)]`}>
           Welcome, {session!.username}
