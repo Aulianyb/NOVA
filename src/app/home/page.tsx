@@ -4,9 +4,9 @@ import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { useEffect, useState } from "react";
 import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
-import Image from "next/image";
 import { quantico } from "../fonts";
 import { Navbar } from "@/components/ui/navbar";
+import { WorldElement } from "@/components/ui/worldElement";
 
 export default function Home() {
   const [session, setSession] = useState<{ username: string } | null>(null);
@@ -59,36 +59,18 @@ export default function Home() {
   }
 
   return (
-    <main className="bg-[var(--white)]">
-      <Navbar username={session!.username}/>
-      <div className="flex flex-col gap-4 justify-center items-center min-h-screen">
-        <h1 className={`${quantico.className} font-bold text-[var(--primary)]`}>
-          Welcome, {session!.username}
+    <main className="bg-[var(--white)] h-full">
+      <Navbar username={session!.username} />
+      <div className="flex flex-col space-y-10 justify-start items-center h-full py-10 px-10">
+        <h1 className={`${quantico.className} font-bold text-[var(--primary)] text-6xl`}>
+          World Portal
         </h1>
-        <Image
-          src={`/NOVA-greet.png`}
-          alt="NOVA, the mascot, greeting you"
-          width="250"
-          height="250"
-        />
-        <p>
-          <strong>Hi there, thanks for trying out NOVA v.0.1.0!</strong>
-          <br /> There's lots of features that hasn't been implemented yet
-          <br /> and that's because this version is meant to test
-          <br /> the authentication features first (login, signup, etc)
-          <br /> as well as initiation of the project!
-          <br />
-          <br /> Got feedback? Let me know!
-          <br /><strong>Discord : TheVoidMask</strong>
-        </p>
-        <Button
-          size="lg"
-          onClick={() => {
-            handleLogout();
-          }}
-        >
-          LOGOUT
-        </Button>
+        <div className="flex flex-wrap gap-4 justify-center">
+          <WorldElement />
+          <WorldElement />
+          <WorldElement />
+          <WorldElement />
+        </div>
       </div>
     </main>
   );
