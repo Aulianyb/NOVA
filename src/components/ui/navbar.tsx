@@ -54,7 +54,7 @@ export function Navbar({ username }: { username: string }) {
           <Bell />
         </Button>
         <DropdownMenu>
-          <DropdownMenuTrigger>
+          <DropdownMenuTrigger asChild>
             <Button variant="ghost" className="gap-4 h-12 rounded-md">
               <CircleUserRound />
               {username}

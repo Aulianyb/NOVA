@@ -61,11 +61,14 @@ export default function Home() {
   return (
     <main className="bg-[var(--white)] h-full">
       <Navbar username={session!.username} />
-      <div className="flex flex-col space-y-10 justify-start items-center mx-auto h-full max-w-screen-2xl py-10 px-10">
+      <div className="flex flex-col space-y-10 justify-start items-center mx-auto h-full max-w-screen-xl py-10 px-10">
         <h1 className={`${quantico.className} font-bold text-[--primary] text-6xl`}>
           World Portal
         </h1>
         <div className="grid gap-4 lg:grid-cols-4 md:grid-cols-2 sm:grid-cols-1">
+          <WorldElement />
+          <WorldElement />
+          <WorldElement />
           <WorldElement />
           <WorldElement />
           <WorldElement />
