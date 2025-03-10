@@ -76,7 +76,7 @@ export default function Home() {
         >
           World Portal
         </h1>
-        <div className="grid gap-5 grid-cols-auto md:grid-cols-2 sm:grid-cols-1">
+        <div className="w-full grid gap-5 lg:grid-cols-4 md:grid-cols-2 sm:grid-cols-1 items-start">
           {worlds.map((world) => {
             return (
               <WorldElement
