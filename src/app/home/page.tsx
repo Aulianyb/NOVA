@@ -11,6 +11,7 @@ import { WorldElement } from "@/components/ui/worldElement";
 export default function Home() {
   const [session, setSession] = useState<{ username: string } | null>(null);
   const [loading, setLoading] = useState(true);
+  const [worlds, setWorlds] = useState<any[]>([]);
   const router = useRouter();
 
   useEffect(() => {
@@ -20,8 +21,16 @@ export default function Home() {
         if (!res.ok) {
           throw new Error("Failed to get session");
         }
-        const data = await res.json();
-        setSession(data.session);
+        const sessionData = await res.json();
+        const session = sessionData.session;
+        setSession(session);
+        const resWorld = await fetch(`api/worlds`);
+        if (!resWorld.ok) {
+          throw new Error("Failed to get world data");
+        }
+        const worldData = await resWorld.json();
+        setWorlds(worldData.data);
+        console.log(worldData);
       } catch (error) {
         console.log({ error: error instanceof Error ? error.message : error });
       } finally {
@@ -62,18 +71,21 @@ export default function Home() {
     <main className="bg-[var(--white)] h-full">
       <Navbar username={session!.username} />
       <div className="flex flex-col space-y-10 justify-start items-center mx-auto h-full max-w-screen-xl py-10 px-10">
-        <h1 className={`${quantico.className} font-bold text-[--primary] text-6xl`}>
+        <h1
+          className={`${quantico.className} font-bold text-[--primary] text-6xl`}
+        >
           World Portal
         </h1>
-        <div className="grid gap-4 lg:grid-cols-4 md:grid-cols-2 sm:grid-cols-1">
-          <WorldElement />
-          <WorldElement />
-          <WorldElement />
-          <WorldElement />
-          <WorldElement />
-          <WorldElement />
-          <WorldElement />
-          <WorldElement />
+        <div className="grid gap-5 grid-cols-auto md:grid-cols-2 sm:grid-cols-1">
+          {worlds.map((world) => {
+            return (
+              <WorldElement
+                key={world._id}
+                worldName={world.worldName}
+                worldDescription={world.worldDescription}
+              />
+            );
+          })}
         </div>
       </div>
     </main>

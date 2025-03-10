@@ -3,6 +3,7 @@
 import { cookies } from "next/headers";
 
 export type Session = {
+    id : string,
     username: string,
     token: string; 
 }; 

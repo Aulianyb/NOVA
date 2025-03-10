@@ -29,6 +29,7 @@ export async function POST(
     const token = await jwt.sign(tokenData, JWT_SECRET!)
     const res = NextResponse.json({message : "Login successful", token}, {status: 200}) 
     const session : Session = {
+      id : user._id,
       username : user.username,
       token : token
     }

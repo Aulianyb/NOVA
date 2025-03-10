@@ -3,6 +3,7 @@ import { NextRequest, NextResponse } from "next/server";
 import World from "../../../../../model/World";
 import { getSession } from "../../auth/session";
 import jwt from "jsonwebtoken";
+import User from "../../../../../model/User";
 
 export async function GET(req: NextRequest, {params} : { params : {id : string}}){
     // Ini temporary, untuk cek params
@@ -21,7 +22,7 @@ export async function GET(req: NextRequest, {params} : { params : {id : string}}
 export async function DELETE(req: NextRequest, { params }: { params: { id: string } }){
     try {
         await connectToMongoDB();
-        const worldID = params.id;
+        const worldID = await params.id;
 
         const session = await getSession();
         if (!session){
@@ -39,10 +40,15 @@ export async function DELETE(req: NextRequest, { params }: { params: { id: strin
         if (!world.owners.includes(userID)){
             throw new Error("You are not the owner of this world");
         }
+        
+        await User.updateMany(
+            { _id: { $in: world.owners } },
+            { $pull: { ownedWorlds: worldID } }
+        );
 
         const deletedWorld = await World.findByIdAndDelete({'_id' : worldID});
-
         return NextResponse.json({ data : deletedWorld, message : "World Deleted!"}, { status: 200 });
+
     } catch(error){
         console.log(error);
         if (error instanceof Error) {
@@ -64,7 +70,7 @@ export async function PUT(req: NextRequest, { params }: { params: { id: string }
         await connectToMongoDB();
 
         const data = await req.json();
-        const worldID = params.id;
+        const worldID = await params.id;
 
         const session = await getSession();
         if (!session){
