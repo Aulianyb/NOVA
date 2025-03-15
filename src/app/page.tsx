@@ -6,7 +6,7 @@ import { quantico, quanticoItalic } from "./fonts";
 import Image from "next/image";
 import { Star } from "lucide-react";
 
-export default function Home() {
+export default function LandingPage() {
   const router = useRouter();
   return (
     <main className="bg-[var(--black)]">

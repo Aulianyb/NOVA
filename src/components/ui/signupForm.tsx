@@ -6,7 +6,6 @@ import {
   FormControl,
   FormField,
   FormItem,
-  FormLabel,
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
@@ -61,7 +60,7 @@ export function SignupForm({
         throw new Error("Failed to register user");
       }
       console.log("User registered successfully!");
-      router.push("/home");
+      router.push("/worlds");
     } catch {
       // console.error(error);
       setSignupError(true);
@@ -80,7 +79,7 @@ export function SignupForm({
             <FormItem>
               {/* <FormLabel>Username</FormLabel> */}
               <FormControl>
-                <Input {...field} placeholder="Username"/>
+                <Input {...field} placeholder="Username" className="h-12 rounded-lg"/>
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -93,7 +92,7 @@ export function SignupForm({
             <FormItem>
               {/* <FormLabel>Password</FormLabel> */}
               <FormControl>
-                <Input {...field} type="password" placeholder="Password"/>
+                <Input {...field} type="password" placeholder="Password" className="h-12 rounded-lg"/>
               </FormControl>
               <FormMessage />
             </FormItem>

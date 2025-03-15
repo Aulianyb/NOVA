@@ -12,18 +12,17 @@ import {
   DropdownMenuGroup,
   DropdownMenuItem,
   DropdownMenuLabel,
-  DropdownMenuPortal,
   DropdownMenuSeparator,
-  DropdownMenuShortcut,
-  DropdownMenuSub,
-  DropdownMenuSubContent,
-  DropdownMenuSubTrigger,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useRouter } from "next/navigation";
+import { CreateWorldDialog } from "./createWorldDialog";
+
 
 export function Navbar({ username }: { username: string }) {
   const router = useRouter();
+
+
   async function handleLogout() {
     try {
       const res = await fetch("/api/auth/logout", {
@@ -44,9 +43,7 @@ export function Navbar({ username }: { username: string }) {
     <div className="min-w-screen text-[var(--white)] bg-[var(--primary)] flex items-center justify-between py-3 px-12">
       <div className="flex items-center gap-4">
         <h1 className={`${quantico.className}`}>NOVA</h1>
-        <Button variant="ghost" className="h-12 rounded-md">
-          <SquarePlus size={10} /> CREATE NEW WORLD
-        </Button>
+        <CreateWorldDialog />
       </div>
 
       <div>

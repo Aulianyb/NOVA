@@ -1,61 +1,44 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { Button } from "@/components/ui/button";
 import { useEffect, useState } from "react";
 import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
 import { quantico } from "../fonts";
 import { Navbar } from "@/components/ui/navbar";
 import { WorldElement } from "@/components/ui/worldElement";
 
-export default function Home() {
+export default function Worlds() {
   const [session, setSession] = useState<{ username: string } | null>(null);
   const [loading, setLoading] = useState(true);
   const [worlds, setWorlds] = useState<any[]>([]);
   const router = useRouter();
 
-  useEffect(() => {
-    async function fetchSession() {
-      try {
-        const res = await fetch("/api/auth/self");
-        if (!res.ok) {
-          throw new Error("Failed to get session");
-        }
-        const sessionData = await res.json();
-        const session = sessionData.session;
-        setSession(session);
-        const resWorld = await fetch(`api/worlds`);
-        if (!resWorld.ok) {
-          throw new Error("Failed to get world data");
-        }
-        const worldData = await resWorld.json();
-        setWorlds(worldData.data);
-        console.log(worldData);
-      } catch (error) {
-        console.log({ error: error instanceof Error ? error.message : error });
-      } finally {
-        setLoading(false);
-      }
-    }
-
-    fetchSession();
-  }, []);
-
-  async function handleLogout() {
+  async function fetchSession() {
     try {
-      const res = await fetch("/api/auth/logout", {
-        method: "POST",
-      });
+      const res = await fetch("/api/auth/self");
       if (!res.ok) {
-        //self note : fix this so it'll be more descriptive
-        throw new Error("Failed to login");
+        throw new Error("Failed to get session");
       }
-      console.log("Logout successful!");
-      router.push("/");
+      const sessionData = await res.json();
+      const session = sessionData.session;
+      setSession(session);
+      const resWorld = await fetch(`api/worlds`);
+      if (!resWorld.ok) {
+        throw new Error("Failed to get world data");
+      }
+      const worldData = await resWorld.json();
+      setWorlds(worldData.data);
+      console.log(worldData);
     } catch (error) {
-      console.error(error);
+      console.log({ error: error instanceof Error ? error.message : error });
+    } finally {
+      setLoading(false);
     }
   }
+
+  useEffect(() => {
+    fetchSession();
+  }, []);
 
   if (loading) {
     return (

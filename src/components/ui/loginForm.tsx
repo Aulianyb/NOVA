@@ -41,7 +41,7 @@ export function LoginForm({setLoginError} : {setLoginError:(value:boolean)=>void
           throw new Error("Failed to login");
         }
         console.log("Login successful!");
-        router.push("/home");
+        router.push("/worlds");
       } catch {
         setLoginError(true);
         // console.error(error);
@@ -56,9 +56,8 @@ export function LoginForm({setLoginError} : {setLoginError:(value:boolean)=>void
             name="username"
             render={({ field }) => (
               <FormItem>
-                {/* <FormLabel>Username</FormLabel> */}
                 <FormControl>
-                  <Input {...field} placeholder="Username"/>
+                  <Input {...field} placeholder="Username" className="h-12 rounded-lg"/>
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -71,7 +70,7 @@ export function LoginForm({setLoginError} : {setLoginError:(value:boolean)=>void
               <FormItem>
                 {/* <FormLabel>Password</FormLabel> */}
                 <FormControl>
-                  <Input {...field} type="password" placeholder="Password"/>
+                  <Input {...field} type="password" placeholder="Password" className="h-12 rounded-lg"/>
                 </FormControl>
                 <FormMessage />
               </FormItem>

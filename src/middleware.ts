@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getSession } from "./app/api/auth/session";
 
-const protectedRoutes = ['/home']
+const protectedRoutes = ['/worlds']
 const publicRoutes = ['/login', '/signup', '/']
 
 export default async function middleware(req: NextRequest){
@@ -17,7 +17,7 @@ export default async function middleware(req: NextRequest){
 
     if (isPublicRoute && session?.username){
         // note self : KALAU FIX URL INI UBAH
-        return NextResponse.redirect(new URL('/home', req.nextUrl))
+        return NextResponse.redirect(new URL('/worlds', req.nextUrl))
     }
 
     return NextResponse.next()
