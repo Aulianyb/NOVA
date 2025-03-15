@@ -6,7 +6,7 @@ const world = new Schema({
     worldDescription: { type: String },
     owners: [{ type: Schema.Types.ObjectId, ref: 'User' }],
     categories: [{ type: Schema.Types.ObjectId, ref: 'Category' }],
-    object: [{ type: Schema.Types.ObjectId, ref: 'Object' }],
+    objects: [{ type: Schema.Types.ObjectId, ref: 'Object' }],
     changes: [{ type: Schema.Types.ObjectId, ref: 'Changes' }],
 }, { timestamps: true });
 
