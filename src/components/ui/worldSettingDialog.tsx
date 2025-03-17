@@ -3,7 +3,7 @@ import {
   FormControl,
   FormField,
   FormItem,
-  FormMessage
+  FormMessage,
 } from "@/components/ui/form";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
@@ -17,11 +17,12 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-  DialogFooter,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { SquarePlus } from "lucide-react";
+import { Settings } from "lucide-react";
+import { World } from "../../../types/types";
+import { useRouter } from "next/navigation";
 
 const formSchema = z.object({
   worldName: z
@@ -33,30 +34,49 @@ const formSchema = z.object({
     .max(240, "Description must be under 240 characters long"),
 });
 
-export function CreateWorldDialog() {
+export function WorldSettingDialog({ worldData }: { worldData: World }) {
+  const router = useRouter();
+
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      worldName: "",
-      worldDescription: "",
+      worldName: worldData.worldName,
+      worldDescription: worldData.worldDescription,
     },
   });
 
-  async function onSubmit(values: z.infer<typeof formSchema>) {
+  async function onEdit(values: z.infer<typeof formSchema>) {
     try {
-      const res = await fetch("/api/worlds", {
-        method: "POST",
+      const res = await fetch(`/api/worlds/${worldData.id}`, {
+        method: "PUT",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify(values),
       });
       if (!res.ok) {
-        throw new Error("World creation failed");
+        throw new Error("World edit failed");
       }
       window.location.reload();
     } catch (error) {
-      console.log(error);
+      console.error(error);
+    }
+  }
+
+  async function onDelete() {
+    try {
+      const res = await fetch(`/api/worlds/${worldData.id}`, {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      if (!res.ok) {
+        throw new Error("World delete failed");
+      }
+      router.push("/worlds");
+    } catch (error) {
+      console.error(error);
     }
   }
 
@@ -64,18 +84,18 @@ export function CreateWorldDialog() {
     <Dialog>
       <DialogTrigger asChild>
         <Button variant="ghost" className="h-12 rounded-md">
-          <SquarePlus size={10} /> CREATE NEW WORLD
+          <Settings size={10} /> WORLD SETTINGS
         </Button>
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Create New World</DialogTitle>
-          <DialogDescription>
-            Fill in information about your new world!
-          </DialogDescription>
+          <DialogTitle>World Settings</DialogTitle>
         </DialogHeader>
+        <DialogDescription>
+          Edit your world's name and description
+        </DialogDescription>
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)}>
+          <form onSubmit={form.handleSubmit(onEdit)}>
             <FormField
               control={form.control}
               name="worldName"
@@ -106,13 +126,20 @@ export function CreateWorldDialog() {
                 </FormItem>
               )}
             />
-            <DialogFooter>
-              <Button type="submit" className="rounded-lg mt-4">
-                Create
-              </Button>
-            </DialogFooter>
+            <Button type="submit" className="rounded-lg mt-4">
+              Save Changes
+            </Button>
           </form>
         </Form>
+        <div className="mt-4 w-full space-y-2 p-2 border-red-200 border-2 rounded-lg">
+          <DialogTitle className=" text-red-900">Danger Zone</DialogTitle>
+          <DialogDescription>
+            Delete your world and it's contents. This action is irreversible.
+          </DialogDescription>
+          <Button className="rounded-lg w-full bg-red-500 hover:bg-red-600" onClick={()=>{onDelete()}}>
+            Destroy World
+          </Button>
+        </div>
       </DialogContent>
     </Dialog>
   );

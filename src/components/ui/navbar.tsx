@@ -17,11 +17,13 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { useRouter } from "next/navigation";
 import { CreateWorldDialog } from "./createWorldDialog";
+import { WorldSettingDialog } from "./worldSettingDialog";
+import { World } from "../../../types/types";
 
-
-export function Navbar({ username }: { username: string }) {
+export function Navbar(
+  { username, type, worldData = null}: { username: string, type : string, worldData? : World | null}
+) {
   const router = useRouter();
-
 
   async function handleLogout() {
     try {
@@ -30,7 +32,7 @@ export function Navbar({ username }: { username: string }) {
       });
       if (!res.ok) {
         //self note : fix this so it'll be more descriptive
-        throw new Error("Failed to login");
+        throw new Error("Failed to logout");
       }
       console.log("Logout successful!");
       router.push("/");
@@ -40,10 +42,10 @@ export function Navbar({ username }: { username: string }) {
   }
 
   return (
-    <div className="min-w-screen text-[var(--white)] bg-[var(--primary)] flex items-center justify-between py-3 px-12">
+    <div className="w-full text-[var(--white)] bg-[var(--primary)] flex items-center justify-between py-3 px-12">
       <div className="flex items-center gap-4">
         <h1 className={`${quantico.className}`}>NOVA</h1>
-        <CreateWorldDialog />
+        {type === "menu" ? <CreateWorldDialog /> : <WorldSettingDialog worldData={worldData!}/>}
       </div>
 
       <div>

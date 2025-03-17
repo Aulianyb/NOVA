@@ -20,8 +20,8 @@ export async function GET(req: NextRequest, {params} : { params : {id : string}}
             throw new Error("No session found");
         }
         const userID = verifyUser(session.token);
-        console.log(userID)
-        const world = await World.findById(params.id);
+        const { id } = await params;
+        const world = await World.findById(id);
         if (!world){
             throw new Error("World not found");
         }
@@ -41,7 +41,7 @@ export async function GET(req: NextRequest, {params} : { params : {id : string}}
 export async function DELETE(req: NextRequest, { params }: { params: { id: string } }){
     try {
         await connectToMongoDB();
-        const worldID = params.id;
+        const { id } = await params;
 
         const session = await getSession();
         if (!session){
@@ -52,7 +52,7 @@ export async function DELETE(req: NextRequest, { params }: { params: { id: strin
         const decoded = jwt.verify(session.token, JWT_SECRET!) as jwt.JwtPayload & { id: string };
         const userID = decoded.id
 
-        const world = await World.findById(worldID);
+        const world = await World.findById(id);
         if (!world){
             throw new Error("World not found");
         }
@@ -62,10 +62,10 @@ export async function DELETE(req: NextRequest, { params }: { params: { id: strin
         
         await User.updateMany(
             { _id: { $in: world.owners } },
-            { $pull: { ownedWorlds: worldID } }
+            { $pull: { ownedWorlds: id } }
         );
 
-        const deletedWorld = await World.findByIdAndDelete({'_id' : worldID});
+        const deletedWorld = await World.findByIdAndDelete({'_id' : id});
         return NextResponse.json({ data : deletedWorld, message : "World Deleted!"}, { status: 200 });
 
     } catch(error){
@@ -89,7 +89,7 @@ export async function PUT(req: NextRequest, { params }: { params: { id: string }
         await connectToMongoDB();
 
         const data = await req.json();
-        const worldID = await params.id;
+        const { id } = await params;
 
         const session = await getSession();
         if (!session){
@@ -100,7 +100,7 @@ export async function PUT(req: NextRequest, { params }: { params: { id: string }
         const decoded = jwt.verify(session.token, JWT_SECRET!) as jwt.JwtPayload & { id: string };
         const userID = decoded.id
 
-        const world = await World.findById(worldID);
+        const world = await World.findById(id);
         if (!world){
             throw new Error("World not found");
         }
@@ -108,7 +108,7 @@ export async function PUT(req: NextRequest, { params }: { params: { id: string }
             throw new Error("You are not the owner of this world");
         }
 
-        const editedWorld = await World.findByIdAndUpdate(worldID,
+        const editedWorld = await World.findByIdAndUpdate(id,
             {worldName : data.worldName,
             worldDescription : data.worldDescription},
             {new: true}
