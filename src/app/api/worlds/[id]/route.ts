@@ -5,11 +5,30 @@ import { getSession } from "../../auth/session";
 import jwt from "jsonwebtoken";
 import User from "../../../../../model/User";
 
+function verifyUser(sessionToken : string) {
+    const JWT_SECRET = process.env.JWT_SECRET;
+    const decoded = jwt.verify(sessionToken, JWT_SECRET!) as jwt.JwtPayload & { id: string };
+    const userID = decoded.id
+    return userID;
+}
+
 export async function GET(req: NextRequest, {params} : { params : {id : string}}){
-    // Ini temporary, untuk cek params
     try {
-        console.log(params);
-        return NextResponse.json({message : params})
+        await connectToMongoDB();
+        const session = await getSession();
+        if (!session){
+            throw new Error("No session found");
+        }
+        const userID = verifyUser(session.token);
+        console.log(userID)
+        const world = await World.findById(params.id);
+        if (!world){
+            throw new Error("World not found");
+        }
+        if (!world.owners.includes(userID)){
+            throw new Error("You are not the owner of this world");
+        }
+        return NextResponse.json({data : world, message : "World Found!"})
     } catch(error){
         console.log(error);
         return NextResponse.json(
@@ -22,7 +41,7 @@ export async function GET(req: NextRequest, {params} : { params : {id : string}}
 export async function DELETE(req: NextRequest, { params }: { params: { id: string } }){
     try {
         await connectToMongoDB();
-        const worldID = await params.id;
+        const worldID = params.id;
 
         const session = await getSession();
         if (!session){
