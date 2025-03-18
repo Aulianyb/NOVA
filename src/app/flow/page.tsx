@@ -1,0 +1,83 @@
+"use client";
+import React, { useCallback } from "react";
+import {
+  ReactFlow,
+  useNodesState,
+  useEdgesState,
+  addEdge,
+  MiniMap,
+  Controls,
+  Background,
+  Panel,
+  useReactFlow,
+  ReactFlowProvider,
+} from "@xyflow/react";
+import "@xyflow/react/dist/style.css";
+import { Button } from "@/components/ui/button";
+
+const initialNodes = [
+  { id: "1", position: { x: 500, y: 100 }, data: { label: "1" } },
+  { id: "2", position: { x: 500, y: 200 }, data: { label: "2" } },
+];
+const initialEdges = [{ id: "e1-2", source: "1", target: "2" }];
+
+function FlowContent() {
+  const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
+  const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
+  const flow = useReactFlow();
+  const onConnect = useCallback(
+    (params: any) => setEdges((eds) => addEdge(params, eds)),
+    [setEdges]
+  );
+
+  const addNode = useCallback(() => {
+    const id = Math.random().toString();
+    const newNode = {
+      id: id,
+      position: flow.screenToFlowPosition({
+        x: window.innerWidth / 2,
+        y: window.innerHeight / 2,
+      }),
+      data: { label: `Node ${id}` },
+      origin: [0.5, 0.0],
+    };
+    setNodes((nds) => nds.concat(newNode));
+  }, []);
+
+  return (
+    <main>
+      {/* <Navbar username="Test" type={"menu"} /> */}
+      <div style={{ width: "100vw", height: "100vh" }}>
+        <ReactFlow
+          nodes={nodes}
+          edges={edges}
+          onNodesChange={onNodesChange}
+          onEdgesChange={onEdgesChange}
+          onConnect={onConnect}
+        >
+          <Panel>
+            <h1>World Name</h1>
+            <Button
+              onClick={() => {
+                addNode();
+              }}
+            >
+              Add Node
+            </Button>
+          </Panel>
+          <Controls />
+          <MiniMap />
+          <Background variant="lines" gap={12} size={1} />
+        </ReactFlow>
+      </div>
+    </main>
+  );
+}
+
+export default function Flow() {
+  return (
+    <ReactFlowProvider>
+      <FlowContent />
+    </ReactFlowProvider>
+  );
+}
