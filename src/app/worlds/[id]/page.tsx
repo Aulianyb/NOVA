@@ -1,9 +1,9 @@
 "use client";
-import { Navbar } from "@/components/ui/navbar";
+import { Navbar } from "@/components/navbar";
 import { useParams } from "next/navigation";
 import { useState, useEffect } from "react";
 import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
-import { World } from "../../../../types/types"; 
+import { World } from "../../../../types/types";
 
 export default function Page() {
   const [session, setSession] = useState<{ username: string } | null>(null);
@@ -26,7 +26,7 @@ export default function Page() {
         throw new Error("Failed to get world");
       }
       const worldData = await world.json();
-      const currentWorld : World = {
+      const currentWorld: World = {
         id: worldData.data._id,
         worldName: worldData.data.worldName,
         worldDescription: worldData.data.worldDescription,
@@ -34,8 +34,8 @@ export default function Page() {
         categories: worldData.data.categories,
         objects: worldData.data.object,
         changes: worldData.data.changes,
-      }
-      setWorld(currentWorld); 
+      };
+      setWorld(currentWorld);
       console.log(currentWorld);
     } catch (error) {
       console.log({ error: error instanceof Error ? error.message : error });
@@ -60,7 +60,11 @@ export default function Page() {
 
   return (
     <main className="bg-[var(--white)] h-full">
-      <Navbar username={session!.username} type={"individual"} worldData={world}/>
+      <Navbar
+        username={session!.username}
+        type={"individual"}
+        worldData={world}
+      />
       <h1>Hi there! Welcome to {world!.worldName}</h1>
       <p>{world!.worldDescription}</p>
     </main>

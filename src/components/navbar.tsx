@@ -4,7 +4,7 @@ import {
   ChevronsUpDown,
   Bell,
 } from "lucide-react";
-import { Button } from "./button";
+import { Button } from "./ui/button";
 import { quantico } from "@/app/fonts";
 import {
   DropdownMenu,
@@ -18,11 +18,17 @@ import {
 import { useRouter } from "next/navigation";
 import { CreateWorldDialog } from "./createWorldDialog";
 import { WorldSettingDialog } from "./worldSettingDialog";
-import { World } from "../../../types/types";
+import { World } from "../../types/types";
 
-export function Navbar(
-  { username, type, worldData = null}: { username: string, type : string, worldData? : World | null}
-) {
+export function Navbar({
+  username,
+  type,
+  worldData = null,
+}: {
+  username: string;
+  type: string;
+  worldData?: World | null;
+}) {
   const router = useRouter();
 
   async function handleLogout() {
@@ -45,7 +51,11 @@ export function Navbar(
     <div className="w-full text-[var(--white)] bg-[var(--primary)] flex items-center justify-between py-3 px-12">
       <div className="flex items-center gap-4">
         <h1 className={`${quantico.className}`}>NOVA</h1>
-        {type === "menu" ? <CreateWorldDialog /> : <WorldSettingDialog worldData={worldData!}/>}
+        {type === "menu" ? (
+          <CreateWorldDialog />
+        ) : (
+          <WorldSettingDialog worldData={worldData!} />
+        )}
       </div>
 
       <div>

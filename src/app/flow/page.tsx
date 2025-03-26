@@ -11,13 +11,38 @@ import {
   Panel,
   useReactFlow,
   ReactFlowProvider,
+  MarkerType,
 } from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
 import { Button } from "@/components/ui/button";
+import FloatingEdge from "@/components/FloatingEdge";
+import CustomConnectionLine from "@/components/CustomConnectionLine";
+import CustomNode from "@/components/CustomNode";
+
+const nodeTypes = {
+  customNode: CustomNode,
+};
+
+const connectionLineStyle = {
+  stroke: "#b1b1b7",
+};
+
 
 const initialNodes = [
   { id: "1", position: { x: 500, y: 100 }, data: { label: "1" } },
   { id: "2", position: { x: 500, y: 200 }, data: { label: "2" } },
+  {
+    id: "4",
+    position: { x: 600, y: 400 },
+    type: "customNode",
+    data: { number: 12 },
+  },
+  {
+    id: "5",
+    position: { x: 500, y: 400 },
+    type: "customNode",
+    data: { number: 12 },
+  },
 ];
 const initialEdges = [{ id: "e1-2", source: "1", target: "2" }];
 
@@ -54,6 +79,9 @@ function FlowContent() {
           onNodesChange={onNodesChange}
           onEdgesChange={onEdgesChange}
           onConnect={onConnect}
+          nodeTypes={nodeTypes}
+          connectionLineComponent={CustomConnectionLine}
+          connectionLineStyle={connectionLineStyle}
         >
           <Panel>
             <h1>World Name</h1>

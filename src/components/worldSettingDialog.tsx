@@ -21,7 +21,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Settings } from "lucide-react";
-import { World } from "../../../types/types";
+import { World } from "../../types/types";
 import { useRouter } from "next/navigation";
 
 const formSchema = z.object({
@@ -136,7 +136,12 @@ export function WorldSettingDialog({ worldData }: { worldData: World }) {
           <DialogDescription>
             Delete your world and it's contents. This action is irreversible.
           </DialogDescription>
-          <Button className="rounded-lg w-full bg-red-500 hover:bg-red-600" onClick={()=>{onDelete()}}>
+          <Button
+            className="rounded-lg w-full bg-red-500 hover:bg-red-600"
+            onClick={() => {
+              onDelete();
+            }}
+          >
             Destroy World
           </Button>
         </div>

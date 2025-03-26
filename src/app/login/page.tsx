@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { AlertCircle } from "lucide-react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { LoginForm } from "@/components/ui/loginForm";
+import { LoginForm } from "@/components/loginForm";
 
 function showAlert(isError: boolean) {
   if (isError) {

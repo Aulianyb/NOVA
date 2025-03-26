@@ -3,9 +3,9 @@
 import { useEffect, useState } from "react";
 import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
 import { quantico } from "../fonts";
-import { Navbar } from "@/components/ui/navbar";
-import { WorldElement } from "@/components/ui/worldElement";
-import { World } from "../../../types/types"; 
+import { Navbar } from "@/components/navbar";
+import { WorldElement } from "@/components/worldElement";
+import { World } from "../../../types/types";
 
 export default function Worlds() {
   const [session, setSession] = useState<{ username: string } | null>(null);
@@ -26,7 +26,7 @@ export default function Worlds() {
         throw new Error("Failed to get world data");
       }
       const worldData = await resWorld.json();
-      const worldArray : World[] = worldData.data.map((world : any) =>({
+      const worldArray: World[] = worldData.data.map((world: any) => ({
         id: world._id,
         worldName: world.worldName,
         worldDescription: world.worldDescription,
@@ -35,7 +35,7 @@ export default function Worlds() {
         // note to self : HARUSNYA OBJECTS! CHANGE LATER
         objects: world.object,
         changes: world.changes,
-      }))
+      }));
       setWorlds(worldArray);
       console.log(worldArray);
     } catch (error) {
@@ -61,7 +61,7 @@ export default function Worlds() {
 
   return (
     <main className="bg-[var(--white)] h-full">
-      <Navbar username={session!.username} type="menu"/>
+      <Navbar username={session!.username} type="menu" />
       <div className="flex flex-col space-y-10 justify-start items-center mx-auto h-full max-w-screen-xl py-10 px-10">
         <h1
           className={`${quantico.className} font-bold text-[--primary] text-6xl`}
