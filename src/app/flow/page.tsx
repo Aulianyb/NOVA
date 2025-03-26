@@ -11,9 +11,9 @@ import {
   Panel,
   useReactFlow,
   ReactFlowProvider,
-  MarkerType,
+  ConnectionMode,
+  BackgroundVariant,
 } from "@xyflow/react";
-import "@xyflow/react/dist/style.css";
 import { Button } from "@/components/ui/button";
 import FloatingEdge from "@/components/FloatingEdge";
 import CustomConnectionLine from "@/components/CustomConnectionLine";
@@ -27,7 +27,6 @@ const connectionLineStyle = {
   stroke: "#b1b1b7",
 };
 
-
 const initialNodes = [
   { id: "1", position: { x: 500, y: 100 }, data: { label: "1" } },
   { id: "2", position: { x: 500, y: 200 }, data: { label: "2" } },
@@ -35,13 +34,13 @@ const initialNodes = [
     id: "4",
     position: { x: 600, y: 400 },
     type: "customNode",
-    data: { number: 12 },
+    data: { name: "name" },
   },
   {
     id: "5",
     position: { x: 500, y: 400 },
     type: "customNode",
-    data: { number: 12 },
+    data: { name: "name" },
   },
 ];
 const initialEdges = [{ id: "e1-2", source: "1", target: "2" }];
@@ -50,8 +49,10 @@ function FlowContent() {
   const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
   const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
   const flow = useReactFlow();
+
   const onConnect = useCallback(
-    (params: any) => setEdges((eds) => addEdge(params, eds)),
+    (params: any) =>
+      setEdges((eds) => addEdge({ ...params, type: "straight" }, eds)),
     [setEdges]
   );
 
@@ -63,8 +64,9 @@ function FlowContent() {
         x: window.innerWidth / 2,
         y: window.innerHeight / 2,
       }),
-      data: { label: `Node ${id}` },
-      origin: [0.5, 0.0],
+      type: "customNode",
+      data: { name: "Jane Doe" },
+      // origin: [0.5, 0.0],
     };
     setNodes((nds) => nds.concat(newNode));
   }, []);
@@ -82,6 +84,7 @@ function FlowContent() {
           nodeTypes={nodeTypes}
           connectionLineComponent={CustomConnectionLine}
           connectionLineStyle={connectionLineStyle}
+          connectionMode={ConnectionMode.Loose}
         >
           <Panel>
             <h1>World Name</h1>
@@ -95,7 +98,7 @@ function FlowContent() {
           </Panel>
           <Controls />
           <MiniMap />
-          <Background variant="lines" gap={12} size={1} />
+          <Background variant={BackgroundVariant.Lines} gap={12} size={1} />
         </ReactFlow>
       </div>
     </main>
