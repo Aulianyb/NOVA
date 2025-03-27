@@ -1,25 +1,15 @@
-import { connectToMongoDB } from "@/app/lib/connect";
 import { NextRequest, NextResponse } from "next/server";
 import World from "../../../../../model/World";
-import { getSession } from "../../auth/session";
-import jwt from "jsonwebtoken";
 import User from "../../../../../model/User";
-
-function verifyUser(sessionToken : string) {
-    const JWT_SECRET = process.env.JWT_SECRET;
-    const decoded = jwt.verify(sessionToken, JWT_SECRET!) as jwt.JwtPayload & { id: string };
-    const userID = decoded.id
-    return userID;
-}
+import { verifyUser } from "../../auth/session";
+import { errorhandling } from "../../function";
 
 export async function GET(req: NextRequest, {params} : { params : {id : string}}){
     try {
-        await connectToMongoDB();
-        const session = await getSession();
-        if (!session){
-            throw new Error("No session found");
+        const userID = await verifyUser();
+        if (!userID) {
+            throw new Error("No Session Found"); 
         }
-        const userID = verifyUser(session.token);
         const { id } = await params;
         const world = await World.findById(id);
         if (!world){
@@ -30,27 +20,17 @@ export async function GET(req: NextRequest, {params} : { params : {id : string}}
         }
         return NextResponse.json({data : world, message : "World Found!"})
     } catch(error){
-        console.log(error);
-        return NextResponse.json(
-            { error: error instanceof Error ? error.message : error },
-            { status: 500 }
-        );
+        return errorhandling(error);
     }
 }
 
 export async function DELETE(req: NextRequest, { params }: { params: { id: string } }){
     try {
-        await connectToMongoDB();
-        const { id } = await params;
-
-        const session = await getSession();
-        if (!session){
-            throw new Error("No session found");
+        const userID = await verifyUser();
+        if (!userID) {
+            throw new Error("No Session Found"); 
         }
-
-        const JWT_SECRET = process.env.JWT_SECRET;
-        const decoded = jwt.verify(session.token, JWT_SECRET!) as jwt.JwtPayload & { id: string };
-        const userID = decoded.id
+        const { id } = await params;
 
         const world = await World.findById(id);
         if (!world){
@@ -69,36 +49,19 @@ export async function DELETE(req: NextRequest, { params }: { params: { id: strin
         return NextResponse.json({ data : deletedWorld, message : "World Deleted!"}, { status: 200 });
 
     } catch(error){
-        console.log(error);
-        if (error instanceof Error) {
-            if (error.message === "No session found" || error.message === "You are not the owner of this world") {
-                return NextResponse.json({ error: error.message }, { status: 401 });
-            }
-            return NextResponse.json({ error: error.message }, { status: 500 });
-        }
-        return NextResponse.json(
-            { message : error },
-            { status: 500 }
-        );
+        return errorhandling(error);
     }
 }
 
 
 export async function PUT(req: NextRequest, { params }: { params: { id: string } }){
     try {
-        await connectToMongoDB();
-
+        const userID = await verifyUser();
+        if (!userID) {
+            throw new Error("No Session Found"); 
+        }
         const data = await req.json();
         const { id } = await params;
-
-        const session = await getSession();
-        if (!session){
-            throw new Error("No session found");
-        }
-
-        const JWT_SECRET = process.env.JWT_SECRET;
-        const decoded = jwt.verify(session.token, JWT_SECRET!) as jwt.JwtPayload & { id: string };
-        const userID = decoded.id
 
         const world = await World.findById(id);
         if (!world){
@@ -116,16 +79,6 @@ export async function PUT(req: NextRequest, { params }: { params: { id: string }
 
         return NextResponse.json({ data : editedWorld, message : "World Edited!"}, { status: 200 });
     } catch(error){
-        console.log(error);
-        if (error instanceof Error) {
-            if (error.message === "No session found" || error.message === "You are not the owner of this world") {
-                return NextResponse.json({ error: error.message }, { status: 401 });
-            }
-            return NextResponse.json({ error: error.message }, { status: 500 });
-        }
-        return NextResponse.json(
-            { message : error },
-            { status: 500 }
-        );
+        return errorhandling(error);
     }
 }

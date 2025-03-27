@@ -32,7 +32,6 @@ export default function Worlds() {
         worldDescription: world.worldDescription,
         owners: world.owners,
         categories: world.categories,
-        // note to self : HARUSNYA OBJECTS! CHANGE LATER
         objects: world.object,
         changes: world.changes,
       }));
