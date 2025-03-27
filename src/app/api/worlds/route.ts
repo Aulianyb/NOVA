@@ -52,9 +52,9 @@ export async function POST(req:NextRequest){
             worldName: data.worldName,
             worldDescription: data.worldDescription,
             owners: [userID],
-            categories: [],
-            object: [],
-            changes: []
+            objects: [],
+            changes: [],
+            tags: []
         })
         
         const world = await newWorld.save();

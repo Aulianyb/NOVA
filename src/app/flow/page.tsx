@@ -73,7 +73,6 @@ function FlowContent() {
 
   return (
     <main>
-      {/* <Navbar username="Test" type={"menu"} /> */}
       <div style={{ width: "100vw", height: "100vh" }}>
         <ReactFlow
           nodes={nodes}
