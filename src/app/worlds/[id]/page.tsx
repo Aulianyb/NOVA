@@ -1,9 +1,80 @@
 "use client";
-import { Navbar } from "@/components/navbar";
+import React, { useCallback } from "react";
 import { useParams } from "next/navigation";
 import { useState, useEffect } from "react";
 import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
 import { World } from "../../../../types/types";
+import {
+  ReactFlow,
+  useNodesState,
+  useEdgesState,
+  addEdge,
+  Background,
+  Panel,
+  useReactFlow,
+  ReactFlowProvider,
+  ConnectionMode,
+  BackgroundVariant,
+} from "@xyflow/react";
+import CustomNode from "@/components/CustomNode";
+import { Button } from "@/components/ui/button";
+import { Settings, SquarePlus, ArrowLeft } from "lucide-react";
+
+const nodeTypes = {
+  customNode: CustomNode,
+};
+
+const initialEdges: Node[] = [];
+const initialNodes: Node[] = [];
+
+function FlowContent() {
+  const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
+  const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
+  const flow = useReactFlow();
+
+  const onConnect = useCallback(
+    (params: any) =>
+      setEdges((eds) => addEdge({ ...params, type: "straight" }, eds)),
+    [setEdges]
+  );
+  return (
+    <main>
+      <div style={{ width: "100vw", height: "100vh" }}>
+        <ReactFlow>
+          <Panel>
+            <div className="flex flex-col gap-2">
+              <Button
+                onClick={() => {
+                  console.log("Adding Node");
+                }}
+                size="icon"
+              >
+                <ArrowLeft />
+              </Button>
+              <Button
+                onClick={() => {
+                  console.log("Adding Node");
+                }}
+                size="icon"
+              >
+                <Settings />
+              </Button>
+              <Button
+                onClick={() => {
+                  console.log("Adding Node");
+                }}
+                size="icon"
+              >
+                <SquarePlus />
+              </Button>
+            </div>
+          </Panel>
+          <Background variant={BackgroundVariant.Lines} gap={12} size={1} />
+        </ReactFlow>
+      </div>
+    </main>
+  );
+}
 
 export default function Page() {
   const [session, setSession] = useState<{ username: string } | null>(null);
@@ -59,14 +130,8 @@ export default function Page() {
   }
 
   return (
-    <main className="bg-[var(--white)] h-full">
-      <Navbar
-        username={session!.username}
-        type={"individual"}
-        worldData={world}
-      />
-      <h1>Hi there! Welcome to {world!.worldName}</h1>
-      <p>{world!.worldDescription}</p>
-    </main>
+    <ReactFlowProvider>
+      <FlowContent />
+    </ReactFlowProvider>
   );
 }

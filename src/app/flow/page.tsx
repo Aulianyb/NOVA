@@ -15,8 +15,6 @@ import {
   BackgroundVariant,
 } from "@xyflow/react";
 import { Button } from "@/components/ui/button";
-import FloatingEdge from "@/components/FloatingEdge";
-import CustomConnectionLine from "@/components/CustomConnectionLine";
 import CustomNode from "@/components/CustomNode";
 
 const nodeTypes = {
@@ -81,7 +79,6 @@ function FlowContent() {
           onEdgesChange={onEdgesChange}
           onConnect={onConnect}
           nodeTypes={nodeTypes}
-          connectionLineComponent={CustomConnectionLine}
           connectionLineStyle={connectionLineStyle}
           connectionMode={ConnectionMode.Loose}
         >
