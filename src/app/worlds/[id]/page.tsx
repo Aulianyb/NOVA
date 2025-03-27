@@ -15,16 +15,22 @@ import {
   ReactFlowProvider,
   ConnectionMode,
   BackgroundVariant,
+  Edge,
+  Node
 } from "@xyflow/react";
 import CustomNode from "@/components/CustomNode";
 import { Button } from "@/components/ui/button";
 import { Settings, SquarePlus, ArrowLeft } from "lucide-react";
 
+const connectionLineStyle = {
+  stroke: "#b1b1b7",
+};
+
 const nodeTypes = {
   customNode: CustomNode,
 };
 
-const initialEdges: Node[] = [];
+const initialEdges: Edge[] = [];
 const initialNodes: Node[] = [];
 
 function FlowContent() {
@@ -40,7 +46,16 @@ function FlowContent() {
   return (
     <main>
       <div style={{ width: "100vw", height: "100vh" }}>
-        <ReactFlow>
+        <ReactFlow
+          nodes={nodes}
+          edges={edges}
+          onNodesChange={onNodesChange}
+          onEdgesChange={onEdgesChange}
+          onConnect={onConnect}
+          nodeTypes={nodeTypes}
+          connectionLineStyle={connectionLineStyle}
+          connectionMode={ConnectionMode.Loose}
+        >
           <Panel>
             <div className="flex flex-col gap-2">
               <Button
