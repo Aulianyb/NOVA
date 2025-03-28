@@ -3,7 +3,6 @@ import { verifyUser } from "../auth/session";
 import Object from "../../../../model/Object";
 import World from "../../../../model/World"; 
 import { errorhandling, verifyWorld } from "../function";
-import { useSearchParams } from "next/navigation";
 
 export async function GET(req:NextRequest){
     try {
@@ -44,6 +43,7 @@ export async function POST(req:NextRequest){
             tags : [],
             positionX : data.positionX,
             positionY : data.positionY,
+            worldID : worldID
         });
 
         const createdObject = await newObject.save();

@@ -12,7 +12,7 @@ const world = new Schema({
     owners: [{ type: Schema.Types.ObjectId, ref: 'User' }],
     objects: [{ type: Schema.Types.ObjectId, ref: 'Object' }],
     changes: [changes],
-    tags : [{type : Schema.Types.ObjectId, ref: 'Tag'}]
+    tags : [{type : Schema.Types.ObjectId, ref: 'Tag'}],
 }, { timestamps: true });
 
 export default mongoose.models.World || mongoose.model("World", world);

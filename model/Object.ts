@@ -10,6 +10,7 @@ const object = new Schema({
     tags : [{type: Schema.Types.ObjectId, ref: 'Tag'}],
     positionX : {type : Number, required:[true, "X position required"]},
     positionY : {type : Number, required:[true, "Y position required"]},
+    worldID : {type : Schema.Types.ObjectId, ref : 'World'}
 }, { timestamps: true });
 
 export default mongoose.models.Object || mongoose.model("Object", object);

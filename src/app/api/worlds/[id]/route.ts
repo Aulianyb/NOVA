@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import World from "../../../../../model/World";
 import User from "../../../../../model/User";
 import { verifyUser } from "../../auth/session";
-import { errorhandling } from "../../function";
+import { errorhandling, verifyWorld } from "../../function";
 
 export async function GET(req: NextRequest, {params} : { params : {id : string}}){
     try {
@@ -11,13 +11,7 @@ export async function GET(req: NextRequest, {params} : { params : {id : string}}
             throw new Error("No Session Found"); 
         }
         const { id } = await params;
-        const world = await World.findById(id);
-        if (!world){
-            throw new Error("World not found");
-        }
-        if (!world.owners.includes(userID)){
-            throw new Error("You are not the owner of this world");
-        }
+        const world = await verifyWorld(id, userID); 
         return NextResponse.json({data : world, message : "World Found!"})
     } catch(error){
         return errorhandling(error);
@@ -31,14 +25,7 @@ export async function DELETE(req: NextRequest, { params }: { params: { id: strin
             throw new Error("No Session Found"); 
         }
         const { id } = await params;
-
-        const world = await World.findById(id);
-        if (!world){
-            throw new Error("World not found");
-        }
-        if (!world.owners.includes(userID)){
-            throw new Error("You are not the owner of this world");
-        }
+        const world = await verifyWorld(id, userID); 
         
         await User.updateMany(
             { _id: { $in: world.owners } },
@@ -63,13 +50,7 @@ export async function PUT(req: NextRequest, { params }: { params: { id: string }
         const data = await req.json();
         const { id } = await params;
 
-        const world = await World.findById(id);
-        if (!world){
-            throw new Error("World not found");
-        }
-        if (!world.owners.includes(userID)){
-            throw new Error("You are not the owner of this world");
-        }
+        const world = await verifyWorld(id, userID); 
 
         const editedWorld = await World.findByIdAndUpdate(id,
             {worldName : data.worldName,
