@@ -1,6 +1,5 @@
 import mongoose from "mongoose";
 const { Schema } = mongoose;
-import { Position } from "@xyflow/react";
 
 const object = new Schema({
     objectName : {type : String, required: [true, "Object name required"]},
@@ -8,8 +7,9 @@ const object = new Schema({
     objectDescription : {type : String},
     images : [{type : Schema.Types.ObjectId, ref: 'Image'}],
     relationships : [{type : Schema.Types.ObjectId, ref: 'Relationship'}],
-    tags : [{type: Schema.Types.ObjectId, red: 'Tag'}],
-    position : {type : Position, required:[true, "Object position required"]}
+    tags : [{type: Schema.Types.ObjectId, ref: 'Tag'}],
+    positionX : {type : Number, required:[true, "X position required"]},
+    positionY : {type : Number, required:[true, "Y position required"]},
 }, { timestamps: true });
 
 export default mongoose.models.Object || mongoose.model("Object", object);

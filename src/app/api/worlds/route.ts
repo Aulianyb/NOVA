@@ -34,7 +34,7 @@ export async function POST(req:NextRequest){
             objects: [],
             changes: [],
             tags: []
-        })
+        });
         
         const world = await newWorld.save();
         await User.updateOne({_id: userID}, { $push: { ownedWorlds: newWorld._id } });
