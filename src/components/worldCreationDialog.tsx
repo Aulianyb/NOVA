@@ -59,7 +59,6 @@ export function CreateWorldDialog({
       if (!res.ok) {
         throw new Error("World creation failed");
       }
-      // window.location.reload();
       worldRefresh();
     } catch (error) {
       console.log(error);

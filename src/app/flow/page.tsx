@@ -64,7 +64,6 @@ function FlowContent() {
       }),
       type: "customNode",
       data: { name: "Jane Doe" },
-      // origin: [0.5, 0.0],
     };
     setNodes((nds) => nds.concat(newNode));
   }, []);

@@ -4,7 +4,7 @@ import {
   FormField,
   FormItem,
   FormMessage,
-  FormDescription
+  FormDescription,
 } from "@/components/ui/form";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
@@ -45,12 +45,23 @@ export function ObjectCreationDialog() {
     defaultValues: {
       objectName: "",
       objectDescription: "",
-      objectImage: "",
+      objectImage: "/cat-nerd.jpg",
     },
   });
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
-    console.log("Submitted!");
+    console.log("Submitted!"); 
+    // try {
+    //   const res = await fetch("/api/objects", {
+    //     method: "POST",
+    //     headers: {
+    //       "Content-Type": "application/json",
+    //     },
+    //     body: JSON.stringify(values),
+    //   });
+    // } catch (error) {
+    //   console.log(error);
+    // }
   }
 
   return (
@@ -83,9 +94,7 @@ export function ObjectCreationDialog() {
                       className="bg-white border border-slate-200"
                     />
                   </FormControl>
-                  <FormDescription>
-                    This will be added later!
-                  </FormDescription>
+                  <FormDescription>This will be added later!</FormDescription>
                   <FormMessage />
                 </FormItem>
               )}

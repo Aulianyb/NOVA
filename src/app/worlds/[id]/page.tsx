@@ -11,6 +11,7 @@ import {
   addEdge,
   Background,
   Panel,
+  useReactFlow,
   ReactFlowProvider,
   ConnectionMode,
   BackgroundVariant,
@@ -34,20 +35,16 @@ const nodeTypes = {
 };
 
 const initialEdges: Edge[] = [];
+const initialNodes: Node[] = [];
 
-function FlowContent({ worldData, objectData }: { worldData: World | null, objectData : Object[] | null}) {
-  let initialNodes : Node[] = [];
-  if (objectData){
-    initialNodes = objectData.map((object : Object)=>({
-      id : object.id,
-      position : { x : object.positionX, y : object.positionY},
-      data : {
-        objectName : object.objectName
-      },
-      type: "customNode"
-    }));
-  }
-  
+function FlowContent({
+  worldData,
+  objectData,
+}: {
+  worldData: World | null;
+  objectData: Object[] | null;
+}) {
+  const flow = useReactFlow();
   const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
   const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
   const router = useRouter();
@@ -57,6 +54,51 @@ function FlowContent({ worldData, objectData }: { worldData: World | null, objec
       setEdges((eds) => addEdge({ ...params, type: "straight" }, eds)),
     [setEdges]
   );
+
+  function fetchObjects() {
+    if (objectData) {
+      const currentNodes = objectData.map((object: Object) => ({
+        id: object.id,
+        position: { x: object.positionX, y: object.positionY },
+        data: {
+          objectName: object.objectName,
+        },
+        type: "customNode",
+      }));
+      setNodes(currentNodes);
+      console.log("objects mounted!"); 
+    }
+  }
+
+  useEffect(() => {
+    fetchObjects();
+  }, []);
+
+  const addNode = useCallback(
+    ({
+      objectName,
+      objectDescription,
+      objectPicture,
+    }: {
+      objectName: string;
+      objectDescription: string;
+      objectPicture: string;
+    }) => {
+      const id = Math.random().toString();
+      const newNode = {
+        id: id,
+        position: flow.screenToFlowPosition({
+          x: window.innerWidth / 2,
+          y: window.innerHeight / 2,
+        }),
+        type: "customNode",
+        data: { objectName: objectName },
+      };
+      setNodes((nds) => nds.concat(newNode));
+    },
+    []
+  );
+
   return (
     <main>
       <div style={{ width: "100vw", height: "100vh" }}>
@@ -96,7 +138,7 @@ export default function Page() {
   const [loading, setLoading] = useState(true);
   const [world, setWorld] = useState<World | null>(null);
   const [objects, setObjects] = useState<Object[] | null>(null);
-
+  // const flow = useReactFlow();
   const params = useParams();
   async function fetchSession() {
     try {
@@ -129,17 +171,17 @@ export default function Page() {
         throw new Error("Failed to get objects");
       }
       const objectData = await objects.json();
-      console.log(objectData); 
-      const objectArray : Object[] = objectData.data.map((object : any) => ({
-        id : object._id,
-        objectName : object.objectName,
-        objectDescription : object.objectDescription,
-        objectPicture : object.objectPicture,
-        images : object.images,
-        relationships : object.relationships,
-        tags : object.tags,
-        positionX : object.positionX,
-        positionY : object.positionY
+      console.log(objectData);
+      const objectArray: Object[] = objectData.data.map((object: any) => ({
+        id: object._id,
+        objectName: object.objectName,
+        objectDescription: object.objectDescription,
+        objectPicture: object.objectPicture,
+        images: object.images,
+        relationships: object.relationships,
+        tags: object.tags,
+        positionX: object.positionX,
+        positionY: object.positionY,
       }));
       setObjects(objectArray);
       console.log(objectArray);
@@ -166,7 +208,7 @@ export default function Page() {
 
   return (
     <ReactFlowProvider>
-      <FlowContent worldData={world} objectData={objects}/>
+      <FlowContent worldData={world} objectData={objects} />
     </ReactFlowProvider>
   );
 }
