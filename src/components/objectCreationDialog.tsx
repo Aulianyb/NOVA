@@ -19,6 +19,7 @@ import {
   DialogTitle,
   DialogTrigger,
   DialogFooter,
+  DialogClose,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -36,32 +37,35 @@ const formSchema = z.object({
     .string()
     .max(240, "Description must be under 240 characters long"),
   // Temporary, of course
-  objectImage: z.string(),
+  objectPicture: z.string().optional(),
 });
 
-export function ObjectCreationDialog() {
+export function ObjectCreationDialog({
+  createFunction,
+}: {
+  createFunction: (input: {
+    objectName: string;
+    objectDescription: string;
+    objectPicture: string | undefined;
+  }) => void;
+}) {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       objectName: "",
       objectDescription: "",
-      objectImage: "/cat-nerd.jpg",
+      objectPicture: "/cat-nerd.jpg",
     },
   });
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
-    console.log("Submitted!"); 
-    // try {
-    //   const res = await fetch("/api/objects", {
-    //     method: "POST",
-    //     headers: {
-    //       "Content-Type": "application/json",
-    //     },
-    //     body: JSON.stringify(values),
-    //   });
-    // } catch (error) {
-    //   console.log(error);
-    // }
+    console.log(values.objectName);
+    createFunction({
+      objectName: values.objectName,
+      objectDescription: values.objectDescription,
+      objectPicture: values.objectPicture,
+    });
+    form.reset(); 
   }
 
   return (
@@ -82,7 +86,7 @@ export function ObjectCreationDialog() {
           <form onSubmit={form.handleSubmit(onSubmit)}>
             <FormField
               control={form.control}
-              name="objectImage"
+              name="objectPicture"
               render={({ field }) => (
                 <FormItem>
                   <Label htmlFor="picture">Profile Picture</Label>
@@ -94,8 +98,8 @@ export function ObjectCreationDialog() {
                       className="bg-white border border-slate-200"
                     />
                   </FormControl>
-                  <FormDescription>This will be added later!</FormDescription>
                   <FormMessage />
+                  <FormDescription>This will be added later!</FormDescription>
                 </FormItem>
               )}
             />
@@ -130,9 +134,11 @@ export function ObjectCreationDialog() {
               )}
             />
             <DialogFooter>
-              <Button type="submit" className="rounded-lg mt-4">
-                Create
-              </Button>
+              <DialogClose asChild>
+                <Button type="submit" className="rounded-lg mt-4">
+                  Create
+                </Button>
+              </DialogClose>
             </DialogFooter>
           </form>
         </Form>

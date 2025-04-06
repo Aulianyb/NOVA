@@ -62,6 +62,8 @@ export function CreateWorldDialog({
       worldRefresh();
     } catch (error) {
       console.log(error);
+    } finally {
+      form.reset();
     }
   }
 

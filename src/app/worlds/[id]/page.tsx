@@ -17,10 +17,11 @@ import {
   BackgroundVariant,
   Edge,
   Node,
+  NodeChange,
 } from "@xyflow/react";
 import CustomNode from "@/components/CustomNode";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, Save } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { WorldSettingDialog } from "@/components/worldSettingDialog";
 import { ObjectCreationDialog } from "@/components/objectCreationDialog";
@@ -47,6 +48,7 @@ function FlowContent({
   const flow = useReactFlow();
   const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
   const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
+  const [hasChange, setHasChanged] = useState(false);
   const router = useRouter();
 
   const onConnect = useCallback(
@@ -66,9 +68,21 @@ function FlowContent({
         type: "customNode",
       }));
       setNodes(currentNodes);
-      console.log("objects mounted!"); 
     }
   }
+
+  const handleNodesChange = useCallback(
+    (changes: NodeChange[]) => {
+      if (!hasChange) {
+        if (changes.length > 0) {
+          setHasChanged(true);
+        }
+        console.log("Im called!");
+      }
+      onNodesChange(changes);
+    },
+    [hasChange, onNodesChange]
+  );
 
   useEffect(() => {
     fetchObjects();
@@ -82,7 +96,7 @@ function FlowContent({
     }: {
       objectName: string;
       objectDescription: string;
-      objectPicture: string;
+      objectPicture: string | undefined;
     }) => {
       const id = Math.random().toString();
       const newNode = {
@@ -105,7 +119,7 @@ function FlowContent({
         <ReactFlow
           nodes={nodes}
           edges={edges}
-          onNodesChange={onNodesChange}
+          onNodesChange={handleNodesChange}
           onEdgesChange={onEdgesChange}
           onConnect={onConnect}
           nodeTypes={nodeTypes}
@@ -123,7 +137,12 @@ function FlowContent({
                 <ArrowLeft />
               </Button>
               <WorldSettingDialog worldData={worldData!} />
-              <ObjectCreationDialog />
+              <ObjectCreationDialog createFunction={addNode} />
+              {hasChange && (
+                <Button size="icon" variant="destructive">
+                  <Save />
+                </Button>
+              )}
             </div>
           </Panel>
           <Background variant={BackgroundVariant.Lines} gap={12} size={1} />
@@ -165,13 +184,11 @@ export default function Page() {
         changes: worldData.data.changes,
       };
       setWorld(currentWorld);
-      console.log(currentWorld);
       const objects = await fetch(`/api/objects/?worldID=${currentWorld.id}`);
       if (!objects.ok) {
         throw new Error("Failed to get objects");
       }
       const objectData = await objects.json();
-      console.log(objectData);
       const objectArray: Object[] = objectData.data.map((object: any) => ({
         id: object._id,
         objectName: object.objectName,
@@ -184,7 +201,6 @@ export default function Page() {
         positionY: object.positionY,
       }));
       setObjects(objectArray);
-      console.log(objectArray);
     } catch (error) {
       console.log({ error: error instanceof Error ? error.message : error });
     } finally {
