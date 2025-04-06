@@ -11,7 +11,6 @@ import {
   addEdge,
   Background,
   Panel,
-  useReactFlow,
   ReactFlowProvider,
   ConnectionMode,
   BackgroundVariant,
@@ -20,10 +19,11 @@ import {
 } from "@xyflow/react";
 import CustomNode from "@/components/CustomNode";
 import { Button } from "@/components/ui/button";
-import { SquarePlus, ArrowLeft } from "lucide-react";
+import { ArrowLeft } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { WorldSettingDialog } from "@/components/worldSettingDialog";
 import { ObjectCreationDialog } from "@/components/objectCreationDialog";
+import { Object } from "../../../../types/types";
 
 const connectionLineStyle = {
   stroke: "#b1b1b7",
@@ -34,12 +34,22 @@ const nodeTypes = {
 };
 
 const initialEdges: Edge[] = [];
-const initialNodes: Node[] = [];
 
-function FlowContent({ worldData }: { worldData: World | null }) {
+function FlowContent({ worldData, objectData }: { worldData: World | null, objectData : Object[] | null}) {
+  let initialNodes : Node[] = [];
+  if (objectData){
+    initialNodes = objectData.map((object : Object)=>({
+      id : object.id,
+      position : { x : object.positionX, y : object.positionY},
+      data : {
+        objectName : object.objectName
+      },
+      type: "customNode"
+    }));
+  }
+  
   const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
   const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
-  const flow = useReactFlow();
   const router = useRouter();
 
   const onConnect = useCallback(
@@ -85,6 +95,7 @@ export default function Page() {
   const [session, setSession] = useState<{ username: string } | null>(null);
   const [loading, setLoading] = useState(true);
   const [world, setWorld] = useState<World | null>(null);
+  const [objects, setObjects] = useState<Object[] | null>(null);
 
   const params = useParams();
   async function fetchSession() {
@@ -113,6 +124,25 @@ export default function Page() {
       };
       setWorld(currentWorld);
       console.log(currentWorld);
+      const objects = await fetch(`/api/objects/?worldID=${currentWorld.id}`);
+      if (!objects.ok) {
+        throw new Error("Failed to get objects");
+      }
+      const objectData = await objects.json();
+      console.log(objectData); 
+      const objectArray : Object[] = objectData.data.map((object : any) => ({
+        id : object._id,
+        objectName : object.objectName,
+        objectDescription : object.objectDescription,
+        objectPicture : object.objectPicture,
+        images : object.images,
+        relationships : object.relationships,
+        tags : object.tags,
+        positionX : object.positionX,
+        positionY : object.positionY
+      }));
+      setObjects(objectArray);
+      console.log(objectArray);
     } catch (error) {
       console.log({ error: error instanceof Error ? error.message : error });
     } finally {
@@ -136,7 +166,7 @@ export default function Page() {
 
   return (
     <ReactFlowProvider>
-      <FlowContent worldData={world}/>
+      <FlowContent worldData={world} objectData={objects}/>
     </ReactFlowProvider>
   );
 }

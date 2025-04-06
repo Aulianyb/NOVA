@@ -22,12 +22,10 @@ import { World } from "../../types/types";
 
 export function Navbar({
   username,
-  type,
-  worldData = null,
+  worldRefresh,
 }: {
   username: string;
-  type: string;
-  worldData?: World | null;
+  worldRefresh : () => void
 }) {
   const router = useRouter();
 
@@ -51,11 +49,7 @@ export function Navbar({
     <div className="w-full text-[var(--white)] bg-[var(--primary)] flex items-center justify-between py-3 px-12">
       <div className="flex items-center gap-4">
         <h1 className={`${quantico.className}`}>NOVA</h1>
-        {type === "menu" ? (
-          <CreateWorldDialog />
-        ) : (
-          <WorldSettingDialog worldData={worldData!} />
-        )}
+        <CreateWorldDialog worldRefresh={worldRefresh}/>
       </div>
 
       <div>

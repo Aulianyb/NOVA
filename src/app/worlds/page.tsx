@@ -60,7 +60,7 @@ export default function Worlds() {
 
   return (
     <main className="bg-[var(--white)] h-full">
-      <Navbar username={session!.username} type="menu" />
+      <Navbar username={session!.username} worldRefresh={fetchSession}/>
       <div className="flex flex-col space-y-10 justify-start items-center mx-auto h-full max-w-screen-xl py-10 px-10">
         <h1
           className={`${quantico.className} font-bold text-[--primary] text-6xl`}

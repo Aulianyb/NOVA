@@ -2,7 +2,7 @@ import React from "react";
 import { Position, Node, NodeProps, Handle } from "@xyflow/react";
 import Image from "next/image";
 import { BaseHandle } from "./base-handle";
-type CustomNode = Node<{ name: string }, "custom">;
+type CustomNode = Node<{ objectName: string }, "custom">;
 
 export default function CustomNode({
   data,
@@ -20,7 +20,7 @@ export default function CustomNode({
           draggable={false}
         />
         <div className="p-2">
-          <p>{data.name}</p>
+          <p>{data.objectName}</p>
         </div>
       </div>
       <BaseHandle

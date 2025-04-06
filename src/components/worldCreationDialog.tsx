@@ -18,6 +18,7 @@ import {
   DialogTitle,
   DialogTrigger,
   DialogFooter,
+  DialogClose,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -33,7 +34,11 @@ const formSchema = z.object({
     .max(240, "Description must be under 240 characters long"),
 });
 
-export function CreateWorldDialog() {
+export function CreateWorldDialog({
+  worldRefresh,
+}: {
+  worldRefresh: () => void;
+}) {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -54,7 +59,8 @@ export function CreateWorldDialog() {
       if (!res.ok) {
         throw new Error("World creation failed");
       }
-      window.location.reload();
+      // window.location.reload();
+      worldRefresh();
     } catch (error) {
       console.log(error);
     }
@@ -107,9 +113,11 @@ export function CreateWorldDialog() {
               )}
             />
             <DialogFooter>
-              <Button type="submit" className="rounded-lg mt-4">
-                Create
-              </Button>
+              <DialogClose asChild>
+                <Button type="submit" className="rounded-lg mt-4">
+                  Create
+                </Button>
+              </DialogClose>
             </DialogFooter>
           </form>
         </Form>
