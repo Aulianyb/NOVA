@@ -4,6 +4,7 @@ import {
   FormField,
   FormItem,
   FormMessage,
+  FormDescription
 } from "@/components/ui/form";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
@@ -17,92 +18,85 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
+  DialogFooter,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Settings } from "lucide-react";
 import { World } from "../../types/types";
 import { useRouter } from "next/navigation";
+import { SquarePlus } from "lucide-react";
 
 const formSchema = z.object({
-  worldName: z
+  objectName: z
     .string()
-    .min(1, "Your world must have a name")
-    .max(20, "World name must be at most 20 characters long"),
-  worldDescription: z
+    .min(1, "Your object must have a name")
+    .max(20, "Object name must be at most 20 characters long"),
+  objectDescription: z
     .string()
     .max(240, "Description must be under 240 characters long"),
+  // Temporary, of course
+  objectImage: z.string(),
 });
 
-export function WorldSettingDialog({ worldData }: { worldData: World }) {
-  const router = useRouter();
-
+export function ObjectCreationDialog() {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      worldName: worldData.worldName,
-      worldDescription: worldData.worldDescription,
+      objectName: "",
+      objectDescription: "",
+      objectImage: "",
     },
   });
 
-  async function onEdit(values: z.infer<typeof formSchema>) {
-    try {
-      const res = await fetch(`/api/worlds/${worldData.id}`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(values),
-      });
-      if (!res.ok) {
-        throw new Error("World edit failed");
-      }
-      window.location.reload();
-    } catch (error) {
-      console.error(error);
-    }
-  }
-
-  async function onDelete() {
-    try {
-      const res = await fetch(`/api/worlds/${worldData.id}`, {
-        method: "DELETE",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
-      if (!res.ok) {
-        throw new Error("World delete failed");
-      }
-      router.push("/worlds");
-    } catch (error) {
-      console.error(error);
-    }
+  async function onSubmit(values: z.infer<typeof formSchema>) {
+    console.log("Submitted!");
   }
 
   return (
     <Dialog>
       <DialogTrigger asChild>
         <Button size="icon">
-          <Settings />
+          <SquarePlus />
         </Button>
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>World Settings</DialogTitle>
+          <DialogTitle>Create a New Object</DialogTitle>
         </DialogHeader>
         <DialogDescription>
-          Edit your world's name and description
+          This can be anything, like characters, locations, etc!
         </DialogDescription>
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onEdit)}>
+          <form onSubmit={form.handleSubmit(onSubmit)}>
             <FormField
               control={form.control}
-              name="worldName"
+              name="objectImage"
+              render={({ field }) => (
+                <FormItem>
+                  <Label htmlFor="picture">Profile Picture</Label>
+                  <FormControl>
+                    <Input
+                      disabled
+                      id="picture"
+                      type="file"
+                      className="bg-white border border-slate-200"
+                    />
+                  </FormControl>
+                  <FormDescription>
+                    This will be added later!
+                  </FormDescription>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="objectName"
               render={({ field }) => (
                 <FormItem>
                   <Label htmlFor="name" className="text-right">
-                    World Name
+                    Object Name
                   </Label>
                   <FormControl>
                     <Input {...field} />
@@ -113,11 +107,11 @@ export function WorldSettingDialog({ worldData }: { worldData: World }) {
             />
             <FormField
               control={form.control}
-              name="worldDescription"
+              name="objectDescription"
               render={({ field }) => (
                 <FormItem>
                   <Label htmlFor="name" className="text-right">
-                    World Description
+                    Object Description
                   </Label>
                   <FormControl>
                     <Textarea {...field} className="resize-none h-[100px]" />
@@ -126,25 +120,13 @@ export function WorldSettingDialog({ worldData }: { worldData: World }) {
                 </FormItem>
               )}
             />
-            <Button type="submit" className="rounded-lg mt-4">
-              Save Changes
-            </Button>
+            <DialogFooter>
+              <Button type="submit" className="rounded-lg mt-4">
+                Create
+              </Button>
+            </DialogFooter>
           </form>
         </Form>
-        <div className="mt-4 w-full space-y-2 p-2 border-red-200 border-2 rounded-lg">
-          <DialogTitle className=" text-red-900">Danger Zone</DialogTitle>
-          <DialogDescription>
-            Delete your world and it's contents. This action is irreversible.
-          </DialogDescription>
-          <Button
-            className="rounded-lg w-full bg-red-500 hover:bg-red-600"
-            onClick={() => {
-              onDelete();
-            }}
-          >
-            Destroy World
-          </Button>
-        </div>
       </DialogContent>
     </Dialog>
   );

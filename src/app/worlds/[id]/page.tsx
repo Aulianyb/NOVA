@@ -16,11 +16,14 @@ import {
   ConnectionMode,
   BackgroundVariant,
   Edge,
-  Node
+  Node,
 } from "@xyflow/react";
 import CustomNode from "@/components/CustomNode";
 import { Button } from "@/components/ui/button";
-import { Settings, SquarePlus, ArrowLeft } from "lucide-react";
+import { SquarePlus, ArrowLeft } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { WorldSettingDialog } from "@/components/worldSettingDialog";
+import { ObjectCreationDialog } from "@/components/objectCreationDialog";
 
 const connectionLineStyle = {
   stroke: "#b1b1b7",
@@ -33,10 +36,11 @@ const nodeTypes = {
 const initialEdges: Edge[] = [];
 const initialNodes: Node[] = [];
 
-function FlowContent() {
+function FlowContent({ worldData }: { worldData: World | null }) {
   const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
   const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
   const flow = useReactFlow();
+  const router = useRouter();
 
   const onConnect = useCallback(
     (params: any) =>
@@ -60,28 +64,14 @@ function FlowContent() {
             <div className="flex flex-col gap-2">
               <Button
                 onClick={() => {
-                  console.log("Adding Node");
+                  router.back();
                 }}
                 size="icon"
               >
                 <ArrowLeft />
               </Button>
-              <Button
-                onClick={() => {
-                  console.log("Adding Node");
-                }}
-                size="icon"
-              >
-                <Settings />
-              </Button>
-              <Button
-                onClick={() => {
-                  console.log("Adding Node");
-                }}
-                size="icon"
-              >
-                <SquarePlus />
-              </Button>
+              <WorldSettingDialog worldData={worldData!} />
+              <ObjectCreationDialog />
             </div>
           </Panel>
           <Background variant={BackgroundVariant.Lines} gap={12} size={1} />
@@ -146,7 +136,7 @@ export default function Page() {
 
   return (
     <ReactFlowProvider>
-      <FlowContent />
+      <FlowContent worldData={world}/>
     </ReactFlowProvider>
   );
 }

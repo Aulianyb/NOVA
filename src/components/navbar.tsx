@@ -16,7 +16,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useRouter } from "next/navigation";
-import { CreateWorldDialog } from "./createWorldDialog";
+import { CreateWorldDialog } from "./worldCreationDialog";
 import { WorldSettingDialog } from "./worldSettingDialog";
 import { World } from "../../types/types";
 
