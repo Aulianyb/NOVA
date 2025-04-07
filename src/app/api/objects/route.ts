@@ -34,21 +34,25 @@ export async function POST(req:NextRequest){
         const worldID = data.worldID;
         await verifyWorld(worldID, userID);
 
-        const newObject = new Object({
-            objectName : data.objectName,
-            objectPicture : data.objectPicture,
-            objectDescription : data.objectDescription,
-            images : [],
-            relationships : [],
-            tags : [],
-            positionX : data.positionX,
-            positionY : data.positionY,
-            worldID : worldID
+        const nodes = data.nodes;
+        nodes.forEach((node : any) => {
         });
+        // const newObject = new Object({
+        //     objectName : data.objectName,
+        //     objectPicture : data.objectPicture,
+        //     objectDescription : data.objectDescription,
+        //     images : [],
+        //     relationships : [],
+        //     tags : [],
+        //     positionX : data.positionX,
+        //     positionY : data.positionY,
+        //     worldID : worldID
+        // });
 
-        const createdObject = await newObject.save();
-        await World.updateOne({_id: worldID}, { $push: { objects : newObject._id } });
-        return NextResponse.json({ data : createdObject, message : "New Object Created!"}, { status: 200 });
+        // const createdObject = await newObject.save();
+        // await World.updateOne({_id: worldID}, { $push: { objects : newObject._id } });
+        // return NextResponse.json({ data : createdObject, message : "New Object Created!"}, { status: 200 });
+
     } catch(error){
         return errorhandling(error); 
     }

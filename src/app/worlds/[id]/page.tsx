@@ -26,6 +26,7 @@ import { useRouter } from "next/navigation";
 import { WorldSettingDialog } from "@/components/worldSettingDialog";
 import { ObjectCreationDialog } from "@/components/objectCreationDialog";
 import { Object } from "../../../../types/types";
+import { useToast } from "@/hooks/use-toast";
 
 const connectionLineStyle = {
   stroke: "#b1b1b7",
@@ -50,12 +51,31 @@ function FlowContent({
   const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
   const [hasChange, setHasChanged] = useState(false);
   const router = useRouter();
+  const { toast } = useToast();
+
+  const notifyChanges = () => {
+    const toastId = toast({
+      title: "Your changes are not saved.",
+      description: (
+        <div className="flex gap-1">
+          <span>Save your changes with the</span>
+          <Save size={15} />
+          <span>button!</span>
+        </div>
+      ),
+      variant: "destructive",
+    });
+  };
 
   const onConnect = useCallback(
     (params: any) =>
       setEdges((eds) => addEdge({ ...params, type: "straight" }, eds)),
     [setEdges]
   );
+
+  function handleSave(){
+    console.log(nodes);
+  }
 
   function fetchObjects() {
     if (objectData) {
@@ -76,8 +96,9 @@ function FlowContent({
       if (!hasChange) {
         if (changes.length > 0) {
           setHasChanged(true);
+          notifyChanges();
+          console.log("what");
         }
-        console.log("Im called!");
       }
       onNodesChange(changes);
     },
@@ -139,7 +160,7 @@ function FlowContent({
               <WorldSettingDialog worldData={worldData!} />
               <ObjectCreationDialog createFunction={addNode} />
               {hasChange && (
-                <Button size="icon" variant="destructive">
+                <Button size="icon" variant="destructive" onClick={()=>handleSave()}>
                   <Save />
                 </Button>
               )}
