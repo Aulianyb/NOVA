@@ -25,7 +25,7 @@ import { ArrowLeft, Save } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { WorldSettingDialog } from "@/components/worldSettingDialog";
 import { ObjectCreationDialog } from "@/components/objectCreationDialog";
-import { Object } from "../../../../types/types";
+import { NodeType } from "../../../../types/types";
 import { useToast } from "@/hooks/use-toast";
 
 const connectionLineStyle = {
@@ -41,10 +41,10 @@ const initialNodes: Node[] = [];
 
 function FlowContent({
   worldData,
-  objectData,
+  nodeData,
 }: {
   worldData: World | null;
-  objectData: Object[] | null;
+  nodeData: NodeType[] | null;
 }) {
   const flow = useReactFlow();
   const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
@@ -73,17 +73,19 @@ function FlowContent({
     [setEdges]
   );
 
-  function handleSave(){
+  function handleSave() {
     console.log(nodes);
   }
 
-  function fetchObjects() {
-    if (objectData) {
-      const currentNodes = objectData.map((object: Object) => ({
-        id: object.id,
-        position: { x: object.positionX, y: object.positionY },
+  function fetchNodes() {
+    if (nodeData) {
+      const currentNodes = nodeData.map((node: NodeType) => ({
+        id: node.id,
+        position: { x: node.positionX, y: node.positionY },
         data: {
-          objectName: object.objectName,
+          nodeName: node.nodeName,
+          nodeDescription: node.nodeDescription,
+          nodePicture: node.nodePicture,
         },
         type: "customNode",
       }));
@@ -106,8 +108,16 @@ function FlowContent({
   );
 
   useEffect(() => {
-    fetchObjects();
+    fetchNodes();
   }, []);
+
+  function generateObjectId(): string {
+    const timestamp = Math.floor(new Date().getTime() / 1000).toString(16);
+    const random = "xxxxxxxxxxxxxxxx".replace(/[x]/g, () =>
+      ((Math.random() * 16) | 0).toString(16)
+    );
+    return timestamp + random;
+  }
 
   const addNode = useCallback(
     ({
@@ -119,7 +129,7 @@ function FlowContent({
       objectDescription: string;
       objectPicture: string | undefined;
     }) => {
-      const id = Math.random().toString();
+      const id = generateObjectId();
       const newNode = {
         id: id,
         position: flow.screenToFlowPosition({
@@ -127,7 +137,11 @@ function FlowContent({
           y: window.innerHeight / 2,
         }),
         type: "customNode",
-        data: { objectName: objectName },
+        data: {
+          objectName: objectName,
+          objectDescription: objectDescription,
+          objectPicture: objectPicture,
+        },
       };
       setNodes((nds) => nds.concat(newNode));
     },
@@ -160,7 +174,11 @@ function FlowContent({
               <WorldSettingDialog worldData={worldData!} />
               <ObjectCreationDialog createFunction={addNode} />
               {hasChange && (
-                <Button size="icon" variant="destructive" onClick={()=>handleSave()}>
+                <Button
+                  size="icon"
+                  variant="destructive"
+                  onClick={() => handleSave()}
+                >
                   <Save />
                 </Button>
               )}
@@ -177,7 +195,7 @@ export default function Page() {
   const [session, setSession] = useState<{ username: string } | null>(null);
   const [loading, setLoading] = useState(true);
   const [world, setWorld] = useState<World | null>(null);
-  const [objects, setObjects] = useState<Object[] | null>(null);
+  const [nodes, setNodes] = useState<NodeType[] | null>(null);
   // const flow = useReactFlow();
   const params = useParams();
   async function fetchSession() {
@@ -201,16 +219,16 @@ export default function Page() {
         worldDescription: worldData.data.worldDescription,
         owners: worldData.data.owners,
         categories: worldData.data.categories,
-        objects: worldData.data.object,
+        nodes: worldData.data.nodes,
         changes: worldData.data.changes,
       };
       setWorld(currentWorld);
-      const objects = await fetch(`/api/objects/?worldID=${currentWorld.id}`);
-      if (!objects.ok) {
-        throw new Error("Failed to get objects");
+      const nodes = await fetch(`/api/nodes?worldID=${currentWorld.id}`);
+      if (!nodes.ok) {
+        throw new Error("Failed to get nodes");
       }
-      const objectData = await objects.json();
-      const objectArray: Object[] = objectData.data.map((object: any) => ({
+      const nodeData = await nodes.json();
+      const objectArray: NodeType[] = nodeData.data.map((object: any) => ({
         id: object._id,
         objectName: object.objectName,
         objectDescription: object.objectDescription,
@@ -221,7 +239,7 @@ export default function Page() {
         positionX: object.positionX,
         positionY: object.positionY,
       }));
-      setObjects(objectArray);
+      setNodes(objectArray);
     } catch (error) {
       console.log({ error: error instanceof Error ? error.message : error });
     } finally {
@@ -245,7 +263,7 @@ export default function Page() {
 
   return (
     <ReactFlowProvider>
-      <FlowContent worldData={world} objectData={objects} />
+      <FlowContent worldData={world} nodeData={nodes} />
     </ReactFlowProvider>
   );
 }

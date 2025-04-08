@@ -4,15 +4,15 @@ export type World = {
     worldDescription : string;
     owners : string[];
     categories : string[];
-    objects : string[];
+    nodes : string[];
     changes : string[];
 }
 
-export type Object = {
+export type NodeType = {
     id : string,
-    objectName : string,
-    objectPicture : string,
-    objectDescription : string,
+    nodeName : string,
+    nodePicture : string,
+    nodeDescription : string,
     images : string[],
     relationships : string[],
     tags : string[],

@@ -32,7 +32,7 @@ export default function Worlds() {
         worldDescription: world.worldDescription,
         owners: world.owners,
         categories: world.categories,
-        objects: world.object,
+        nodes: world.nodes,
         changes: world.changes,
       }));
       setWorlds(worldArray);
