@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import World from "../../../model/World";
 import mongoose from "mongoose";
-import Node from "../../../model/Node";
+import Object from "../../../model/Object";
 
 export function errorhandling(error : unknown){
     console.log(error);
@@ -31,17 +31,17 @@ export async function verifyWorld(worldID : string, userID : string){
     return world; 
 }
 
-export async function verifyNode(nodeID : string, userID : string){
-    if (!mongoose.Types.ObjectId.isValid(nodeID)) {
-        throw new Error("Invalid node ID format");
+export async function verifyObject(objectID : string, userID : string){
+    if (!mongoose.Types.ObjectId.isValid(objectID)) {
+        throw new Error("Invalid object ID format");
     }
-    const node = await Node.findById(nodeID); 
-    if (!node){
-        throw new Error("Node not found");
+    const object = await Object.findById(objectID); 
+    if (!object){
+        throw new Error("Object not found");
     }
-    const world = await World.findById(node.worldID);
+    const world = await World.findById(object.worldID);
     if (!world.owners.includes(userID)){
         throw new Error("You are not the owner of this world");
     }
-    return node;
+    return object;
 }

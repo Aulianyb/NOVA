@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { verifyUser } from "../../auth/session";
-import { errorhandling, verifyNode} from "../../function";
+import { errorhandling, verifyObject} from "../../function";
 import World from "../../../../../model/World";
-import Node from "../../../../../model/Node"
+import Object from "../../../../../model/Object"
 
 export async function DELETE(req: NextRequest, {params} : {params : {id:string}}){
     try {
@@ -11,11 +11,11 @@ export async function DELETE(req: NextRequest, {params} : {params : {id:string}}
             throw new Error("No Session Found"); 
         }
         const { id } = await params;
-        const node = await verifyNode(id, userID);
-        await World.findOneAndUpdate({_id : node.worldID}, { $pull: { nodes: id } }); 
+        const object = await verifyObject(id, userID);
+        await World.findOneAndUpdate({_id : object.worldID}, { $pull: { objects: id } }); 
 
-        const deletedNode = await Node.findByIdAndDelete({'_id' : id});
-         return NextResponse.json({ data : deletedNode, message : "Node Deleted!"}, { status: 200 });
+        const deletedObject = await Object.findByIdAndDelete({'_id' : id});
+         return NextResponse.json({ data : deletedObject, message : "Object Deleted!"}, { status: 200 });
     } catch(error){
         return errorhandling(error); 
     }
@@ -29,13 +29,13 @@ export async function PUT(req: NextRequest, {params} : {params : {id:string}}){
         }
         const data = await req.json();
         const { id } = await params;
-        await verifyNode(id, userID);
+        await verifyObject(id, userID);
 
-        const editedNode = await Node.findByIdAndUpdate(id,
+        const editedObject = await Object.findByIdAndUpdate(id,
              {
-                nodeName : data.nodeName,
-                nodePicture : data.nodePicture,
-                nodeDescription : data.nodeDescription,
+                objectName : data.objectName,
+                objectPicture : data.objectPicture,
+                objectDescription : data.objectDescription,
                 images : data.images,
                 relationships : data.relationships,
                 tags : data.tags,
@@ -44,7 +44,7 @@ export async function PUT(req: NextRequest, {params} : {params : {id:string}}){
              }, 
              {new : true}
         )
-        return NextResponse.json({ data : editedNode, message : "Node Edited!"}, { status: 200 });
+        return NextResponse.json({ data : editedObject, message : "Object Edited!"}, { status: 200 });
     } catch(error){
         return errorhandling(error);
     }
