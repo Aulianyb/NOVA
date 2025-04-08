@@ -65,7 +65,7 @@ export function ObjectCreationDialog({
       objectDescription: values.objectDescription,
       objectPicture: values.objectPicture,
     });
-    form.reset(); 
+    form.reset();
   }
 
   return (

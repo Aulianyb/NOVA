@@ -39,9 +39,6 @@ export async function verifyObject(objectID : string, userID : string){
     if (!object){
         throw new Error("Object not found");
     }
-    const world = await World.findById(object.worldID);
-    if (!world.owners.includes(userID)){
-        throw new Error("You are not the owner of this world");
-    }
+    verifyWorld(object.worldID, userID);
     return object;
 }

@@ -1,5 +1,5 @@
 "use client";
-import React, { useCallback } from "react";
+import React, { useCallback, useRef } from "react";
 import { useParams } from "next/navigation";
 import { useState, useEffect } from "react";
 import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
@@ -27,6 +27,7 @@ import { WorldSettingDialog } from "@/components/worldSettingDialog";
 import { ObjectCreationDialog } from "@/components/objectCreationDialog";
 import { Object } from "../../../../types/types";
 import { useToast } from "@/hooks/use-toast";
+import { array } from "zod";
 
 const connectionLineStyle = {
   stroke: "#b1b1b7",
@@ -49,7 +50,7 @@ function FlowContent({
   const flow = useReactFlow();
   const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
   const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
-  const [hasChange, setHasChanged] = useState(false);
+  const [hasChange, setHasChanged] = useState(0);
   const router = useRouter();
   const { toast } = useToast();
 
@@ -73,8 +74,32 @@ function FlowContent({
     [setEdges]
   );
 
-  function handleSave(){
-    console.log(nodes);
+  async function handleSave() {
+    try {
+      if (!worldData) {
+        throw new Error("World not found.");
+      }
+
+      const nodeArray = nodes.map((node) => ({
+        id: node.id,
+        data: node.data,
+        position: node.position,
+      }));
+      const res = await fetch("/api/objects", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          worldID: worldData.id,
+          nodes: nodeArray,
+        }),
+      });
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setHasChanged(1);
+    }
   }
 
   function fetchObjects() {
@@ -84,6 +109,11 @@ function FlowContent({
         position: { x: object.positionX, y: object.positionY },
         data: {
           objectName: object.objectName,
+          objectDescription: object.objectDescription,
+          objectPicture: object.objectPicture,
+          images: object.images,
+          tags: object.tags,
+          relationships: object.relationships,
         },
         type: "customNode",
       }));
@@ -93,12 +123,12 @@ function FlowContent({
 
   const handleNodesChange = useCallback(
     (changes: NodeChange[]) => {
-      if (!hasChange) {
-        if (changes.length > 0) {
-          setHasChanged(true);
-          notifyChanges();
-          console.log("what");
-        }
+      if (hasChange > 1 && hasChange < 3) {
+        notifyChanges();
+        setHasChanged(hasChange + 1);
+      }
+      if (hasChange < 2) {
+        setHasChanged(hasChange + 1);
       }
       onNodesChange(changes);
     },
@@ -109,17 +139,25 @@ function FlowContent({
     fetchObjects();
   }, []);
 
+  function generateObjectId(): string {
+    const timestamp = Math.floor(new Date().getTime() / 1000).toString(16);
+    const random = "xxxxxxxxxxxxxxxx".replace(/[x]/g, () =>
+      ((Math.random() * 16) | 0).toString(16)
+    );
+    return timestamp + random;
+  }
+
   const addNode = useCallback(
     ({
-      nodeName,
-      nodeDescription,
-      nodePicture,
+      objectName,
+      objectDescription,
+      objectPicture,
     }: {
-      nodeName: string;
-      nodeDescription: string;
-      nodePicture: string | undefined;
+      objectName: string;
+      objectDescription: string;
+      objectPicture: string | undefined;
     }) => {
-      const id = Math.random().toString();
+      const id = generateObjectId();
       const newNode = {
         id: id,
         position: flow.screenToFlowPosition({
@@ -127,7 +165,14 @@ function FlowContent({
           y: window.innerHeight / 2,
         }),
         type: "customNode",
-        data: { objectName: objectName },
+        data: {
+          objectName: objectName,
+          objectDescription: objectDescription,
+          objectPicture: "./cat-nerd.jpg",
+          images: [],
+          tags: [],
+          relationships: [],
+        },
       };
       setNodes((nds) => nds.concat(newNode));
     },
@@ -158,9 +203,13 @@ function FlowContent({
                 <ArrowLeft />
               </Button>
               <WorldSettingDialog worldData={worldData!} />
-              <NodeCreationDialog createFunction={addNode} />
-              {hasChange && (
-                <Button size="icon" variant="destructive" onClick={()=>handleSave()}>
+              <ObjectCreationDialog createFunction={addNode} />
+              {hasChange > 1 && (
+                <Button
+                  size="icon"
+                  variant="destructive"
+                  onClick={() => handleSave()}
+                >
                   <Save />
                 </Button>
               )}

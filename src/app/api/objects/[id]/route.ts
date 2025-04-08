@@ -13,9 +13,8 @@ export async function DELETE(req: NextRequest, {params} : {params : {id:string}}
         const { id } = await params;
         const object = await verifyObject(id, userID);
         await World.findOneAndUpdate({_id : object.worldID}, { $pull: { objects: id } }); 
-
         const deletedObject = await Object.findByIdAndDelete({'_id' : id});
-         return NextResponse.json({ data : deletedObject, message : "Object Deleted!"}, { status: 200 });
+        return NextResponse.json({ data : deletedObject, message : "Object Deleted!"}, { status: 200 });
     } catch(error){
         return errorhandling(error); 
     }
