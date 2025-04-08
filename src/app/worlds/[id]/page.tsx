@@ -24,7 +24,7 @@ import { Button } from "@/components/ui/button";
 import { ArrowLeft, Save } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { WorldSettingDialog } from "@/components/worldSettingDialog";
-import { ObjectCreationDialog } from "@/components/objectCreationDialog";
+import { NodeCreationDialog } from "@/components/nodeCreationDialog";
 import { NodeType } from "../../../../types/types";
 import { useToast } from "@/hooks/use-toast";
 
@@ -121,13 +121,13 @@ function FlowContent({
 
   const addNode = useCallback(
     ({
-      objectName,
-      objectDescription,
-      objectPicture,
+      nodeName,
+      nodeDescription,
+      nodePicture,
     }: {
-      objectName: string;
-      objectDescription: string;
-      objectPicture: string | undefined;
+      nodeName: string;
+      nodeDescription: string;
+      nodePicture: string | undefined;
     }) => {
       const id = generateObjectId();
       const newNode = {
@@ -138,9 +138,9 @@ function FlowContent({
         }),
         type: "customNode",
         data: {
-          objectName: objectName,
-          objectDescription: objectDescription,
-          objectPicture: objectPicture,
+          nodeName: nodeName,
+          nodeDescription: nodeDescription,
+          nodePicture: nodePicture,
         },
       };
       setNodes((nds) => nds.concat(newNode));
@@ -172,7 +172,7 @@ function FlowContent({
                 <ArrowLeft />
               </Button>
               <WorldSettingDialog worldData={worldData!} />
-              <ObjectCreationDialog createFunction={addNode} />
+              <NodeCreationDialog createFunction={addNode} />
               {hasChange && (
                 <Button
                   size="icon"
@@ -228,18 +228,18 @@ export default function Page() {
         throw new Error("Failed to get nodes");
       }
       const nodeData = await nodes.json();
-      const objectArray: NodeType[] = nodeData.data.map((object: any) => ({
-        id: object._id,
-        objectName: object.objectName,
-        objectDescription: object.objectDescription,
-        objectPicture: object.objectPicture,
-        images: object.images,
-        relationships: object.relationships,
-        tags: object.tags,
-        positionX: object.positionX,
-        positionY: object.positionY,
+      const nodeArray: NodeType[] = nodeData.data.map((node: any) => ({
+        id: node._id,
+        nodeName: node.nodeName,
+        nodeDescription: node.nodeDescription,
+        nodePicture: node.nodePicture,
+        images: node.images,
+        relationships: node.relationships,
+        tags: node.tags,
+        positionX: node.positionX,
+        positionY: node.positionY,
       }));
-      setNodes(objectArray);
+      setNodes(nodeArray);
     } catch (error) {
       console.log({ error: error instanceof Error ? error.message : error });
     } finally {
