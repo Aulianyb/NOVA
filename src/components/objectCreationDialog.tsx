@@ -29,41 +29,41 @@ import { useRouter } from "next/navigation";
 import { SquarePlus } from "lucide-react";
 
 const formSchema = z.object({
-  nodeName: z
+  objectName: z
     .string()
-    .min(1, "Your node must have a name")
-    .max(20, "Node name must be at most 20 characters long"),
-  nodeDescription: z
+    .min(1, "Your object must have a name")
+    .max(20, "Object name must be at most 20 characters long"),
+  objectDescription: z
     .string()
     .max(240, "Description must be under 240 characters long"),
   // Temporary, of course
-  nodePicture: z.string().optional(),
+  objectPicture: z.string().optional(),
 });
 
-export function NodeCreationDialog({
+export function ObjectCreationDialog({
   createFunction,
 }: {
   createFunction: (input: {
-    nodeName: string;
-    nodeDescription: string;
-    nodePicture: string | undefined;
+    objectName: string;
+    objectDescription: string;
+    objectPicture: string | undefined;
   }) => void;
 }) {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      nodeName: "",
-      nodeDescription: "",
-      nodePicture: "/cat-nerd.jpg",
+      objectName: "",
+      objectDescription: "",
+      objectPicture: "/cat-nerd.jpg",
     },
   });
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
-    console.log(values.nodeName);
+    console.log(values.objectName);
     createFunction({
-      nodeName: values.nodeName,
-      nodeDescription: values.nodeDescription,
-      nodePicture: values.nodePicture,
+      objectName: values.objectName,
+      objectDescription: values.objectDescription,
+      objectPicture: values.objectPicture,
     });
     form.reset(); 
   }
@@ -77,7 +77,7 @@ export function NodeCreationDialog({
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Create a New Node</DialogTitle>
+          <DialogTitle>Create a New Object</DialogTitle>
         </DialogHeader>
         <DialogDescription>
           This can be anything, like characters, locations, etc!
@@ -86,7 +86,7 @@ export function NodeCreationDialog({
           <form onSubmit={form.handleSubmit(onSubmit)}>
             <FormField
               control={form.control}
-              name="nodePicture"
+              name="objectPicture"
               render={({ field }) => (
                 <FormItem>
                   <Label htmlFor="picture">Profile Picture</Label>
@@ -105,11 +105,11 @@ export function NodeCreationDialog({
             />
             <FormField
               control={form.control}
-              name="nodeName"
+              name="objectName"
               render={({ field }) => (
                 <FormItem>
                   <Label htmlFor="name" className="text-right">
-                    Node Name
+                    Object Name
                   </Label>
                   <FormControl>
                     <Input {...field} />
@@ -120,11 +120,11 @@ export function NodeCreationDialog({
             />
             <FormField
               control={form.control}
-              name="nodeDescription"
+              name="objectDescription"
               render={({ field }) => (
                 <FormItem>
                   <Label htmlFor="name" className="text-right">
-                    Node Description
+                    Object Description
                   </Label>
                   <FormControl>
                     <Textarea {...field} className="resize-none h-[100px]" />
