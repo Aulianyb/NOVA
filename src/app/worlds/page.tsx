@@ -6,6 +6,7 @@ import { quantico } from "../fonts";
 import { Navbar } from "@/components/navbar";
 import { WorldElement } from "@/components/worldElement";
 import { World } from "../../../types/types";
+import Loading from "../loading";
 
 export default function Worlds() {
   const [session, setSession] = useState<{ username: string } | null>(null);
@@ -50,11 +51,7 @@ export default function Worlds() {
 
   if (loading) {
     return (
-      <main className="bg-[var(--white)]">
-        <div className="flex flex-col gap-4 justify-center items-center min-h-screen">
-          <LoadingSpinner />
-        </div>
-      </main>
+      <Loading />
     );
   }
 

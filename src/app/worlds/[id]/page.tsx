@@ -68,6 +68,14 @@ function FlowContent({
     });
   };
 
+  const notifySaved = () => {
+    const toastId = toast({
+      title: "Changes are saved!",
+      description: "You can continue editing now :D",
+      variant : "success"
+    });
+  };
+
   const onConnect = useCallback(
     (params: any) =>
       setEdges((eds) => addEdge({ ...params, type: "straight" }, eds)),
@@ -95,6 +103,7 @@ function FlowContent({
           nodes: nodeArray,
         }),
       });
+      notifySaved(); 
     } catch (error) {
       console.log(error);
     } finally {
@@ -168,7 +177,7 @@ function FlowContent({
         data: {
           objectName: objectName,
           objectDescription: objectDescription,
-          objectPicture: "./cat-nerd.jpg",
+          objectPicture: "/cat-nerd.jpg",
           images: [],
           tags: [],
           relationships: [],

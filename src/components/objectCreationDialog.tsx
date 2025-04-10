@@ -23,10 +23,8 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Settings } from "lucide-react";
-import { World } from "../../types/types";
-import { useRouter } from "next/navigation";
 import { SquarePlus } from "lucide-react";
+import { useState } from "react";
 
 const formSchema = z.object({
   objectName: z
@@ -49,6 +47,8 @@ export function ObjectCreationDialog({
     objectPicture: string | undefined;
   }) => void;
 }) {
+  const [isOpen, setIsOpen] = useState(false);
+
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -59,19 +59,25 @@ export function ObjectCreationDialog({
   });
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
-    console.log(values.objectName);
-    createFunction({
-      objectName: values.objectName,
-      objectDescription: values.objectDescription,
-      objectPicture: values.objectPicture,
-    });
-    form.reset();
+    try{
+      console.log(values.objectName);
+      createFunction({
+        objectName: values.objectName,
+        objectDescription: values.objectDescription,
+        objectPicture: values.objectPicture,
+      });
+      form.reset();
+      setIsOpen(false);
+    }
+    catch(error){
+      console.log(error);
+    }
   }
 
   return (
-    <Dialog>
+    <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
-        <Button size="icon">
+        <Button size="icon" onClick={()=> {setIsOpen(true)}}>
           <SquarePlus />
         </Button>
       </DialogTrigger>
@@ -134,11 +140,9 @@ export function ObjectCreationDialog({
               )}
             />
             <DialogFooter>
-              <DialogClose asChild>
                 <Button type="submit" className="rounded-lg mt-4">
                   Create
                 </Button>
-              </DialogClose>
             </DialogFooter>
           </form>
         </Form>

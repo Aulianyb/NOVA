@@ -12,6 +12,7 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { Input } from "@/components/ui/input";
 import { Button } from "./ui/button";
+import { useState } from "react";
 
 const formSchema = z.object({
   username: z.string().min(3),
@@ -23,6 +24,7 @@ export function LoginForm({
 }: {
   setLoginError: (value: boolean) => void;
 }) {
+  const [disableButton, setDisableButton] = useState(false);
   const router = useRouter();
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -33,6 +35,7 @@ export function LoginForm({
   });
   async function onSubmit(values: z.infer<typeof formSchema>) {
     try {
+      setDisableButton(true);
       const res = await fetch("/api/auth/login", {
         method: "POST",
         headers: {
@@ -49,6 +52,8 @@ export function LoginForm({
     } catch {
       setLoginError(true);
       // console.error(error);
+    } finally {
+      setDisableButton(false);
     }
   }
 
@@ -90,7 +95,12 @@ export function LoginForm({
           )}
         />
         <div className="mt-6">
-          <Button size="long" type="submit" className="mt-10">
+          <Button
+            size="long"
+            type="submit"
+            className="mt-10"
+            disabled={disableButton}
+          >
             Login
           </Button>
         </div>

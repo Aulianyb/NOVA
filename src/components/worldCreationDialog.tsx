@@ -23,6 +23,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { SquarePlus } from "lucide-react";
+import { useState } from "react";
 
 const formSchema = z.object({
   worldName: z
@@ -39,6 +40,7 @@ export function CreateWorldDialog({
 }: {
   worldRefresh: () => void;
 }) {
+  const [isOpen, setIsOpen] = useState(false);
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -60,6 +62,7 @@ export function CreateWorldDialog({
         throw new Error("World creation failed");
       }
       worldRefresh();
+      setIsOpen(false);
     } catch (error) {
       console.log(error);
     } finally {
@@ -68,7 +71,7 @@ export function CreateWorldDialog({
   }
 
   return (
-    <Dialog>
+    <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
         <Button variant="ghost" className="h-12 rounded-md">
           <SquarePlus size={10} /> CREATE NEW WORLD
@@ -114,11 +117,9 @@ export function CreateWorldDialog({
               )}
             />
             <DialogFooter>
-              <DialogClose asChild>
                 <Button type="submit" className="rounded-lg mt-4">
                   Create
                 </Button>
-              </DialogClose>
             </DialogFooter>
           </form>
         </Form>
