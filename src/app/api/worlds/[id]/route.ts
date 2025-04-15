@@ -3,6 +3,8 @@ import World from "../../../../../model/World";
 import User from "../../../../../model/User";
 import { verifyUser } from "../../auth/session";
 import { errorhandling, verifyWorld } from "../../function";
+import Object from "../../../../../model/Object";
+import Relationship from "../../../../../model/Relationship";
 
 export async function GET(req: NextRequest, {params} : { params : {id : string}}){
     try {
@@ -31,6 +33,13 @@ export async function DELETE(req: NextRequest, { params }: { params: { id: strin
             { _id: { $in: world.owners } },
             { $pull: { ownedWorlds: id } }
         );
+
+        // Note to self : after Image is added : 
+        // Don't forget to cascade images that is connected to said object.
+        // Delete every images
+
+        await Object.deleteMany({_id : {$in : world.objects}});
+        await Relationship.deleteMany({_id : {$in : world.relationships}});
 
         const deletedWorld = await World.findByIdAndDelete({'_id' : id});
         return NextResponse.json({ data : deletedWorld, message : "World Deleted!"}, { status: 200 });

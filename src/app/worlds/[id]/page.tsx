@@ -1,9 +1,8 @@
 "use client";
-import React, { useCallback, useRef } from "react";
+import React, { useCallback } from "react";
 import { useParams } from "next/navigation";
 import { useState, useEffect } from "react";
-import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
-import { World } from "../../../../types/types";
+import { World, Object, Relationship } from "../../../../types/types";
 import {
   ReactFlow,
   useNodesState,
@@ -18,6 +17,8 @@ import {
   Edge,
   Node,
   NodeChange,
+  EdgeChange,
+  ReactFlowInstance,
 } from "@xyflow/react";
 import CustomNode from "@/components/CustomNode";
 import { Button } from "@/components/ui/button";
@@ -25,9 +26,10 @@ import { ArrowLeft, Save } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { WorldSettingDialog } from "@/components/worldSettingDialog";
 import { ObjectCreationDialog } from "@/components/objectCreationDialog";
-import { Object } from "../../../../types/types";
 import { useToast } from "@/hooks/use-toast";
-import { array } from "zod";
+import Loading from "@/app/loading";
+
+// const flowKey = "example-flow";
 
 const connectionLineStyle = {
   stroke: "#b1b1b7",
@@ -43,14 +45,20 @@ const initialNodes: Node[] = [];
 function FlowContent({
   worldData,
   objectData,
+  relationshipData,
 }: {
   worldData: World | null;
   objectData: Object[] | null;
+  relationshipData: Relationship[] | null;
 }) {
   const flow = useReactFlow();
   const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
   const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
   const [hasChange, setHasChanged] = useState(0);
+  const [rfInstance, setRfInstance] = useState<ReactFlowInstance<
+    Node,
+    Edge
+  > | null>(null);
   const router = useRouter();
   const { toast } = useToast();
 
@@ -72,26 +80,43 @@ function FlowContent({
     const toastId = toast({
       title: "Changes are saved!",
       description: "You can continue editing now :D",
-      variant : "success"
+      variant: "success",
     });
   };
 
   const onConnect = useCallback(
-    (params: any) =>
-      setEdges((eds) => addEdge({ ...params, type: "straight" }, eds)),
-    [setEdges]
+    (params: any) => {
+      handleChanges();
+      const id = generateObjectId();
+      const newEdge = {
+        ...params,
+        id: id,
+        type: "straight",
+      };
+      setEdges((eds) => addEdge(newEdge, eds));
+    },
+    [setEdges, hasChange]
   );
 
   async function handleSave() {
     try {
+      if (!rfInstance) {
+        throw new Error("React flow instance not found.");
+      }
       if (!worldData) {
         throw new Error("World not found.");
       }
 
-      const nodeArray = nodes.map((node) => ({
+      const flow = rfInstance.toObject();
+      const nodeArray = flow.nodes.map((node) => ({
         id: node.id,
         data: node.data,
         position: node.position,
+      }));
+      const edgeArray = flow.edges.map((edge) => ({
+        id: edge.id,
+        source: edge.source,
+        target: edge.target,
       }));
       const res = await fetch("/api/objects", {
         method: "POST",
@@ -101,9 +126,15 @@ function FlowContent({
         body: JSON.stringify({
           worldID: worldData.id,
           nodes: nodeArray,
+          edges: edgeArray,
         }),
       });
-      notifySaved(); 
+
+      if (!res.ok) {
+        throw new Error(`Failed to save objects: ${res.status}`);
+      }
+
+      notifySaved();
     } catch (error) {
       console.log(error);
     } finally {
@@ -111,7 +142,7 @@ function FlowContent({
     }
   }
 
-  function fetchObjects() {
+  function fetchData() {
     if (objectData) {
       const currentNodes = objectData.map((object: Object) => ({
         id: object.id,
@@ -128,24 +159,41 @@ function FlowContent({
       }));
       setNodes(currentNodes);
     }
+    if (relationshipData) {
+      const currentEdges = relationshipData.map((edge: Relationship) => ({
+        id: edge.id,
+        source: edge.source,
+        target: edge.target,
+        type: "straight",
+      }));
+      setEdges(currentEdges);
+    }
+  }
+
+  function handleChanges() {
+    if (hasChange < 2) {
+      setHasChanged(hasChange + 1);
+    }
+    if (hasChange > 1 && hasChange < 3) {
+      notifyChanges();
+      setHasChanged(hasChange + 1);
+    }
   }
 
   const handleNodesChange = useCallback(
     (changes: NodeChange[]) => {
-      if (hasChange > 1 && hasChange < 3) {
-        notifyChanges();
-        setHasChanged(hasChange + 1);
-      }
-      if (hasChange < 2) {
-        setHasChanged(hasChange + 1);
-      }
+      handleChanges();
       onNodesChange(changes);
     },
     [hasChange, onNodesChange]
   );
 
+  const handleEdgesDelete = useCallback((deletedEdges: Edge[]) => {
+    handleChanges();
+  }, [hasChange]);
+
   useEffect(() => {
-    fetchObjects();
+    fetchData();
   }, []);
 
   function generateObjectId(): string {
@@ -196,10 +244,12 @@ function FlowContent({
           edges={edges}
           onNodesChange={handleNodesChange}
           onEdgesChange={onEdgesChange}
+          onEdgesDelete={handleEdgesDelete}
           onConnect={onConnect}
           nodeTypes={nodeTypes}
           connectionLineStyle={connectionLineStyle}
           connectionMode={ConnectionMode.Loose}
+          onInit={setRfInstance}
         >
           <Panel>
             <div className="flex flex-col gap-2">
@@ -236,6 +286,9 @@ export default function Page() {
   const [loading, setLoading] = useState(true);
   const [world, setWorld] = useState<World | null>(null);
   const [objects, setObjects] = useState<Object[] | null>(null);
+  const [relationships, setRelationships] = useState<Relationship[] | null>(
+    null
+  );
   // const flow = useReactFlow();
   const params = useParams();
   async function fetchSession() {
@@ -258,17 +311,19 @@ export default function Page() {
         worldName: worldData.data.worldName,
         worldDescription: worldData.data.worldDescription,
         owners: worldData.data.owners,
-        categories: worldData.data.categories,
         objects: worldData.data.object,
         changes: worldData.data.changes,
       };
       setWorld(currentWorld);
-      const objects = await fetch(`/api/objects/?worldID=${currentWorld.id}`);
-      if (!objects.ok) {
+      const resNodesEdges = await fetch(
+        `/api/objects/?worldID=${currentWorld.id}`
+      );
+      if (!resNodesEdges.ok) {
         throw new Error("Failed to get objects");
       }
-      const objectData = await objects.json();
-      const objectArray: Object[] = objectData.data.map((object: any) => ({
+      const NodesAndEdges = await resNodesEdges.json();
+      const worldObjects = NodesAndEdges.data.worldObjects;
+      const objectArray: Object[] = worldObjects.map((object: any) => ({
         id: object._id,
         objectName: object.objectName,
         objectDescription: object.objectDescription,
@@ -280,6 +335,19 @@ export default function Page() {
         positionY: object.positionY,
       }));
       setObjects(objectArray);
+
+      const worldRelationships = NodesAndEdges.data.worldRelationships;
+      const relationArray: Relationship[] = worldRelationships.map(
+        (relation: any) => ({
+          id: relation._id,
+          source: relation.source,
+          target: relation.target,
+          tags: relation.tags,
+          relationshipDescription: relation.relationshipDescription,
+        })
+      );
+      setObjects(objectArray);
+      setRelationships(relationArray);
     } catch (error) {
       console.log({ error: error instanceof Error ? error.message : error });
     } finally {
@@ -292,18 +360,16 @@ export default function Page() {
   }, []);
 
   if (loading) {
-    return (
-      <main className="bg-[var(--white)]">
-        <div className="flex flex-col gap-4 justify-center items-center min-h-screen">
-          <LoadingSpinner />
-        </div>
-      </main>
-    );
+    return <Loading />;
   }
 
   return (
     <ReactFlowProvider>
-      <FlowContent worldData={world} objectData={objects} />
+      <FlowContent
+        worldData={world}
+        objectData={objects}
+        relationshipData={relationships}
+      />
     </ReactFlowProvider>
   );
 }

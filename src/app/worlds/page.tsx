@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
 import { quantico } from "../fonts";
 import { Navbar } from "@/components/navbar";
 import { WorldElement } from "@/components/worldElement";
@@ -32,8 +31,8 @@ export default function Worlds() {
         worldName: world.worldName,
         worldDescription: world.worldDescription,
         owners: world.owners,
-        categories: world.categories,
         objects: world.object,
+        relationships: world.relationships,
         changes: world.changes,
       }));
       setWorlds(worldArray);

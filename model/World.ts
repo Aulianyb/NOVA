@@ -11,6 +11,7 @@ const world = new Schema({
     worldDescription: { type: String },
     owners: [{ type: Schema.Types.ObjectId, ref: 'User' }],
     objects: [{ type: Schema.Types.ObjectId, ref: 'Object' }],
+    relationships : [{type: Schema.Types.ObjectId, ref : 'Relationship'}],
     changes: [changes],
     tags : [{type : Schema.Types.ObjectId, ref: 'Tag'}],
 }, { timestamps: true });

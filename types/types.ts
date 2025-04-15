@@ -3,7 +3,6 @@ export type World = {
     worldName : string; 
     worldDescription : string;
     owners : string[];
-    categories : string[];
     objects : string[];
     changes : string[];
 }
@@ -18,4 +17,12 @@ export type Object = {
     tags : string[],
     positionX : number,
     positionY : number
+}
+
+export type Relationship = {
+    id : string,
+    source : string,
+    target : string,
+    tags : string[],
+    relationshipDescription : string
 }

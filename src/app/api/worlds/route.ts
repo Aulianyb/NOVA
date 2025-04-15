@@ -32,6 +32,7 @@ export async function POST(req:NextRequest){
             worldDescription: data.worldDescription,
             owners: [userID],
             objects: [],
+            relationships: [],
             changes: [],
             tags: []
         });
