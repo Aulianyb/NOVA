@@ -38,7 +38,7 @@ const formSchema = z.object({
   objectPicture: z.string().optional(),
 });
 
-export function ObjectCreationDialog({
+export default function ObjectCreationDialog({
   createFunction,
 }: {
   createFunction: (input: {

@@ -34,7 +34,7 @@ const formSchema = z.object({
     .max(240, "Description must be under 240 characters long"),
 });
 
-export function WorldSettingDialog({ worldData }: { worldData: World }) {
+export default function WorldSettingDialog({ worldData }: { worldData: World }) {
   const router = useRouter();
 
   const form = useForm<z.infer<typeof formSchema>>({

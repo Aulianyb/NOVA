@@ -24,10 +24,12 @@ import CustomNode from "@/components/CustomNode";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, Save } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { WorldSettingDialog } from "@/components/worldSettingDialog";
-import { ObjectCreationDialog } from "@/components/objectCreationDialog";
+import WorldSettingDialog from "@/components/worldSettingDialog";
+import ObjectCreationDialog from "@/components/objectCreationDialog";
 import { useToast } from "@/hooks/use-toast";
 import Loading from "@/app/loading";
+import ObjectDetailSheet from "@/components/objectDetailSheet";
+import RelationshipDetailSheet from "@/components/relationshipDetailSheet";
 
 // const flowKey = "example-flow";
 
@@ -54,6 +56,8 @@ function FlowContent({
   const flow = useReactFlow();
   const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
   const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
+  const [isNodeClicked, setIsNodeClicked] = useState(false);
+  const [isEdgeClicked, setIsEdgeClicked] = useState(false);
   const [hasChange, setHasChanged] = useState(0);
   const [rfInstance, setRfInstance] = useState<ReactFlowInstance<
     Node,
@@ -97,6 +101,34 @@ function FlowContent({
     },
     [setEdges, hasChange]
   );
+
+  function fetchData() {
+    if (objectData) {
+      const currentNodes = objectData.map((object: Object) => ({
+        id: object.id,
+        position: { x: object.positionX, y: object.positionY },
+        data: {
+          objectName: object.objectName,
+          objectDescription: object.objectDescription,
+          objectPicture: object.objectPicture,
+          images: object.images,
+          tags: object.tags,
+          relationships: object.relationships,
+        },
+        type: "customNode",
+      }));
+      setNodes(currentNodes);
+    }
+    if (relationshipData) {
+      const currentEdges = relationshipData.map((edge: Relationship) => ({
+        id: edge.id,
+        source: edge.source,
+        target: edge.target,
+        type: "straight",
+      }));
+      setEdges(currentEdges);
+    }
+  }
 
   async function handleSave() {
     try {
@@ -142,34 +174,6 @@ function FlowContent({
     }
   }
 
-  function fetchData() {
-    if (objectData) {
-      const currentNodes = objectData.map((object: Object) => ({
-        id: object.id,
-        position: { x: object.positionX, y: object.positionY },
-        data: {
-          objectName: object.objectName,
-          objectDescription: object.objectDescription,
-          objectPicture: object.objectPicture,
-          images: object.images,
-          tags: object.tags,
-          relationships: object.relationships,
-        },
-        type: "customNode",
-      }));
-      setNodes(currentNodes);
-    }
-    if (relationshipData) {
-      const currentEdges = relationshipData.map((edge: Relationship) => ({
-        id: edge.id,
-        source: edge.source,
-        target: edge.target,
-        type: "straight",
-      }));
-      setEdges(currentEdges);
-    }
-  }
-
   function handleChanges() {
     if (hasChange < 2) {
       setHasChanged(hasChange + 1);
@@ -188,9 +192,12 @@ function FlowContent({
     [hasChange, onNodesChange]
   );
 
-  const handleEdgesDelete = useCallback((deletedEdges: Edge[]) => {
-    handleChanges();
-  }, [hasChange]);
+  const handleEdgesDelete = useCallback(
+    (deletedEdges: Edge[]) => {
+      handleChanges();
+    },
+    [hasChange]
+  );
 
   useEffect(() => {
     fetchData();
@@ -237,47 +244,52 @@ function FlowContent({
   );
 
   return (
-    <main>
-      <div style={{ width: "100vw", height: "100vh" }}>
-        <ReactFlow
-          nodes={nodes}
-          edges={edges}
-          onNodesChange={handleNodesChange}
-          onEdgesChange={onEdgesChange}
-          onEdgesDelete={handleEdgesDelete}
-          onConnect={onConnect}
-          nodeTypes={nodeTypes}
-          connectionLineStyle={connectionLineStyle}
-          connectionMode={ConnectionMode.Loose}
-          onInit={setRfInstance}
-        >
-          <Panel>
-            <div className="flex flex-col gap-2">
+    <div style={{ width: "100vw", height: "100vh" }}>
+      <ReactFlow
+        nodes={nodes}
+        edges={edges}
+        onNodesChange={handleNodesChange}
+        onEdgesChange={onEdgesChange}
+        onEdgesDelete={handleEdgesDelete}
+        onNodeClick={() => setIsNodeClicked(true)}
+        onEdgeClick={() => setIsEdgeClicked(true)}
+        onConnect={onConnect}
+        nodeTypes={nodeTypes}
+        connectionLineStyle={connectionLineStyle}
+        connectionMode={ConnectionMode.Loose}
+        onInit={setRfInstance}
+      >
+        <Panel>
+          <div className="flex flex-col gap-2">
+            <Button
+              onClick={() => {
+                router.back();
+              }}
+              size="icon"
+            >
+              <ArrowLeft />
+            </Button>
+            <WorldSettingDialog worldData={worldData!} />
+            <ObjectCreationDialog createFunction={addNode} />
+            {hasChange > 1 && (
               <Button
-                onClick={() => {
-                  router.back();
-                }}
                 size="icon"
+                variant="destructive"
+                onClick={() => handleSave()}
               >
-                <ArrowLeft />
+                <Save />
               </Button>
-              <WorldSettingDialog worldData={worldData!} />
-              <ObjectCreationDialog createFunction={addNode} />
-              {hasChange > 1 && (
-                <Button
-                  size="icon"
-                  variant="destructive"
-                  onClick={() => handleSave()}
-                >
-                  <Save />
-                </Button>
-              )}
-            </div>
-          </Panel>
-          <Background variant={BackgroundVariant.Lines} gap={12} size={1} />
-        </ReactFlow>
-      </div>
-    </main>
+            )}
+          </div>
+          <ObjectDetailSheet
+            isNodeClicked={isNodeClicked}
+            openFunction={setIsNodeClicked}
+          />
+          <RelationshipDetailSheet isEdgeClicked={isEdgeClicked} openFunction={setIsEdgeClicked}/>
+        </Panel>
+        <Background variant={BackgroundVariant.Lines} gap={12} size={1} />
+      </ReactFlow>
+    </div>
   );
 }
 
