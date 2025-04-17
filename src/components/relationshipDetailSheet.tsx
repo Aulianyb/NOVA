@@ -2,13 +2,22 @@ import Image from "next/image";
 import { Hash } from "lucide-react";
 import { Volleyball, ChevronRight, PencilLine } from "lucide-react";
 import { Button } from "./ui/button";
+import { NodeObject } from "../../types/types";
+import { Edge } from "@xyflow/react";
+import { RelationshipData } from "../../types/types";
 
 export default function RelationshipDetailSheet({
   isEdgeClicked,
   openFunction,
+  sourceNode,
+  targetNode,
+  relationshipData,
 }: {
   isEdgeClicked: boolean;
   openFunction: React.Dispatch<React.SetStateAction<boolean>>;
+  sourceNode: NodeObject;
+  targetNode: NodeObject;
+  relationshipData: Edge<RelationshipData>;
 }) {
   return (
     <div>
@@ -39,17 +48,23 @@ export default function RelationshipDetailSheet({
         <div className="flex gap-4">
           <div className="text-center">
             <Image
-              src={`/cat-nerd.jpg`}
+              src={sourceNode.objectPicture}
               alt="NOVA, the mascot, greeting you"
               width="100"
               height="100"
               className="rounded-md"
             />
-            <p>Object 1</p>
+            <p>{sourceNode.objectName}</p>
           </div>
 
           <div className="flex flex-col space-y-4 p-2 flex-grow items-center">
-            <p className="italic"> Description </p>
+            <p className="italic">
+              {relationshipData.data && (
+                <p className="italic">
+                  {relationshipData.data.relationshipDescription}
+                </p>
+              )}
+            </p>
             <div className="flex gap-1">
               <div className="p-1 px-2 text-xs text-red-500 bg-red-200 w-fit rounded-sm flex gap-1 items-center">
                 <Hash size={13} />
@@ -63,13 +78,13 @@ export default function RelationshipDetailSheet({
           </div>
           <div className="text-center">
             <Image
-              src={`/cat-nerd.jpg`}
+              src={targetNode.objectPicture}
               alt="NOVA, the mascot, greeting you"
               width="100"
               height="100"
               className="rounded-md"
             />
-            <p>Object 2</p>
+            <p>{targetNode.objectName}</p>
           </div>
         </div>
 

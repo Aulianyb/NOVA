@@ -2,7 +2,13 @@
 import React, { useCallback } from "react";
 import { useParams } from "next/navigation";
 import { useState, useEffect } from "react";
-import { World, Object, Relationship } from "../../../../types/types";
+import {
+  World,
+  NodeObject,
+  Relationship,
+  NodeData,
+  RelationshipData,
+} from "../../../../types/types";
 import {
   ReactFlow,
   useNodesState,
@@ -50,7 +56,7 @@ function FlowContent({
   relationshipData,
 }: {
   worldData: World | null;
-  objectData: Object[] | null;
+  objectData: NodeObject[] | null;
   relationshipData: Relationship[] | null;
 }) {
   const flow = useReactFlow();
@@ -59,10 +65,16 @@ function FlowContent({
   const [isNodeClicked, setIsNodeClicked] = useState(false);
   const [isEdgeClicked, setIsEdgeClicked] = useState(false);
   const [hasChange, setHasChanged] = useState(0);
+  const [objectMap, setObjectMap] = useState<Record<string, NodeObject>>({});
   const [rfInstance, setRfInstance] = useState<ReactFlowInstance<
     Node,
     Edge
   > | null>(null);
+  const [selectedNode, setSelectedNode] = useState<Node<NodeData> | null>(null);
+  const [selectedEdge, setSelectedEdge] =
+    useState<Edge<RelationshipData> | null>(null);
+  const [selectedTarget, setSelectedTarget] = useState<NodeObject | null>(null);
+  const [selectedSource, setSelectedSource] = useState<NodeObject | null>(null);
   const router = useRouter();
   const { toast } = useToast();
 
@@ -95,6 +107,9 @@ function FlowContent({
       const newEdge = {
         ...params,
         id: id,
+        data: {
+          relationshipDescription: "Describe their relationship!",
+        },
         type: "straight",
       };
       setEdges((eds) => addEdge(newEdge, eds));
@@ -104,7 +119,7 @@ function FlowContent({
 
   function fetchData() {
     if (objectData) {
-      const currentNodes = objectData.map((object: Object) => ({
+      const currentNodes = objectData.map((object: NodeObject) => ({
         id: object.id,
         position: { x: object.positionX, y: object.positionY },
         data: {
@@ -118,12 +133,19 @@ function FlowContent({
         type: "customNode",
       }));
       setNodes(currentNodes);
+      const objectMap = Object.fromEntries(
+        objectData.map((obj) => [obj.id, obj])
+      );
+      setObjectMap(objectMap);
     }
     if (relationshipData) {
       const currentEdges = relationshipData.map((edge: Relationship) => ({
         id: edge.id,
         source: edge.source,
         target: edge.target,
+        data: {
+          relationshipDescription: edge.relationshipDescription,
+        },
         type: "straight",
       }));
       setEdges(currentEdges);
@@ -145,11 +167,15 @@ function FlowContent({
         data: node.data,
         position: node.position,
       }));
+
       const edgeArray = flow.edges.map((edge) => ({
         id: edge.id,
         source: edge.source,
         target: edge.target,
+        data: edge.data,
       }));
+
+
       const res = await fetch("/api/objects", {
         method: "POST",
         headers: {
@@ -243,6 +269,22 @@ function FlowContent({
     []
   );
 
+  const onNodeClick = (event: React.MouseEvent, node: Node) => {
+    console.log("click node", node);
+    setSelectedNode(node as Node<NodeData>);
+    setIsNodeClicked(true);
+  };
+
+  const onEdgeClick = (event: React.MouseEvent, edge: Edge) => {
+    console.log("click edge", edge);
+    if (objectData) {
+      setSelectedEdge(edge as Edge<RelationshipData>);
+      setSelectedSource(objectMap[edge.source]);
+      setSelectedTarget(objectMap[edge.target]);
+    }
+    setIsEdgeClicked(true);
+  };
+
   return (
     <div style={{ width: "100vw", height: "100vh" }}>
       <ReactFlow
@@ -251,8 +293,8 @@ function FlowContent({
         onNodesChange={handleNodesChange}
         onEdgesChange={onEdgesChange}
         onEdgesDelete={handleEdgesDelete}
-        onNodeClick={() => setIsNodeClicked(true)}
-        onEdgeClick={() => setIsEdgeClicked(true)}
+        onNodeClick={onNodeClick}
+        onEdgeClick={onEdgeClick}
         onConnect={onConnect}
         nodeTypes={nodeTypes}
         connectionLineStyle={connectionLineStyle}
@@ -281,11 +323,22 @@ function FlowContent({
               </Button>
             )}
           </div>
-          <ObjectDetailSheet
-            isNodeClicked={isNodeClicked}
-            openFunction={setIsNodeClicked}
-          />
-          <RelationshipDetailSheet isEdgeClicked={isEdgeClicked} openFunction={setIsEdgeClicked}/>
+          {selectedNode && (
+            <ObjectDetailSheet
+              isNodeClicked={isNodeClicked}
+              openFunction={setIsNodeClicked}
+              nodeData={selectedNode}
+            />
+          )}
+          {selectedSource && selectedTarget && selectedEdge && (
+            <RelationshipDetailSheet
+              isEdgeClicked={isEdgeClicked}
+              openFunction={setIsEdgeClicked}
+              sourceNode={selectedSource}
+              targetNode={selectedTarget}
+              relationshipData={selectedEdge}
+            />
+          )}
         </Panel>
         <Background variant={BackgroundVariant.Lines} gap={12} size={1} />
       </ReactFlow>
@@ -297,7 +350,7 @@ export default function Page() {
   const [session, setSession] = useState<{ username: string } | null>(null);
   const [loading, setLoading] = useState(true);
   const [world, setWorld] = useState<World | null>(null);
-  const [objects, setObjects] = useState<Object[] | null>(null);
+  const [objects, setObjects] = useState<NodeObject[] | null>(null);
   const [relationships, setRelationships] = useState<Relationship[] | null>(
     null
   );
@@ -335,7 +388,7 @@ export default function Page() {
       }
       const NodesAndEdges = await resNodesEdges.json();
       const worldObjects = NodesAndEdges.data.worldObjects;
-      const objectArray: Object[] = worldObjects.map((object: any) => ({
+      const objectArray: NodeObject[] = worldObjects.map((object: any) => ({
         id: object._id,
         objectName: object.objectName,
         objectDescription: object.objectDescription,
@@ -358,6 +411,7 @@ export default function Page() {
           relationshipDescription: relation.relationshipDescription,
         })
       );
+
       setObjects(objectArray);
       setRelationships(relationArray);
     } catch (error) {

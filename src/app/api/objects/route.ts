@@ -91,17 +91,21 @@ export async function POST(req:NextRequest){
         await World.updateOne({_id: worldID}, { $push: { objects : createdObjects } });
 
         // EDGE UPSERT
+        console.log(edges[0]);
         const edgeOperations = await edges.map((edge: {
             id: string;
             source : string,
-            target : string
+            target : string,
+            data : {
+                relationshipDescription : string
+            }
         })=>({
             updateOne : {
                 filter: { _id: edge.id },
                 update: {
                     source : edge.source,
                     target : edge.target,
-                    relationshipsDescription : "",
+                    relationshipDescription : edge.data.relationshipDescription,
                     tags : []
                 },
                 upsert: true
@@ -112,7 +116,10 @@ export async function POST(req:NextRequest){
             edges.map(async (edge : {
                 id: string;
                 source : string,
-                target : string
+                target : string,
+                data : {
+                    relationshipDescription : string
+                }
             }) => {
               await Object.updateMany(
                 { _id: { $in: [edge.source, edge.target] } },

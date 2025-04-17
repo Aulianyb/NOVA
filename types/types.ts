@@ -7,7 +7,7 @@ export type World = {
     changes : string[];
 }
 
-export type Object = {
+export type NodeObject = {
     id : string,
     objectName : string,
     objectPicture : string,
@@ -24,5 +24,16 @@ export type Relationship = {
     source : string,
     target : string,
     tags : string[],
+    type : string
     relationshipDescription : string
 }
+
+export type NodeData = {
+    objectName: string;
+    objectPicture: string;
+    objectDescription?: string;
+};
+
+export type RelationshipData = {
+    relationshipDescription : string; 
+};
