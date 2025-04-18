@@ -175,7 +175,6 @@ function FlowContent({
         data: edge.data,
       }));
 
-
       const res = await fetch("/api/objects", {
         method: "POST",
         headers: {
@@ -212,7 +211,9 @@ function FlowContent({
 
   const handleNodesChange = useCallback(
     (changes: NodeChange[]) => {
-      handleChanges();
+      if (changes[0].type == "position" || changes[0].type == "dimensions") {
+        handleChanges();
+      }
       onNodesChange(changes);
     },
     [hasChange, onNodesChange]
@@ -323,22 +324,18 @@ function FlowContent({
               </Button>
             )}
           </div>
-          {selectedNode && (
-            <ObjectDetailSheet
-              isNodeClicked={isNodeClicked}
-              openFunction={setIsNodeClicked}
-              nodeData={selectedNode}
-            />
-          )}
-          {selectedSource && selectedTarget && selectedEdge && (
-            <RelationshipDetailSheet
-              isEdgeClicked={isEdgeClicked}
-              openFunction={setIsEdgeClicked}
-              sourceNode={selectedSource}
-              targetNode={selectedTarget}
-              relationshipData={selectedEdge}
-            />
-          )}
+          <ObjectDetailSheet
+            isNodeClicked={isNodeClicked}
+            openFunction={setIsNodeClicked}
+            nodeData={selectedNode}
+          />
+          <RelationshipDetailSheet
+            isEdgeClicked={isEdgeClicked}
+            openFunction={setIsEdgeClicked}
+            sourceNode={selectedSource}
+            targetNode={selectedTarget}
+            relationshipData={selectedEdge}
+          />
         </Panel>
         <Background variant={BackgroundVariant.Lines} gap={12} size={1} />
       </ReactFlow>

@@ -12,7 +12,7 @@ export default function ObjectDetailSheet({
 }: {
   isNodeClicked: boolean;
   openFunction: React.Dispatch<React.SetStateAction<boolean>>;
-  nodeData: Node<NodeData>;
+  nodeData: Node<NodeData> | null;
 }) {
   return (
     <div>
@@ -40,29 +40,31 @@ export default function ObjectDetailSheet({
           </Button>
         </div>
 
-        <div className="flex gap-4">
-          <Image
-            src={nodeData.data.objectPicture as string}
-            alt="NOVA, the mascot, greeting you"
-            width="150"
-            height="150"
-            className="rounded-md"
-          />
-          <div className="space-y-4 p-2">
-            <h2 className="font-bold"> {nodeData.data.objectName} </h2>
-            <p className="italic"> {nodeData.data.objectDescription} </p>
-            <div className="flex gap-1">
-              <div className="p-1 px-2 text-xs text-red-500 bg-red-200 w-fit rounded-sm flex gap-1 items-center">
-                <Hash size={13} />
-                <span> Tags 1 </span>
-              </div>
-              <div className="p-1 px-2 text-xs text-blue-500 bg-blue-200 w-fit rounded-sm flex gap-1 items-center">
-                <Hash size={13} />
-                <span> Tags 1 </span>
+        {nodeData && (
+          <div className="flex gap-4">
+            <Image
+              src={nodeData.data.objectPicture as string}
+              alt="NOVA, the mascot, greeting you"
+              width="150"
+              height="150"
+              className="rounded-md"
+            />
+            <div className="space-y-4 p-2">
+              <h2 className="font-bold"> {nodeData.data.objectName} </h2>
+              <p className="italic"> {nodeData.data.objectDescription} </p>
+              <div className="flex gap-1">
+                <div className="p-1 px-2 text-xs text-red-500 bg-red-200 w-fit rounded-sm flex gap-1 items-center">
+                  <Hash size={13} />
+                  <span> Tags 1 </span>
+                </div>
+                <div className="p-1 px-2 text-xs text-blue-500 bg-blue-200 w-fit rounded-sm flex gap-1 items-center">
+                  <Hash size={13} />
+                  <span> Tags 1 </span>
+                </div>
               </div>
             </div>
           </div>
-        </div>
+        )}
 
         <hr className="border-gray-300 flex-grow" />
 

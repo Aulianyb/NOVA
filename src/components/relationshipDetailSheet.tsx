@@ -15,9 +15,9 @@ export default function RelationshipDetailSheet({
 }: {
   isEdgeClicked: boolean;
   openFunction: React.Dispatch<React.SetStateAction<boolean>>;
-  sourceNode: NodeObject;
-  targetNode: NodeObject;
-  relationshipData: Edge<RelationshipData>;
+  sourceNode: NodeObject | null;
+  targetNode: NodeObject | null;
+  relationshipData: Edge<RelationshipData> | null;
 }) {
   return (
     <div>
@@ -45,48 +45,48 @@ export default function RelationshipDetailSheet({
           </Button>
         </div>
 
-        <div className="flex gap-4">
-          <div className="text-center">
-            <Image
-              src={sourceNode.objectPicture}
-              alt="NOVA, the mascot, greeting you"
-              width="100"
-              height="100"
-              className="rounded-md"
-            />
-            <p>{sourceNode.objectName}</p>
-          </div>
+        {sourceNode && targetNode && relationshipData && (
+          <div className="flex gap-4">
+            <div className="text-center">
+              <Image
+                src={sourceNode.objectPicture}
+                alt="NOVA, the mascot, greeting you"
+                width="100"
+                height="100"
+                className="rounded-md"
+              />
+              <p>{sourceNode.objectName}</p>
+            </div>
 
-          <div className="flex flex-col space-y-4 p-2 flex-grow items-center">
-            <p className="italic">
+            <div className="flex flex-col space-y-4 p-2 flex-grow items-center">
               {relationshipData.data && (
                 <p className="italic">
                   {relationshipData.data.relationshipDescription}
                 </p>
               )}
-            </p>
-            <div className="flex gap-1">
-              <div className="p-1 px-2 text-xs text-red-500 bg-red-200 w-fit rounded-sm flex gap-1 items-center">
-                <Hash size={13} />
-                <span> Tags 1 </span>
-              </div>
-              <div className="p-1 px-2 text-xs text-blue-500 bg-blue-200 w-fit rounded-sm flex gap-1 items-center">
-                <Hash size={13} />
-                <span> Tags 1 </span>
+              <div className="flex gap-1">
+                <div className="p-1 px-2 text-xs text-red-500 bg-red-200 w-fit rounded-sm flex gap-1 items-center">
+                  <Hash size={13} />
+                  <span> Tags 1 </span>
+                </div>
+                <div className="p-1 px-2 text-xs text-blue-500 bg-blue-200 w-fit rounded-sm flex gap-1 items-center">
+                  <Hash size={13} />
+                  <span> Tags 1 </span>
+                </div>
               </div>
             </div>
+            <div className="text-center">
+              <Image
+                src={targetNode.objectPicture}
+                alt="NOVA, the mascot, greeting you"
+                width="100"
+                height="100"
+                className="rounded-md"
+              />
+              <p>{targetNode.objectName}</p>
+            </div>
           </div>
-          <div className="text-center">
-            <Image
-              src={targetNode.objectPicture}
-              alt="NOVA, the mascot, greeting you"
-              width="100"
-              height="100"
-              className="rounded-md"
-            />
-            <p>{targetNode.objectName}</p>
-          </div>
-        </div>
+        )}
 
         <hr className="border-gray-300 flex-grow" />
 
