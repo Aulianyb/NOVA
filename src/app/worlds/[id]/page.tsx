@@ -259,7 +259,7 @@ function FlowContent({
         data: {
           objectName: objectName,
           objectDescription: objectDescription,
-          objectPicture: "/cat-nerd.jpg",
+          objectPicture: "/NOVA-placeholder.png",
           images: [],
           tags: [],
           relationships: [],

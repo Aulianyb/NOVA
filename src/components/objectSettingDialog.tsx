@@ -53,7 +53,7 @@ export default function ObjectSettingDialog({
     defaultValues: {
       objectName: nodeData.data.objectName,
       objectDescription: nodeData.data.objectDescription,
-      objectPicture: "/cat-nerd.jpg",
+      objectPicture: "/NOVA-placeholder.png",
     },
   });
 
@@ -61,7 +61,7 @@ export default function ObjectSettingDialog({
     form.reset({
       objectName: nodeData.data.objectName,
       objectDescription: nodeData.data.objectDescription,
-      objectPicture: "/cat-nerd.jpg",
+      objectPicture: "/NOVA-placeholder.png",
     });
   }
 

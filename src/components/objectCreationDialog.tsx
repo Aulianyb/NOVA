@@ -54,7 +54,7 @@ export default function ObjectCreationDialog({
     defaultValues: {
       objectName: "",
       objectDescription: "",
-      objectPicture: "/cat-nerd.jpg",
+      objectPicture: "/NOVA-placeholder.png",
     },
   });
 

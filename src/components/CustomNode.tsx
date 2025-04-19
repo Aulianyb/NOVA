@@ -19,7 +19,7 @@ export default function CustomNode({
     <>
       <div className="w-[120px] flex flex-col items-center text-sm rounded-lg bg-zinc-100 border border-zinc-300">
         <Image
-          src="/cat-nerd.jpg"
+          src={data.objectPicture}
           alt="Placeholder Picture"
           width="120"
           height="120"
