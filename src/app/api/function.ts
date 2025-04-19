@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import World from "../../../model/World";
 import mongoose from "mongoose";
 import Object from "../../../model/Object";
+import Relationship from "../../../model/Relationship";
 
 export function errorhandling(error : unknown){
     console.log(error);
@@ -41,4 +42,15 @@ export async function verifyObject(objectID : string, userID : string){
     }
     verifyWorld(object.worldID, userID);
     return object;
+}
+
+export async function verifyRelationship(relationshipID : string){
+    if (!mongoose.Types.ObjectId.isValid(relationshipID)) {
+        throw new Error("Invalid relationship ID format");
+    }
+    const relationship = await Relationship.findById(relationshipID); 
+    if (!relationship){
+        throw new Error("Relationship not found");
+    }
+    return relationship;
 }

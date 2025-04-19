@@ -5,6 +5,7 @@ import { Button } from "./ui/button";
 import { NodeObject } from "../../types/types";
 import { Edge } from "@xyflow/react";
 import { RelationshipData } from "../../types/types";
+import RelationshipSettingDialog from "./relationshipSettingDialog";
 
 export default function RelationshipDetailSheet({
   isEdgeClicked,
@@ -36,13 +37,9 @@ export default function RelationshipDetailSheet({
           >
             <ChevronRight />
           </Button>
-          <Button
-            variant="ghost"
-            size="iconSm"
-            onClick={() => console.log("Edit")}
-          >
-            <PencilLine />
-          </Button>
+          {relationshipData && (
+            <RelationshipSettingDialog relationshipData={relationshipData} />
+          )}
         </div>
 
         {sourceNode && targetNode && relationshipData && (
