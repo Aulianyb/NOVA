@@ -35,11 +35,6 @@ export async function PUT(req: NextRequest, {params} : {params : {id:string}}){
                 objectName : data.objectName,
                 objectPicture : data.objectPicture,
                 objectDescription : data.objectDescription,
-                images : data.images,
-                relationships : data.relationships,
-                tags : data.tags,
-                positionX : data.positionX,
-                positionY : data.positionY,
              }, 
              {new : true}
         )

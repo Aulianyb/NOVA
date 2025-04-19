@@ -59,7 +59,7 @@ export default function WorldSettingDialog({ worldData }: { worldData: World }) 
       }
       window.location.reload();
     } catch (error) {
-      console.error(error);
+      
     }
   }
 

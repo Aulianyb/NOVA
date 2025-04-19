@@ -32,6 +32,9 @@ export type NodeData = {
     objectName: string;
     objectPicture: string;
     objectDescription?: string;
+    images : string[],
+    tags : string[],
+    relationship : string[]
 };
 
 export type RelationshipData = {

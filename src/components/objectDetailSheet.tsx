@@ -4,6 +4,7 @@ import { Volleyball, ChevronRight, PencilLine } from "lucide-react";
 import { Button } from "./ui/button";
 import { Node } from "@xyflow/react";
 import { NodeData } from "../../types/types";
+import ObjectSettingDialog from "./objectSettingDialog";
 
 export default function ObjectDetailSheet({
   isNodeClicked,
@@ -31,13 +32,7 @@ export default function ObjectDetailSheet({
           >
             <ChevronRight />
           </Button>
-          <Button
-            variant="ghost"
-            size="iconSm"
-            onClick={() => console.log("Edit")}
-          >
-            <PencilLine />
-          </Button>
+          {nodeData && <ObjectSettingDialog nodeData={nodeData} />}
         </div>
 
         {nodeData && (
