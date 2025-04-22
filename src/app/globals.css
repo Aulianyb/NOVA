@@ -13,14 +13,21 @@ body {
 }
 
 @layer base {
+  h2 {
+    font-size: 24px;
+  }
+}
+
+
+@layer base {
   :root {
     --radius: 0.5rem;
     --white: #ffffff;
     --black: #16171d;
     --primary: #A88DF9;
-    --secondary: #ffebb3;
-    --accent: #fff5db;
+    --secondary: #CFBEFF;
     --hover:#7a60c8;
-    --dark-gold:B37200;
+    --hover-light:#2A1D3C;
   }
 }
+

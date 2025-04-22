@@ -11,13 +11,11 @@ export async function POST(
   try {
     await connectToMongoDB();
     const data = await req.json();
-    // const bcrypt = require('bcrypt');
+
     console.log(data.username)
     const user = await User.where({ username : data.username }).findOne()
-    console.log(user)
     if (!user) throw new Error('User not found')
-
-
+      
     const validPassword = await bcrypt.compare(data.password, user.password)
     if (!validPassword) throw new Error('Invalid Password')
     
@@ -31,6 +29,7 @@ export async function POST(
     const token = await jwt.sign(tokenData, JWT_SECRET!)
     const res = NextResponse.json({message : "Login successful", token}, {status: 200}) 
     const session : Session = {
+      id : user._id,
       username : user.username,
       token : token
     }

@@ -1,13 +1,18 @@
 import { NextResponse } from "next/server";
 import { getSession, removeSession } from "../session";
 import { connectToMongoDB } from '@/app/lib/connect';
+import { errorhandling } from "../../function";
 
 export async function POST(){
-    await connectToMongoDB();
-    const session = await getSession(); 
-    if (!session) {
-        return NextResponse.json({message : "No session found"}, {status: 401});
+    try {
+        await connectToMongoDB();
+        const session = await getSession(); 
+        if (!session) {
+            throw(new Error('No session found')); 
+        }
+        await removeSession();
+        return NextResponse.json({message : "Logout successful"}, {status: 200});
+    } catch (error){
+        return errorhandling(error); 
     }
-    await removeSession();
-    return NextResponse.json({message : "Logout successful"}, {status: 200});
 };

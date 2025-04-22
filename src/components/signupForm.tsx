@@ -6,12 +6,12 @@ import {
   FormControl,
   FormField,
   FormItem,
-  FormLabel,
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
+import { useState } from "react";
 
 const formSchema = z.object({
   username: z
@@ -37,6 +37,7 @@ export function SignupForm({
   setSignupError: (value: boolean) => void;
 }) {
   const router = useRouter();
+  const [disableButton, setDisableButton] = useState(false);
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -46,6 +47,7 @@ export function SignupForm({
   });
   async function onSubmit(values: z.infer<typeof formSchema>) {
     try {
+      setDisableButton(true); 
       const res = await fetch("/api/auth/signup", {
         method: "POST",
         headers: {
@@ -58,17 +60,12 @@ export function SignupForm({
         throw new Error("Failed to register user");
       }
       console.log("User registered successfully!");
-      await fetch("/api/auth/login", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(values),
-      });
-      router.push("/home");
+      router.push("/worlds");
     } catch {
       // console.error(error);
       setSignupError(true);
+    } finally {
+      setDisableButton(false); 
     }
   }
 
@@ -80,9 +77,9 @@ export function SignupForm({
           name="username"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Username</FormLabel>
+              {/* <FormLabel>Username</FormLabel> */}
               <FormControl>
-                <Input {...field} />
+                <Input {...field} placeholder="Username" className="h-12 rounded-lg"/>
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -93,17 +90,19 @@ export function SignupForm({
           name="password"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Password</FormLabel>
+              {/* <FormLabel>Password</FormLabel> */}
               <FormControl>
-                <Input {...field} type="password" />
+                <Input {...field} type="password" placeholder="Password" className="h-12 rounded-lg"/>
               </FormControl>
               <FormMessage />
             </FormItem>
           )}
         />
-        <Button size="long" type="submit">
-          Register
-        </Button>
+        <div className="mt-6">
+          <Button size="long" type="submit" disabled={disableButton} className="mt-10">
+            Sign Up
+          </Button>
+        </div>
       </form>
     </Form>
   );

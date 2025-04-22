@@ -2,11 +2,11 @@ import { Quantico } from 'next/font/google';
 
 export const quantico = Quantico({
   weight: "700",
-  subsets: ["latin"],
+  subsets: ["latin"]
 });
 
-// will use later
-// export const inter = Quantico({
-//   weight: "400",
-//   subsets: ["latin"],
-// });
+export const quanticoItalic = Quantico({
+  weight: "700",
+  subsets: ["latin"],
+  style: "italic"
+});
