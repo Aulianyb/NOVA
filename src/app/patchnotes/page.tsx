@@ -11,10 +11,11 @@ export default function PatchNotesPage() {
       <div className="flex flex-col gap-4 justify-start items-center min-h-screen">
         <h1 className="font-bold">PATCH NOTES</h1>
         <Image
-          src={`/cat-nerd.jpg`}
-          alt="Nerdy cat meme"
+          src={`/NOVA-placeholder.png`}
+          alt="Mascot, NOVA"
           width="200"
           height="200"
+          className="rounded-full"
         />
         <p>Hi there, this page won't be in the final product.</p>
         <div className="space-y-5">
@@ -31,8 +32,23 @@ export default function PatchNotesPage() {
             <li>Adjusting button and input sizes</li>
             <li>Added patch notes page</li>
           </div>
+          <div>
+            <h2>NOVA v0.2.0</h2>
+            <li>Added World Portal for adding, editing and deleting worlds</li>
+            <li>Added World Graph, changing and saving nodes and edges</li>
+            <li>Added node and graph editing</li>
+            <li>Fixed buncha bugs! 🐛🐛</li>
+          </div>
         </div>
-        <Button className="mt-12" onClick={()=>{router.push("/")}}> GO BACK </Button>
+        <Button
+          className="mt-12"
+          onClick={() => {
+            router.push("/");
+          }}
+        >
+          {" "}
+          GO BACK{" "}
+        </Button>
       </div>
     </main>
   );
