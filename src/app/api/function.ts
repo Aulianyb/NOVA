@@ -3,6 +3,9 @@ import World from "../../../model/World";
 import mongoose from "mongoose";
 import Object from "../../../model/Object";
 import Relationship from "../../../model/Relationship";
+import { connectToMongoDB } from "@/app/lib/connect";
+import jwt from "jsonwebtoken";
+import { getSession } from "./auth/session";
 
 export function errorhandling(error : unknown){
     console.log(error);
@@ -53,4 +56,17 @@ export async function verifyRelationship(relationshipID : string){
         throw new Error("Relationship not found");
     }
     return relationship;
+}
+
+export async function verifyUser() {
+    await connectToMongoDB();
+    const session = await getSession();
+    if (!session){
+        return null;
+    } else{
+        const JWT_SECRET = process.env.JWT_SECRET;
+        const decoded = jwt.verify(session.token, JWT_SECRET!) as jwt.JwtPayload & { id: string };
+        const userID = decoded.id
+        return userID;
+    }
 }

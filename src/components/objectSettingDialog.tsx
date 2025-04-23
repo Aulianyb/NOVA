@@ -19,12 +19,11 @@ import {
   DialogTitle,
   DialogTrigger,
   DialogFooter,
-  DialogClose,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { PencilLine } from "lucide-react";
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import { Node } from "@xyflow/react";
 import { NodeData } from "../../types/types";
 import { useEffect } from "react";
@@ -57,17 +56,17 @@ export default function ObjectSettingDialog({
     },
   });
 
-  function resetForm() {
+  const resetForm = useCallback(() => {
     form.reset({
       objectName: nodeData.data.objectName,
       objectDescription: nodeData.data.objectDescription,
       objectPicture: "/NOVA-placeholder.png",
     });
-  }
+  }, [form, nodeData.data.objectDescription, nodeData.data.objectName]);
 
   useEffect(() => {
     resetForm();
-  }, [nodeData, form]);
+  }, [nodeData, form, resetForm]);
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     try {
@@ -117,7 +116,7 @@ export default function ObjectSettingDialog({
             <FormField
               control={form.control}
               name="objectPicture"
-              render={({ field }) => (
+              render={() => (
                 <FormItem>
                   <Label htmlFor="picture">Profile Picture</Label>
                   <FormControl>

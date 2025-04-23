@@ -4,10 +4,8 @@ import {
   FormField,
   FormItem,
   FormMessage,
-  FormDescription,
 } from "@/components/ui/form";
 import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { useForm } from "react-hook-form";
@@ -23,7 +21,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { PencilLine } from "lucide-react";
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import { useEffect } from "react";
 import { Edge } from "@xyflow/react";
 import { RelationshipData } from "../../types/types";
@@ -48,15 +46,15 @@ export default function RelationshipSettingDialog({
     },
   });
 
-  function resetForm() {
+  const resetForm = useCallback(() => {
     form.reset({
       relationshipDescription: relationshipData.data!.relationshipDescription,
     });
-  }
+  }, [form, relationshipData.data]);
 
   useEffect(() => {
     resetForm();
-  }, [relationshipData, form]);
+  }, [relationshipData, form, resetForm]);
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     try {

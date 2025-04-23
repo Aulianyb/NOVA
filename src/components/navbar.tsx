@@ -1,5 +1,4 @@
 import {
-  SquarePlus,
   CircleUserRound,
   ChevronsUpDown,
   Bell,
@@ -17,8 +16,6 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { useRouter } from "next/navigation";
 import { CreateWorldDialog } from "./worldCreationDialog";
-import WorldSettingDialog from "./worldSettingDialog";
-import { World } from "../../types/types";
 
 export function Navbar({
   username,

@@ -1,6 +1,6 @@
 import Image from "next/image";
 import { Hash } from "lucide-react";
-import { Volleyball, ChevronRight, PencilLine } from "lucide-react";
+import { Volleyball, ChevronRight} from "lucide-react";
 import { Button } from "./ui/button";
 import { NodeObject } from "../../types/types";
 import { Edge } from "@xyflow/react";

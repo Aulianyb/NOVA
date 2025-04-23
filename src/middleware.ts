@@ -16,7 +16,6 @@ export default async function middleware(req: NextRequest){
     }
 
     if (isPublicRoute && session?.username){
-        // note self : KALAU FIX URL INI UBAH
         return NextResponse.redirect(new URL('/worlds', req.nextUrl))
     }
 

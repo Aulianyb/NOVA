@@ -19,7 +19,6 @@ import {
   DialogTitle,
   DialogTrigger,
   DialogFooter,
-  DialogClose,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -93,7 +92,7 @@ export default function ObjectCreationDialog({
             <FormField
               control={form.control}
               name="objectPicture"
-              render={({ field }) => (
+              render={() => (
                 <FormItem>
                   <Label htmlFor="picture">Profile Picture</Label>
                   <FormControl>

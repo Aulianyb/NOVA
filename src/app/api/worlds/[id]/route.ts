@@ -1,12 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
 import World from "../../../../../model/World";
 import User from "../../../../../model/User";
-import { verifyUser } from "../../auth/session";
-import { errorhandling, verifyWorld } from "../../function";
+import { errorhandling, verifyWorld, verifyUser} from "../../function";
 import Object from "../../../../../model/Object";
 import Relationship from "../../../../../model/Relationship";
 
-export async function GET(req: NextRequest, {params} : { params : {id : string}}){
+export async function GET(req: NextRequest, { params }: { params: Promise<{ id: string }> }){
     try {
         const userID = await verifyUser();
         if (!userID) {
@@ -20,7 +19,7 @@ export async function GET(req: NextRequest, {params} : { params : {id : string}}
     }
 }
 
-export async function DELETE(req: NextRequest, { params }: { params: { id: string } }){
+export async function DELETE(req: NextRequest, { params }: { params: Promise<{ id: string }> }){
     try {
         const userID = await verifyUser();
         if (!userID) {
@@ -50,7 +49,7 @@ export async function DELETE(req: NextRequest, { params }: { params: { id: strin
 }
 
 
-export async function PUT(req: NextRequest, { params }: { params: { id: string } }){
+export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: string }> }){
     try {
         const userID = await verifyUser();
         if (!userID) {
@@ -59,7 +58,7 @@ export async function PUT(req: NextRequest, { params }: { params: { id: string }
         const data = await req.json();
         const { id } = await params;
 
-        const world = await verifyWorld(id, userID); 
+        await verifyWorld(id, userID); 
 
         const editedWorld = await World.findByIdAndUpdate(id,
             {worldName : data.worldName,
