@@ -309,7 +309,7 @@ function FlowContent({
             >
               <ArrowLeft />
             </Button>
-            <WorldSettingDialog worldData={worldData!} />
+            {worldData && <WorldSettingDialog worldData={worldData} />}
             <ObjectCreationDialog createFunction={addNode} />
             {hasChange > 1 && (
               <Button
@@ -380,7 +380,7 @@ export default function Page() {
       const worldObjects = NodesAndEdges.data.worldObjects;
       const objectArray: NodeObject[] = worldObjects.map(
         (object: NodeObject) => ({
-          id: object._id,
+          _id: object._id,
           objectName: object.objectName,
           objectDescription: object.objectDescription,
           objectPicture: object.objectPicture,

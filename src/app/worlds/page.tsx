@@ -27,7 +27,7 @@ export default function Worlds() {
       }
       const worldData = await resWorld.json();
       const worldArray: World[] = worldData.data.map((world: World) => ({
-        id: world._id,
+        _id: world._id,
         worldName: world.worldName,
         worldDescription: world.worldDescription,
         owners: world.owners,
