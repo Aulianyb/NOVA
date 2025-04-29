@@ -1,14 +1,15 @@
 export type World = {
-    id : string;
-    worldName : string; 
-    worldDescription : string;
-    owners : string[];
-    objects : string[];
-    changes : string[];
+    _id : string,
+    worldName : string, 
+    worldDescription : string,
+    owners : string[],
+    objects : string[],
+    changes : string[],
+    relationships : string[]
 }
 
 export type NodeObject = {
-    id : string,
+    _id : string,
     objectName : string,
     objectPicture : string,
     objectDescription : string,
@@ -20,12 +21,23 @@ export type NodeObject = {
 }
 
 export type Relationship = {
-    id : string,
+    _id : string,
     source : string,
     target : string,
     tags : string[],
     type : string
     relationshipDescription : string
+}
+
+export type Position = {
+    x : number,
+    y : number
+}
+
+export type NodeJSON = {
+    id : string,
+    data : NodeData,
+    position : Position
 }
 
 export type NodeData = {
@@ -36,6 +48,13 @@ export type NodeData = {
     tags : string[],
     relationship : string[]
 };
+
+export type EdgeJSON = {
+    id : string,
+    source : string,
+    target : string,
+    data : RelationshipData
+}
 
 export type RelationshipData = {
     relationshipDescription : string; 

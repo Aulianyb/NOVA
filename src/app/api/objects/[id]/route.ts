@@ -1,10 +1,13 @@
 import { NextRequest, NextResponse } from "next/server";
-import { verifyUser } from "../../auth/session";
-import { errorhandling, verifyObject} from "../../function";
+import { errorhandling, verifyObject, verifyUser} from "../../function";
 import World from "../../../../../model/World";
 import Object from "../../../../../model/Object"
 
-export async function DELETE(req: NextRequest, {params} : {params : {id:string}}){
+
+export async function DELETE(
+req: NextRequest, 
+{ params }: { params: Promise<{ id: string }> }
+){
     try {
         const userID = await verifyUser();
         if (!userID) {
@@ -20,7 +23,10 @@ export async function DELETE(req: NextRequest, {params} : {params : {id:string}}
     }
 }
 
-export async function PUT(req: NextRequest, {params} : {params : {id:string}}){
+export async function PUT(
+req: NextRequest, 
+{ params }: { params: Promise<{ id: string }> })
+{
     try {
         const userID = await verifyUser();
         if (!userID) {

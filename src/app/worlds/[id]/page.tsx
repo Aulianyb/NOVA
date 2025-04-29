@@ -23,8 +23,8 @@ import {
   Edge,
   Node,
   NodeChange,
-  EdgeChange,
   ReactFlowInstance,
+  OnConnect,
 } from "@xyflow/react";
 import CustomNode from "@/components/CustomNode";
 import { Button } from "@/components/ui/button";
@@ -49,6 +49,14 @@ const nodeTypes = {
 
 const initialEdges: Edge[] = [];
 const initialNodes: Node[] = [];
+
+function generateObjectId(): string {
+  const timestamp = Math.floor(new Date().getTime() / 1000).toString(16);
+  const random = "xxxxxxxxxxxxxxxx".replace(/[x]/g, () =>
+    ((Math.random() * 16) | 0).toString(16)
+  );
+  return timestamp + random;
+}
 
 function FlowContent({
   worldData,
@@ -78,8 +86,8 @@ function FlowContent({
   const router = useRouter();
   const { toast } = useToast();
 
-  const notifyChanges = () => {
-    const toastId = toast({
+  const notifyChanges = useCallback(() => {
+    toast({
       title: "Your changes are not saved.",
       description: (
         <div className="flex gap-1">
@@ -90,22 +98,32 @@ function FlowContent({
       ),
       variant: "destructive",
     });
-  };
+  }, [toast]);
+
+  const handleChanges = useCallback(() => {
+    if (hasChange < 2) {
+      setHasChanged(hasChange + 1);
+    }
+    if (hasChange > 1 && hasChange < 3) {
+      notifyChanges();
+      setHasChanged(hasChange + 1);
+    }
+  }, [hasChange, notifyChanges]);
 
   const notifySaved = () => {
-    const toastId = toast({
+    toast({
       title: "Changes are saved!",
       description: "You can continue editing now :D",
       variant: "success",
     });
   };
 
-  const onConnect = useCallback(
-    (params: any) => {
+  const onConnect: OnConnect = useCallback(
+    (connection) => {
       handleChanges();
       const id = generateObjectId();
-      const newEdge = {
-        ...params,
+      const newEdge: Edge = {
+        ...connection,
         id: id,
         data: {
           relationshipDescription: "Describe their relationship!",
@@ -114,13 +132,13 @@ function FlowContent({
       };
       setEdges((eds) => addEdge(newEdge, eds));
     },
-    [setEdges, hasChange]
+    [setEdges, handleChanges]
   );
 
-  function fetchData() {
+  const fetchData = useCallback(() => {
     if (objectData) {
       const currentNodes = objectData.map((object: NodeObject) => ({
-        id: object.id,
+        id: object._id,
         position: { x: object.positionX, y: object.positionY },
         data: {
           objectName: object.objectName,
@@ -134,13 +152,13 @@ function FlowContent({
       }));
       setNodes(currentNodes);
       const objectMap = Object.fromEntries(
-        objectData.map((obj) => [obj.id, obj])
+        objectData.map((obj) => [obj._id, obj])
       );
       setObjectMap(objectMap);
     }
     if (relationshipData) {
       const currentEdges = relationshipData.map((edge: Relationship) => ({
-        id: edge.id,
+        id: edge._id,
         source: edge.source,
         target: edge.target,
         data: {
@@ -150,7 +168,7 @@ function FlowContent({
       }));
       setEdges(currentEdges);
     }
-  }
+  }, [objectData, relationshipData, setEdges, setNodes]);
 
   async function handleSave() {
     try {
@@ -181,7 +199,7 @@ function FlowContent({
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          worldID: worldData.id,
+          worldID: worldData._id,
           nodes: nodeArray,
           edges: edgeArray,
         }),
@@ -199,16 +217,6 @@ function FlowContent({
     }
   }
 
-  function handleChanges() {
-    if (hasChange < 2) {
-      setHasChanged(hasChange + 1);
-    }
-    if (hasChange > 1 && hasChange < 3) {
-      notifyChanges();
-      setHasChanged(hasChange + 1);
-    }
-  }
-
   const handleNodesChange = useCallback(
     (changes: NodeChange[]) => {
       if (changes[0].type == "position" || changes[0].type == "dimensions") {
@@ -216,27 +224,16 @@ function FlowContent({
       }
       onNodesChange(changes);
     },
-    [hasChange, onNodesChange]
+    [onNodesChange, handleChanges]
   );
 
-  const handleEdgesDelete = useCallback(
-    (deletedEdges: Edge[]) => {
-      handleChanges();
-    },
-    [hasChange]
-  );
+  const handleEdgesDelete = useCallback(() => {
+    handleChanges();
+  }, [handleChanges]);
 
   useEffect(() => {
     fetchData();
-  }, []);
-
-  function generateObjectId(): string {
-    const timestamp = Math.floor(new Date().getTime() / 1000).toString(16);
-    const random = "xxxxxxxxxxxxxxxx".replace(/[x]/g, () =>
-      ((Math.random() * 16) | 0).toString(16)
-    );
-    return timestamp + random;
-  }
+  }, [fetchData]);
 
   const addNode = useCallback(
     ({
@@ -259,7 +256,7 @@ function FlowContent({
         data: {
           objectName: objectName,
           objectDescription: objectDescription,
-          objectPicture: "/NOVA-placeholder.png",
+          objectPicture: objectPicture,
           images: [],
           tags: [],
           relationships: [],
@@ -267,7 +264,7 @@ function FlowContent({
       };
       setNodes((nds) => nds.concat(newNode));
     },
-    []
+    [setNodes, flow]
   );
 
   const onNodeClick = (event: React.MouseEvent, node: Node) => {
@@ -312,7 +309,7 @@ function FlowContent({
             >
               <ArrowLeft />
             </Button>
-            <WorldSettingDialog worldData={worldData!} />
+            {worldData && <WorldSettingDialog worldData={worldData} />}
             <ObjectCreationDialog createFunction={addNode} />
             {hasChange > 1 && (
               <Button
@@ -344,7 +341,6 @@ function FlowContent({
 }
 
 export default function Page() {
-  const [session, setSession] = useState<{ username: string } | null>(null);
   const [loading, setLoading] = useState(true);
   const [world, setWorld] = useState<World | null>(null);
   const [objects, setObjects] = useState<NodeObject[] | null>(null);
@@ -353,55 +349,54 @@ export default function Page() {
   );
   // const flow = useReactFlow();
   const params = useParams();
-  async function fetchSession() {
+  const fetchSession = useCallback(async () => {
     try {
       const res = await fetch("/api/auth/self");
       if (!res.ok) {
         throw new Error("Failed to get session");
       }
-      const sessionData = await res.json();
-      const session = sessionData.session;
-      setSession(session);
-
       const world = await fetch(`/api/worlds/${params.id}`);
       if (!world.ok) {
         throw new Error("Failed to get world");
       }
       const worldData = await world.json();
       const currentWorld: World = {
-        id: worldData.data._id,
+        _id: worldData.data._id,
         worldName: worldData.data.worldName,
         worldDescription: worldData.data.worldDescription,
         owners: worldData.data.owners,
         objects: worldData.data.object,
         changes: worldData.data.changes,
+        relationships: worldData.data.relationships,
       };
       setWorld(currentWorld);
       const resNodesEdges = await fetch(
-        `/api/objects/?worldID=${currentWorld.id}`
+        `/api/objects/?worldID=${currentWorld._id}`
       );
       if (!resNodesEdges.ok) {
         throw new Error("Failed to get objects");
       }
       const NodesAndEdges = await resNodesEdges.json();
       const worldObjects = NodesAndEdges.data.worldObjects;
-      const objectArray: NodeObject[] = worldObjects.map((object: any) => ({
-        id: object._id,
-        objectName: object.objectName,
-        objectDescription: object.objectDescription,
-        objectPicture: object.objectPicture,
-        images: object.images,
-        relationships: object.relationships,
-        tags: object.tags,
-        positionX: object.positionX,
-        positionY: object.positionY,
-      }));
+      const objectArray: NodeObject[] = worldObjects.map(
+        (object: NodeObject) => ({
+          _id: object._id,
+          objectName: object.objectName,
+          objectDescription: object.objectDescription,
+          objectPicture: object.objectPicture,
+          images: object.images,
+          relationships: object.relationships,
+          tags: object.tags,
+          positionX: object.positionX,
+          positionY: object.positionY,
+        })
+      );
       setObjects(objectArray);
 
       const worldRelationships = NodesAndEdges.data.worldRelationships;
       const relationArray: Relationship[] = worldRelationships.map(
-        (relation: any) => ({
-          id: relation._id,
+        (relation: Relationship) => ({
+          _id: relation._id,
           source: relation.source,
           target: relation.target,
           tags: relation.tags,
@@ -416,11 +411,11 @@ export default function Page() {
     } finally {
       setLoading(false);
     }
-  }
+  }, [setObjects, setRelationships, setWorld, params.id]);
 
   useEffect(() => {
     fetchSession();
-  }, []);
+  }, [fetchSession]);
 
   if (loading) {
     return <Loading />;

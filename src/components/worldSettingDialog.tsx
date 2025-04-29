@@ -34,7 +34,11 @@ const formSchema = z.object({
     .max(240, "Description must be under 240 characters long"),
 });
 
-export default function WorldSettingDialog({ worldData }: { worldData: World }) {
+export default function WorldSettingDialog({
+  worldData,
+}: {
+  worldData: World;
+}) {
   const router = useRouter();
 
   const form = useForm<z.infer<typeof formSchema>>({
@@ -47,7 +51,7 @@ export default function WorldSettingDialog({ worldData }: { worldData: World }) 
 
   async function onEdit(values: z.infer<typeof formSchema>) {
     try {
-      const res = await fetch(`/api/worlds/${worldData.id}`, {
+      const res = await fetch(`/api/worlds/${worldData._id}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
@@ -59,13 +63,13 @@ export default function WorldSettingDialog({ worldData }: { worldData: World }) 
       }
       window.location.reload();
     } catch (error) {
-      
+      console.log(error);
     }
   }
 
   async function onDelete() {
     try {
-      const res = await fetch(`/api/worlds/${worldData.id}`, {
+      const res = await fetch(`/api/worlds/${worldData._id}`, {
         method: "DELETE",
         headers: {
           "Content-Type": "application/json",

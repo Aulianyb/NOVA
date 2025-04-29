@@ -1,10 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
-import { verifyUser } from "../../auth/session";
 import Relationship from "../../../../../model/Relationship";
 import { errorhandling } from "../../function";
-import { verifyRelationship } from "../../function";
+import { verifyRelationship, verifyUser } from "../../function";
 
-export async function PUT(req: NextRequest, {params} : {params : {id:string}}){
+export async function PUT(req: NextRequest, 
+    { params }: { params: Promise<{ id: string }> }){
     try {
         const userID = await verifyUser();
         if (!userID) {

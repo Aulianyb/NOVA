@@ -1,9 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
-import { verifyUser } from "../auth/session";
 import Object from "../../../../model/Object";
 import World from "../../../../model/World"; 
-import { errorhandling, verifyWorld } from "../function";
+import { errorhandling, verifyWorld, verifyUser} from "../function";
 import Relationship from "../../../../model/Relationship";
+import mongoose from "mongoose";
+import { NodeJSON, EdgeJSON } from "../../../../types/types";
 
 export async function GET(req:NextRequest){
     try {
@@ -43,14 +44,15 @@ export async function POST(req:NextRequest){
 
         // Establishing variables
         const data = await req.json();
+        console.log(data);
         const worldID = data.worldID;
         const world = await verifyWorld(worldID, userID);
         const nodes = data.nodes;
         const edges = data.edges;
-        const oldNodes = world.objects.map((objId: any) => objId.toString());
-        const oldEdges = world.relationships.map((objId: any) => objId.toString());
-        const newNodes = nodes.map((node:any) => node.id.toString());
-        const newEdges = edges.map((edge:any) => edge.id.toString());
+        const oldNodes = world.objects.map((objId:mongoose.Types.ObjectId) => objId.toString());
+        const oldEdges = world.relationships.map((objId:mongoose.Types.ObjectId) => objId.toString());
+        const newNodes = nodes.map((node:NodeJSON) => node.id.toString());
+        const newEdges = edges.map((edge:EdgeJSON) => edge.id.toString());
         const deletedNodes = oldNodes.filter((id: string) => !newNodes.includes(id));
         const deletedEdges = oldEdges.filter((id:string) => !newEdges.includes(id));
 

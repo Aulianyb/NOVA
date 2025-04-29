@@ -26,12 +26,12 @@ export default function Worlds() {
         throw new Error("Failed to get world data");
       }
       const worldData = await resWorld.json();
-      const worldArray: World[] = worldData.data.map((world: any) => ({
-        id: world._id,
+      const worldArray: World[] = worldData.data.map((world: World) => ({
+        _id: world._id,
         worldName: world.worldName,
         worldDescription: world.worldDescription,
         owners: world.owners,
-        objects: world.object,
+        objects: world.objects,
         relationships: world.relationships,
         changes: world.changes,
       }));
@@ -49,14 +49,12 @@ export default function Worlds() {
   }, []);
 
   if (loading) {
-    return (
-      <Loading />
-    );
+    return <Loading />;
   }
 
   return (
     <main className="bg-[var(--white)] h-full">
-      <Navbar username={session!.username} worldRefresh={fetchSession}/>
+      <Navbar username={session!.username} worldRefresh={fetchSession} />
       <div className="flex flex-col space-y-10 justify-start items-center mx-auto h-full max-w-screen-xl py-10 px-10">
         <h1
           className={`${quantico.className} font-bold text-[--primary] text-6xl`}
@@ -67,10 +65,10 @@ export default function Worlds() {
           {worlds.toReversed().map((world) => {
             return (
               <WorldElement
-                key={world.id}
+                key={world._id}
                 worldName={world.worldName}
                 worldDescription={world.worldDescription}
-                worldID={world.id}
+                worldID={world._id}
               />
             );
           })}

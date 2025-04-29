@@ -1,8 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import World from "../../../../model/World"; 
 import User from "../../../../model/User"; 
-import { verifyUser } from "../auth/session";
-import { errorhandling } from "../function";
+import { errorhandling, verifyUser} from "../function";
 
 export async function GET(){
     try {

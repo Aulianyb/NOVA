@@ -18,7 +18,6 @@ import {
   DialogTitle,
   DialogTrigger,
   DialogFooter,
-  DialogClose,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -117,9 +116,9 @@ export function CreateWorldDialog({
               )}
             />
             <DialogFooter>
-                <Button type="submit" className="rounded-lg mt-4">
-                  Create
-                </Button>
+              <Button type="submit" className="rounded-lg mt-4">
+                Create
+              </Button>
             </DialogFooter>
           </form>
         </Form>

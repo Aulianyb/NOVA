@@ -1,8 +1,6 @@
 'use server'; 
 
 import { cookies } from "next/headers";
-import { connectToMongoDB } from "@/app/lib/connect";
-import jwt from "jsonwebtoken";
 
 export type Session = {
     id : string,
@@ -34,15 +32,3 @@ export const removeSession = async () => {
     cookieStore.delete('session');
 };
 
-export async function verifyUser() {
-    await connectToMongoDB();
-    const session = await getSession();
-    if (!session){
-        return null;
-    } else{
-        const JWT_SECRET = process.env.JWT_SECRET;
-        const decoded = jwt.verify(session.token, JWT_SECRET!) as jwt.JwtPayload & { id: string };
-        const userID = decoded.id
-        return userID;
-    }
-}

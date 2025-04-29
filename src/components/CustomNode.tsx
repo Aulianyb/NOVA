@@ -1,5 +1,5 @@
 import React from "react";
-import { Position, Node, NodeProps, Handle } from "@xyflow/react";
+import { Position, Node, NodeProps } from "@xyflow/react";
 import Image from "next/image";
 import { BaseHandle } from "./base-handle";
 type CustomNode = Node<{ 

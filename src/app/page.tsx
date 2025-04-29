@@ -13,7 +13,11 @@ export default function LandingPage() {
       <div className="relative flex flex-wrap justify-center gap-8 min-h-[80vh] pt-24 px-20">
         <main className="flex flex-col row-start-2 ml-12">
           <div className="flex-shrink">
-            <Button className="mb-12" variant="outline" onClick={() => router.push("/patchnotes")}>
+            <Button
+              className="mb-12"
+              variant="outline"
+              onClick={() => router.push("/patchnotes")}
+            >
               PATCH NOTES
             </Button>
             <h1
@@ -50,13 +54,19 @@ export default function LandingPage() {
       </div>
       <div className="bg-[var(--white)] flex flex-col items-center gap-12 p-20">
         <div className="flex items-center gap-8">
-          <Star className="w-12 h-12 text-[var(--primary)]" style={{ fill: "var(--primary)" }}/>
+          <Star
+            className="w-12 h-12 text-[var(--primary)]"
+            style={{ fill: "var(--primary)" }}
+          />
           <h1
             className={`${quantico.className} text-center text-5xl text-[var(--primary)]`}
           >
             Things you can do with NOVA
           </h1>
-          <Star className="w-12 h-12 text-[var(--primary)]" style={{ fill: "var(--primary)" }}/>
+          <Star
+            className="w-12 h-12 text-[var(--primary)]"
+            style={{ fill: "var(--primary)" }}
+          />
         </div>
         <div className="flex gap-2">
           <div className="bg-[var(--primary)] text-[var(--white)] text-center p-8 rounded-xl max-w-[280px]">
@@ -77,9 +87,9 @@ export default function LandingPage() {
         </div>
       </div>
       <footer className="row-start-3 flex gap-6 flex-wrap items-center justify-center p-4">
-          <h3 className="text-[var(--white)]">
-            Final project by @TheVoidMask - v0.1.2
-          </h3>
+        <h3 className="text-[var(--white)]">
+          Final project by @TheVoidMask - v0.2.0
+        </h3>
       </footer>
     </main>
   );
