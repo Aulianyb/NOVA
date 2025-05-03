@@ -2,6 +2,7 @@ export type World = {
     _id : string,
     worldName : string, 
     worldDescription : string,
+    worldCover : string | undefined,
     owners : string[],
     objects : string[],
     changes : string[],

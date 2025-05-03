@@ -4,6 +4,7 @@ import User from "../../../../../model/User";
 import { errorhandling, verifyWorld, verifyUser} from "../../function";
 import Object from "../../../../../model/Object";
 import Relationship from "../../../../../model/Relationship";
+import cloudinary from "@/app/lib/connect";
 
 export async function GET(req: NextRequest, { params }: { params: Promise<{ id: string }> }){
     try {
@@ -37,6 +38,10 @@ export async function DELETE(req: NextRequest, { params }: { params: Promise<{ i
         // Don't forget to cascade images that is connected to said object.
         // Delete every images
 
+        if (world.worldCover && world.worldCover != "worldCover/gn9gyt4gxzebqb6icrwj"){
+            await cloudinary.uploader.destroy(world.worldCover);
+        }
+        
         await Object.deleteMany({_id : {$in : world.objects}});
         await Relationship.deleteMany({_id : {$in : world.relationships}});
 

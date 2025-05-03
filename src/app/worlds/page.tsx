@@ -34,6 +34,7 @@ export default function Worlds() {
         objects: world.objects,
         relationships: world.relationships,
         changes: world.changes,
+        worldCover: world.worldCover,
       }));
       setWorlds(worldArray);
       console.log(worldArray);
@@ -69,6 +70,7 @@ export default function Worlds() {
                 worldName={world.worldName}
                 worldDescription={world.worldDescription}
                 worldID={world._id}
+                worldCover={world.worldCover}
               />
             );
           })}

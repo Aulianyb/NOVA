@@ -24,6 +24,14 @@ import { Button } from "@/components/ui/button";
 import { SquarePlus } from "lucide-react";
 import { useState } from "react";
 
+const MAX_FILE_SIZE = 5000000;
+const ACCEPTED_IMAGE_TYPES = [
+  "image/jpeg",
+  "image/jpg",
+  "image/png",
+  "image/webp",
+];
+
 const formSchema = z.object({
   worldName: z
     .string()
@@ -32,6 +40,18 @@ const formSchema = z.object({
   worldDescription: z
     .string()
     .max(240, "Description must be under 240 characters long"),
+  worldCover: z
+    .any()
+    .transform((val) => (val instanceof FileList ? val[0] : val))
+    .optional()
+    .refine(
+      (file) => file === undefined || file?.size <= MAX_FILE_SIZE,
+      `Max image size is 5MB.`
+    )
+    .refine(
+      (file) => file === undefined || ACCEPTED_IMAGE_TYPES.includes(file?.type),
+      "Only .jpg, .jpeg, .png and .webp formats are supported."
+    ),
 });
 
 export function CreateWorldDialog({
@@ -45,17 +65,23 @@ export function CreateWorldDialog({
     defaultValues: {
       worldName: "",
       worldDescription: "",
+      worldCover: undefined,
     },
   });
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     try {
+      console.log("WHAT");
+      console.log("worldCover raw:", values.worldCover);
+
+      const formData = new FormData();
+      formData.append("worldName", values.worldName);
+      formData.append("worldDescription", values.worldDescription);
+      formData.append("worldCover", values.worldCover);
+
       const res = await fetch("/api/worlds", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(values),
+        body: formData,
       });
       if (!res.ok) {
         throw new Error("World creation failed");
@@ -110,6 +136,24 @@ export function CreateWorldDialog({
                   </Label>
                   <FormControl>
                     <Textarea {...field} className="resize-none h-[100px]" />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="worldCover"
+              render={() => (
+                <FormItem>
+                  <Label htmlFor="picture">Profile Picture</Label>
+                  <FormControl>
+                    <Input
+                      id="picture"
+                      type="file"
+                      className="bg-white border border-slate-200"
+                      {...form.register("worldCover")}
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
