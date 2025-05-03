@@ -4,6 +4,7 @@ import {
   FormField,
   FormItem,
   FormMessage,
+  FormDescription,
 } from "@/components/ui/form";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
@@ -155,6 +156,11 @@ export function CreateWorldDialog({
                       {...form.register("worldCover")}
                     />
                   </FormControl>
+                  <FormDescription>
+                    If you left this blank, it'll give you a default world
+                    cover!
+                  </FormDescription>
+
                   <FormMessage />
                 </FormItem>
               )}
