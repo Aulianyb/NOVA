@@ -16,7 +16,6 @@ export default function ObjectDetailSheet({
   nodeData: Node<NodeData> | null;
 }) {
   return (
-    <div>
       <div
         className={`
           fixed flex flex-col gap-4 z-50 bg-white p-6 inset-y-0 right-0 h-full shadow-lg border-l-2 w-2/4
@@ -71,6 +70,5 @@ export default function ObjectDetailSheet({
           </div>
         </div>
       </div>
-    </div>
   );
 }
