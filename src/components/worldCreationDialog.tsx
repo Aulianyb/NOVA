@@ -72,9 +72,6 @@ export function CreateWorldDialog({
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     try {
-      console.log("WHAT");
-      console.log("worldCover raw:", values.worldCover);
-
       const formData = new FormData();
       formData.append("worldName", values.worldName);
       formData.append("worldDescription", values.worldDescription);

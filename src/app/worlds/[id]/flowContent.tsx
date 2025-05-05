@@ -165,6 +165,14 @@ export function FlowContent({
     }
   }, [objectData, relationshipData, setEdges, setNodes]);
 
+  function getCenterScreen() {
+    const position = flow.screenToFlowPosition({
+      x: window.innerWidth / 2,
+      y: window.innerHeight / 2,
+    });
+    return position;
+  }
+
   async function handleSave() {
     try {
       if (!rfInstance) {
@@ -232,32 +240,37 @@ export function FlowContent({
 
   const addNode = useCallback(
     ({
+      objectID,
       objectName,
       objectDescription,
       objectPicture,
     }: {
+      objectID: string;
       objectName: string;
       objectDescription: string;
-      objectPicture: string | undefined;
+      objectPicture: string;
     }) => {
-      const id = generateObjectId();
-      const newNode = {
-        id: id,
-        position: flow.screenToFlowPosition({
-          x: window.innerWidth / 2,
-          y: window.innerHeight / 2,
-        }),
-        type: "customNode",
-        data: {
-          objectName: objectName,
-          objectDescription: objectDescription,
-          objectPicture: objectPicture,
-          images: [],
-          tags: [],
-          relationships: [],
-        },
-      };
-      setNodes((nds) => nds.concat(newNode));
+      try {
+        const newNode = {
+          id: objectID,
+          position: flow.screenToFlowPosition({
+            x: window.innerWidth / 2,
+            y: window.innerHeight / 2,
+          }),
+          type: "customNode",
+          data: {
+            objectName: objectName,
+            objectDescription: objectDescription,
+            objectPicture: objectPicture,
+            images: [],
+            tags: [],
+            relationships: [],
+          },
+        };
+        setNodes((nds) => nds.concat(newNode));
+      } catch (error) {
+        console.log(error);
+      }
     },
     [setNodes, flow]
   );
@@ -308,7 +321,11 @@ export function FlowContent({
               <History />
             </Button>
             {worldData && <WorldSettingDialog worldData={worldData} />}
-            <ObjectCreationDialog createFunction={addNode} />
+            <ObjectCreationDialog
+              createFunction={addNode}
+              worldID={worldData!._id}
+              position={getCenterScreen()}
+            />
             {hasChange > 1 && (
               <Button
                 size="icon"

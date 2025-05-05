@@ -46,6 +46,7 @@ export async function POST(req:NextRequest){
         }
         await verifyWorld(worldID, userID);
 
+        console.log(objectPictureRaw);
         if (objectPictureRaw instanceof File &&
             objectPictureRaw .size > 0
         ){

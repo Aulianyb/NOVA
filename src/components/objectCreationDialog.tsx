@@ -24,6 +24,15 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { SquarePlus } from "lucide-react";
 import { useState } from "react";
+import { XYPosition } from "@xyflow/react";
+
+const MAX_FILE_SIZE = 5000000;
+const ACCEPTED_IMAGE_TYPES = [
+  "image/jpeg",
+  "image/jpg",
+  "image/png",
+  "image/webp",
+];
 
 const formSchema = z.object({
   objectName: z
@@ -33,18 +42,33 @@ const formSchema = z.object({
   objectDescription: z
     .string()
     .max(240, "Description must be under 240 characters long"),
-  // Temporary, of course
-  objectPicture: z.string().optional(),
+  objectPicture: z
+    .any()
+    .transform((val) => (val instanceof FileList ? val[0] : val))
+    .optional()
+    .refine(
+      (file) => file === undefined || file?.size <= MAX_FILE_SIZE,
+      `Max image size is 5MB.`
+    )
+    .refine(
+      (file) => file === undefined || ACCEPTED_IMAGE_TYPES.includes(file?.type),
+      "Only .jpg, .jpeg, .png and .webp formats are supported."
+    ),
 });
 
 export default function ObjectCreationDialog({
   createFunction,
+  worldID,
+  position,
 }: {
   createFunction: (input: {
+    objectID: string;
     objectName: string;
     objectDescription: string;
-    objectPicture: string | undefined;
+    objectPicture: string;
   }) => void;
+  worldID: string;
+  position: XYPosition;
 }) {
   const [isOpen, setIsOpen] = useState(false);
 
@@ -53,22 +77,40 @@ export default function ObjectCreationDialog({
     defaultValues: {
       objectName: "",
       objectDescription: "",
-      objectPicture: "/NOVA-placeholder.png",
+      objectPicture: undefined,
     },
   });
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
-    try{
-      console.log(values.objectName);
+    try {
+      const formData = new FormData();
+      console.log(values.objectPicture);
+      formData.append("objectName", values.objectName);
+      formData.append("objectDescription", values.objectDescription);
+      formData.append("objectPicture", values.objectPicture);
+      formData.append("positionX", String(position.x));
+      formData.append("positionY", String(position.y));
+      formData.append("worldID", worldID);
+
+      const res = await fetch("/api/objects", {
+        method: "POST",
+        body: formData,
+      });
+      if (!res.ok) {
+        throw new Error("Object creation failed");
+      }
+
+      const responseData = await res.json();
+      const newNode = responseData.data;
       createFunction({
-        objectName: values.objectName,
-        objectDescription: values.objectDescription,
-        objectPicture: values.objectPicture,
+        objectID: newNode._id,
+        objectName: newNode.objectName,
+        objectDescription: newNode.objectDescription,
+        objectPicture: newNode.objectPicture,
       });
       form.reset();
       setIsOpen(false);
-    }
-    catch(error){
+    } catch (error) {
       console.log(error);
     }
   }
@@ -76,7 +118,12 @@ export default function ObjectCreationDialog({
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
-        <Button size="icon" onClick={()=> {setIsOpen(true)}}>
+        <Button
+          size="icon"
+          onClick={() => {
+            setIsOpen(true);
+          }}
+        >
           <SquarePlus />
         </Button>
       </DialogTrigger>
@@ -97,14 +144,16 @@ export default function ObjectCreationDialog({
                   <Label htmlFor="picture">Profile Picture</Label>
                   <FormControl>
                     <Input
-                      disabled
                       id="picture"
                       type="file"
                       className="bg-white border border-slate-200"
+                      {...form.register("objectPicture")}
                     />
                   </FormControl>
                   <FormMessage />
-                  <FormDescription>This will be added later!</FormDescription>
+                  <FormDescription>
+                    Files can only be JPG and PNG
+                  </FormDescription>
                 </FormItem>
               )}
             />
@@ -139,9 +188,9 @@ export default function ObjectCreationDialog({
               )}
             />
             <DialogFooter>
-                <Button type="submit" className="rounded-lg mt-4">
-                  Create
-                </Button>
+              <Button type="submit" className="rounded-lg mt-4">
+                Create
+              </Button>
             </DialogFooter>
           </form>
         </Form>
