@@ -2,19 +2,29 @@ import { NextRequest, NextResponse } from "next/server";
 import { errorhandling, verifyObject, verifyUser} from "../../function";
 import World from "../../../../../model/World";
 import Object from "../../../../../model/Object"
-
+import cloudinary from "@/app/lib/connect";
 
 export async function DELETE(
 req: NextRequest, 
 { params }: { params: Promise<{ id: string }> }
 ){
     try {
+        // Note to self : after Image is added : 
+        // Don't forget to cascade images that is connected to said object.
+        // Delete every images
+
         const userID = await verifyUser();
         if (!userID) {
             throw new Error("No Session Found"); 
         }
         const { id } = await params;
         const object = await verifyObject(id, userID);
+
+        console.log(object.objectPicture);
+        if (object.objectPicture && object.objectPicture != "objectPicture/fuetkmzyox2su7tfkib3"){
+            await cloudinary.uploader.destroy(object.objectPicture);
+        }
+
         await World.findOneAndUpdate({_id : object.worldID}, { $pull: { objects: id } }); 
         const deletedObject = await Object.findByIdAndDelete({'_id' : id});
         return NextResponse.json({ data : deletedObject, message : "Object Deleted!"}, { status: 200 });

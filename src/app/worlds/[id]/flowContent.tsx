@@ -1,4 +1,3 @@
-import CustomNode from "@/components/CustomNode";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, Save, History } from "lucide-react";
 import { useRouter } from "next/navigation";
@@ -32,6 +31,7 @@ import {
 } from "@xyflow/react";
 import React, { useCallback, useState, useEffect } from "react";
 import ChangesSheet from "@/components/changesSheet";
+import CustomNode from "@/components/CustomNode";
 
 const connectionLineStyle = {
   stroke: "#b1b1b7",
@@ -188,7 +188,7 @@ export function FlowContent({
         data: edge.data,
       }));
 
-      const res = await fetch("/api/objects", {
+      const res = await fetch("/api/objects/layout", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
