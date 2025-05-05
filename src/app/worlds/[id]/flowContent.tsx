@@ -31,6 +31,7 @@ import {
   OnConnect,
 } from "@xyflow/react";
 import React, { useCallback, useState, useEffect } from "react";
+import ChangesSheet from "@/components/changesSheet";
 
 const connectionLineStyle = {
   stroke: "#b1b1b7",
@@ -65,6 +66,7 @@ export function FlowContent({
   const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
   const [isNodeClicked, setIsNodeClicked] = useState(false);
   const [isEdgeClicked, setIsEdgeClicked] = useState(false);
+  const [isSheetOpen, setIsSheetOpen] = useState(false);
   const [hasChange, setHasChanged] = useState(0);
   const [objectMap, setObjectMap] = useState<Record<string, NodeObject>>({});
   const [rfInstance, setRfInstance] = useState<ReactFlowInstance<
@@ -302,7 +304,7 @@ export function FlowContent({
             >
               <ArrowLeft />
             </Button>
-            <Button size="icon">
+            <Button size="icon" onClick={() => setIsSheetOpen(true)}>
               <History />
             </Button>
             {worldData && <WorldSettingDialog worldData={worldData} />}
@@ -317,6 +319,8 @@ export function FlowContent({
               </Button>
             )}
           </div>
+
+          <ChangesSheet isOpen={isSheetOpen} openFunction={setIsSheetOpen} />
           <ObjectDetailSheet
             isNodeClicked={isNodeClicked}
             openFunction={setIsNodeClicked}
