@@ -21,7 +21,7 @@ export function errorhandling(error : unknown){
     );
 }
 
-export async function verifyWorld(worldID : string, userID : string){
+export async function verifyWorld(worldID : string, userID : string){;
     if (!mongoose.Types.ObjectId.isValid(worldID)) {
         throw new Error("Invalid world ID format");
     }

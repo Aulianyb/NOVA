@@ -1,19 +1,21 @@
 import { CldImage } from "next-cloudinary";
-import { Hash } from "lucide-react";
-import { Volleyball, ChevronRight } from "lucide-react";
+import { Volleyball, ChevronRight, Hash } from "lucide-react";
 import { Button } from "./ui/button";
 import { Node } from "@xyflow/react";
 import { NodeData } from "../../types/types";
 import ObjectSettingDialog from "./objectSettingDialog";
+import DeleteAlert from "./deleteAlert";
 
 export default function ObjectDetailSheet({
   isNodeClicked,
   openFunction,
   nodeData,
+  deleteNodeFunction,
 }: {
   isNodeClicked: boolean;
   openFunction: React.Dispatch<React.SetStateAction<boolean>>;
   nodeData: Node<NodeData> | null;
+  deleteNodeFunction: (objectID: string) => void;
 }) {
   let usedPicture = "objectPicture/fuetkmzyox2su7tfkib3";
   if (nodeData) {
@@ -31,7 +33,7 @@ export default function ObjectDetailSheet({
           ${isNodeClicked ? "translate-x-0" : "translate-x-full"}
         `}
     >
-      <div>
+      <div className="flex gap-2">
         <Button
           variant="ghost"
           size="iconSm"
@@ -40,6 +42,13 @@ export default function ObjectDetailSheet({
           <ChevronRight />
         </Button>
         {nodeData && <ObjectSettingDialog nodeData={nodeData} />}
+        {nodeData && (
+          <DeleteAlert
+            objectID={nodeData.id}
+            deleteNodeFunction={deleteNodeFunction}
+            openFunction={openFunction}
+          />
+        )}
       </div>
 
       {nodeData && (

@@ -275,6 +275,14 @@ export function FlowContent({
     [setNodes, flow]
   );
 
+  const deleteNode = useCallback(
+    (objectID: string) => {
+      console.log("Im called!!");
+      setNodes((nds) => nds.filter((node) => node.id !== objectID));
+    },
+    [setNodes]
+  );
+
   const onNodeClick = (event: React.MouseEvent, node: Node) => {
     setSelectedNode(node as Node<NodeData>);
     setIsNodeClicked(true);
@@ -340,6 +348,7 @@ export function FlowContent({
             isNodeClicked={isNodeClicked}
             openFunction={setIsNodeClicked}
             nodeData={selectedNode}
+            deleteNodeFunction={deleteNode}
           />
           <RelationshipDetailSheet
             isEdgeClicked={isEdgeClicked}

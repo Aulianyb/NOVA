@@ -1,11 +1,11 @@
-import Image from "next/image";
 import { Hash } from "lucide-react";
-import { Volleyball, ChevronRight} from "lucide-react";
+import { Volleyball, ChevronRight } from "lucide-react";
 import { Button } from "./ui/button";
 import { NodeObject } from "../../types/types";
 import { Edge } from "@xyflow/react";
 import { RelationshipData } from "../../types/types";
 import RelationshipSettingDialog from "./relationshipSettingDialog";
+import { CldImage } from "next-cloudinary";
 
 export default function RelationshipDetailSheet({
   isEdgeClicked,
@@ -20,6 +20,20 @@ export default function RelationshipDetailSheet({
   targetNode: NodeObject | null;
   relationshipData: Edge<RelationshipData> | null;
 }) {
+  let usedSourcePicture = "objectPicture/fuetkmzyox2su7tfkib3";
+  if (sourceNode) {
+    const sourcePicture = sourceNode.objectPicture;
+    if (sourcePicture != "/NOVA-placeholder.png") {
+      usedSourcePicture = sourcePicture;
+    }
+  }
+  let usedTargetPicture = "objectPicture/fuetkmzyox2su7tfkib3";
+  if (targetNode) {
+    const targetPicture = targetNode.objectPicture;
+    if (targetPicture != "/NOVA-placeholder.png") {
+      usedTargetPicture = targetPicture;
+    }
+  }
   return (
     <div>
       <div
@@ -45,8 +59,8 @@ export default function RelationshipDetailSheet({
         {sourceNode && targetNode && relationshipData && (
           <div className="flex gap-4">
             <div className="text-center">
-              <Image
-                src={sourceNode.objectPicture}
+              <CldImage
+                src={usedSourcePicture}
                 alt="NOVA, the mascot, greeting you"
                 width="100"
                 height="100"
@@ -73,8 +87,8 @@ export default function RelationshipDetailSheet({
               </div>
             </div>
             <div className="text-center">
-              <Image
-                src={targetNode.objectPicture}
+              <CldImage
+                src={usedTargetPicture}
                 alt="NOVA, the mascot, greeting you"
                 width="100"
                 height="100"
