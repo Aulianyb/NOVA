@@ -5,6 +5,7 @@ import { errorhandling, verifyWorld, verifyUser} from "../../function";
 import Object from "../../../../../model/Object";
 import Relationship from "../../../../../model/Relationship";
 import cloudinary from "@/app/lib/connect";
+import { verifyObject } from "../../function";
 
 export async function GET(req: NextRequest, { params }: { params: Promise<{ id: string }> }){
     try {
@@ -41,7 +42,21 @@ export async function DELETE(req: NextRequest, { params }: { params: Promise<{ i
         if (world.worldCover && world.worldCover != "worldCover/gn9gyt4gxzebqb6icrwj"){
             await cloudinary.uploader.destroy(world.worldCover);
         }
-        
+
+        const deletablePublicIDs: string[] = [];
+        for (const objectID of world.objects){
+            const object = await verifyObject(objectID);
+            if (
+                object.objectPicture &&
+                object.objectPicture !== "objectPicture/fuetkmzyox2su7tfkib3"
+              ) {
+                deletablePublicIDs.push(object.objectPicture);
+              }
+        }
+
+        if (deletablePublicIDs.length > 0) {
+            await cloudinary.api.delete_resources(deletablePublicIDs);
+        }
         await Object.deleteMany({_id : {$in : world.objects}});
         await Relationship.deleteMany({_id : {$in : world.relationships}});
 

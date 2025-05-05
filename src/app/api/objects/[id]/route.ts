@@ -1,12 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
-import { errorhandling, verifyObject, verifyUser} from "../../function";
+import { errorhandling, verifyObject, verifyUser, verifyWorld} from "../../function";
 import World from "../../../../../model/World";
 import Object from "../../../../../model/Object"
 import cloudinary from "@/app/lib/connect";
 
 export async function DELETE(
 req: NextRequest, 
-{ params }: { params: Promise<{ id: string }> }
+{ params }: { params: Promise<{ objectID: string }> }
 ){
     try {
         // Note to self : after Image is added : 
@@ -17,16 +17,14 @@ req: NextRequest,
         if (!userID) {
             throw new Error("No Session Found"); 
         }
-        const { id } = await params;
-        const object = await verifyObject(id, userID);
-
-        console.log(object.objectPicture);
+        const { objectID } = await params;
+        const object = await verifyObject(objectID);
+        await verifyWorld(object.worldID, userID);
         if (object.objectPicture && object.objectPicture != "objectPicture/fuetkmzyox2su7tfkib3"){
             await cloudinary.uploader.destroy(object.objectPicture);
         }
-
-        await World.findOneAndUpdate({_id : object.worldID}, { $pull: { objects: id } }); 
-        const deletedObject = await Object.findByIdAndDelete({'_id' : id});
+        await World.findOneAndUpdate({_id : object.worldID}, { $pull: { objects:objectID } }); 
+        const deletedObject = await Object.findByIdAndDelete({'_id' : objectID});
         return NextResponse.json({ data : deletedObject, message : "Object Deleted!"}, { status: 200 });
     } catch(error){
         return errorhandling(error); 
@@ -44,7 +42,7 @@ req: NextRequest,
         }
         const data = await req.json();
         const { id } = await params;
-        await verifyObject(id, userID);
+        await verifyObject(id);
 
         const editedObject = await Object.findByIdAndUpdate(id,
              {

@@ -31,7 +31,7 @@ import {
 } from "@xyflow/react";
 import React, { useCallback, useState, useEffect } from "react";
 import ChangesSheet from "@/components/changesSheet";
-import CustomNode from "@/components/CustomNode";
+import CustomNode from "@/components/customNode";
 
 const connectionLineStyle = {
   stroke: "#b1b1b7",
@@ -276,13 +276,11 @@ export function FlowContent({
   );
 
   const onNodeClick = (event: React.MouseEvent, node: Node) => {
-    console.log("click node", node);
     setSelectedNode(node as Node<NodeData>);
     setIsNodeClicked(true);
   };
 
   const onEdgeClick = (event: React.MouseEvent, edge: Edge) => {
-    console.log("click edge", edge);
     if (objectData) {
       setSelectedEdge(edge as Edge<RelationshipData>);
       setSelectedSource(objectMap[edge.source]);

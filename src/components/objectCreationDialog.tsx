@@ -84,7 +84,6 @@ export default function ObjectCreationDialog({
   async function onSubmit(values: z.infer<typeof formSchema>) {
     try {
       const formData = new FormData();
-      console.log(values.objectPicture);
       formData.append("objectName", values.objectName);
       formData.append("objectDescription", values.objectDescription);
       formData.append("objectPicture", values.objectPicture);

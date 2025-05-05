@@ -52,7 +52,7 @@ export default function ObjectSettingDialog({
     defaultValues: {
       objectName: nodeData.data.objectName,
       objectDescription: nodeData.data.objectDescription,
-      objectPicture: "/NOVA-placeholder.png",
+      objectPicture: nodeData.data.objectPicture,
     },
   });
 
@@ -60,9 +60,14 @@ export default function ObjectSettingDialog({
     form.reset({
       objectName: nodeData.data.objectName,
       objectDescription: nodeData.data.objectDescription,
-      objectPicture: "/NOVA-placeholder.png",
+      objectPicture: nodeData.data.objectPicture,
     });
-  }, [form, nodeData.data.objectDescription, nodeData.data.objectName]);
+  }, [
+    form,
+    nodeData.data.objectDescription,
+    nodeData.data.objectName,
+    nodeData.data.objectPicture,
+  ]);
 
   useEffect(() => {
     resetForm();

@@ -35,7 +35,7 @@ export async function verifyWorld(worldID : string, userID : string){
     return world; 
 }
 
-export async function verifyObject(objectID : string, userID : string){
+export async function verifyObject(objectID : string){
     if (!mongoose.Types.ObjectId.isValid(objectID)) {
         throw new Error("Invalid object ID format");
     }
@@ -43,7 +43,6 @@ export async function verifyObject(objectID : string, userID : string){
     if (!object){
         throw new Error("Object not found");
     }
-    verifyWorld(object.worldID, userID);
     return object;
 }
 
