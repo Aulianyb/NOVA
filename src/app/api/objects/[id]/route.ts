@@ -4,6 +4,7 @@ import World from "../../../../../model/World";
 import Object from "../../../../../model/Object"
 import cloudinary from "@/app/lib/connect";
 import Relationship from "../../../../../model/Relationship";
+import User from "../../../../../model/User";
 
 export async function DELETE(
 req: NextRequest, 
@@ -19,7 +20,6 @@ req: NextRequest,
             throw new Error("No Session Found"); 
         }
         const { id } = await params;
-        console.log(id);
         const object = await verifyObject(id);
         await verifyWorld(object.worldID, userID);
         if (object.objectPicture && object.objectPicture != "objectPicture/fuetkmzyox2su7tfkib3"){
@@ -29,6 +29,14 @@ req: NextRequest,
         await Relationship.deleteMany({_id : {$in : deletedEdges}});
         await World.findOneAndUpdate({_id : object.worldID}, { $pull: { objects:id } }); 
         const deletedObject = await Object.findByIdAndDelete({'_id' : id});
+
+        const currentUser = await User.findById(userID);
+        const newChange = {
+            description : "Deleted " + deletedObject.objectName,
+            username : currentUser.username,
+        }
+        await World.updateOne({_id: object.worldID}, { $push: { changes : newChange} });
+
         return NextResponse.json({ data : deletedObject, message : "Object Deleted!"}, { status: 200 });
     } catch(error){
         return errorhandling(error); 

@@ -5,7 +5,7 @@ import Relationship from "../../../../model/Relationship";
 import cloudinary from "@/app/lib/connect";
 import { UploadApiResponse } from "cloudinary";
 import World from "../../../../model/World";
-
+import User from "../../../../model/User";
 
 export async function GET(req:NextRequest){
     try {
@@ -75,8 +75,17 @@ export async function POST(req:NextRequest){
             worldID : worldID,
         })
 
+
         const object = await newObject.save();
+
         await World.updateOne({_id: worldID}, { $push: { objects : object.id } });
+       
+        const currentUser = await User.findById(userID);
+        const newChange = {
+            description : "Added " + formData.get("objectName"),
+            username : currentUser.username,
+        }
+        await World.updateOne({_id: worldID}, { $push: { changes : newChange} });
         return NextResponse.json({ data : object, message : "Node Added!"}, { status: 200 });
     } catch(error){
         return errorhandling(error); 

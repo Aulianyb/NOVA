@@ -342,8 +342,14 @@ export function FlowContent({
               </Button>
             )}
           </div>
+          {worldData && (
+            <ChangesSheet
+              isOpen={isSheetOpen}
+              openFunction={setIsSheetOpen}
+              worldID={worldData._id}
+            />
+          )}
 
-          <ChangesSheet isOpen={isSheetOpen} openFunction={setIsSheetOpen} />
           <ObjectDetailSheet
             isNodeClicked={isNodeClicked}
             openFunction={setIsNodeClicked}

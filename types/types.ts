@@ -1,3 +1,17 @@
+export type ChangeAPI = {
+    _id : string,
+    description : string,
+    username : string,
+    createdAt : string
+}
+
+export type Change = {
+    _id : string,
+    description : string,
+    username : string,
+    time : string
+}
+
 export type World = {
     _id : string,
     worldName : string, 
@@ -5,7 +19,7 @@ export type World = {
     worldCover : string | undefined,
     owners : string[],
     objects : string[],
-    changes : string[],
+    changes : Change[],
     relationships : string[]
 }
 
