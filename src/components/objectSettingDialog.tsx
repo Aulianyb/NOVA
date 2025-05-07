@@ -42,8 +42,10 @@ const formSchema = z.object({
 
 export default function ObjectSettingDialog({
   nodeData,
+  graphRefresh,
 }: {
   nodeData: Node<NodeData>;
+  graphRefresh: () => void;
 }) {
   const [isOpen, setIsOpen] = useState(false);
 
@@ -91,10 +93,12 @@ export default function ObjectSettingDialog({
       if (!res.ok) {
         throw new Error("Object edit failed");
       }
-      form.reset();
-      window.location.reload();
+      graphRefresh();
+      setIsOpen(false);
     } catch (error) {
       console.error(error);
+    } finally {
+      form.reset();
     }
   }
 

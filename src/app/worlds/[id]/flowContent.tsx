@@ -7,8 +7,8 @@ import { useToast } from "@/hooks/use-toast";
 import ObjectDetailSheet from "@/components/objectDetailSheet";
 import RelationshipDetailSheet from "@/components/relationshipDetailSheet";
 import {
-  NodeData,
   RelationshipData,
+  NodeData,
   NodeObject,
   World,
   Relationship,
@@ -29,7 +29,7 @@ import {
   ReactFlowInstance,
   OnConnect,
 } from "@xyflow/react";
-import React, { useCallback, useState, useEffect } from "react";
+import React, { useCallback, useState, useEffect, useMemo } from "react";
 import ChangesSheet from "@/components/changesSheet";
 import CustomNode from "@/components/customNode";
 
@@ -56,10 +56,12 @@ export function FlowContent({
   worldData,
   objectData,
   relationshipData,
+  graphRefresh,
 }: {
   worldData: World | null;
   objectData: NodeObject[] | null;
   relationshipData: Relationship[] | null;
+  graphRefresh: () => void;
 }) {
   const flow = useReactFlow();
   const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
@@ -73,7 +75,8 @@ export function FlowContent({
     Node,
     Edge
   > | null>(null);
-  const [selectedNode, setSelectedNode] = useState<Node<NodeData> | null>(null);
+  const [selectedNodeId, setSelectedNodeId] = useState<string | null>(null);
+  // const [selectedNode, setSelectedNode] = useState<Node<NodeData> | null>(null);
   const [selectedEdge, setSelectedEdge] =
     useState<Edge<RelationshipData> | null>(null);
   const [selectedTarget, setSelectedTarget] = useState<NodeObject | null>(null);
@@ -283,8 +286,12 @@ export function FlowContent({
     [setNodes]
   );
 
+  const selectedNode = useMemo(() => {
+    return nodes.find((n) => n.id === selectedNodeId) ?? null;
+  }, [nodes, selectedNodeId]);
+
   const onNodeClick = (event: React.MouseEvent, node: Node) => {
-    setSelectedNode(node as Node<NodeData>);
+    setSelectedNodeId(node.id);
     setIsNodeClicked(true);
   };
 
@@ -353,8 +360,9 @@ export function FlowContent({
           <ObjectDetailSheet
             isNodeClicked={isNodeClicked}
             openFunction={setIsNodeClicked}
-            nodeData={selectedNode}
+            nodeData={selectedNode as Node<NodeData>}
             deleteNodeFunction={deleteNode}
+            graphRefresh={graphRefresh}
           />
           <RelationshipDetailSheet
             isEdgeClicked={isEdgeClicked}

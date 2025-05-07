@@ -11,11 +11,13 @@ export default function ObjectDetailSheet({
   openFunction,
   nodeData,
   deleteNodeFunction,
+  graphRefresh,
 }: {
   isNodeClicked: boolean;
   openFunction: React.Dispatch<React.SetStateAction<boolean>>;
   nodeData: Node<NodeData> | null;
   deleteNodeFunction: (objectID: string) => void;
+  graphRefresh: () => void;
 }) {
   let usedPicture = "objectPicture/fuetkmzyox2su7tfkib3";
   if (nodeData) {
@@ -41,7 +43,7 @@ export default function ObjectDetailSheet({
         >
           <ChevronRight />
         </Button>
-        {nodeData && <ObjectSettingDialog nodeData={nodeData} />}
+        {nodeData && <ObjectSettingDialog nodeData={nodeData} graphRefresh={graphRefresh}/>}
         {nodeData && (
           <DeleteAlert
             objectID={nodeData.id}
