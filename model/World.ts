@@ -2,7 +2,7 @@ import mongoose from "mongoose";
 const { Schema } = mongoose;
 
 const changes = new Schema({
-    description : {type : String, required: [true, "Description required"]},
+    description :[{type : String, required: [true, "Description required"]}],
     username  : {type : String, required: [true, "Description required"]}
 }, { timestamps: true });
 

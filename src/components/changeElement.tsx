@@ -1,6 +1,6 @@
 import { Change } from "../../types/types";
 
-export default function ChangeElement({changeData} : {changeData : Change}) {
+export default function ChangeElement({ changeData }: { changeData: Change }) {
   return (
     <div className="flex flex-col gap-2 text-sm">
       <div className="border-2 border-slate-200 rounded-xl">
@@ -10,7 +10,13 @@ export default function ChangeElement({changeData} : {changeData : Change}) {
         </div>
         <hr />
         <div className="p-2">
-          <p className="italic">{changeData.description}</p>
+          <ul className="list-disc ml-6">
+            {changeData.description.map((change, index) => {
+              return (
+                <li key={index}>{change}</li>
+              )
+            })}
+          </ul>
         </div>
       </div>
     </div>

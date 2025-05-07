@@ -5,6 +5,7 @@ import Object from "../../../../../model/Object"
 import cloudinary from "@/app/lib/connect";
 import Relationship from "../../../../../model/Relationship";
 import User from "../../../../../model/User";
+import { UploadApiResponse } from "cloudinary";
 
 export async function DELETE(
 req: NextRequest, 
@@ -32,7 +33,7 @@ req: NextRequest,
 
         const currentUser = await User.findById(userID);
         const newChange = {
-            description : "Deleted " + deletedObject.objectName,
+            description : ["Deleted " + deletedObject.objectName],
             username : currentUser.username,
         }
         await World.updateOne({_id: object.worldID}, { $push: { changes : newChange} });
@@ -52,19 +53,62 @@ req: NextRequest,
         if (!userID) {
             throw new Error("No Session Found"); 
         }
-        const data = await req.json();
+        const currentUser = await User.findById(userID);
+        
+        const formData = await req.formData();
         const { id } = await params;
-        console.log(id);
         await verifyObject(id);
-
-        const editedObject = await Object.findByIdAndUpdate(id,
-             {
-                objectName : data.objectName,
-                objectPicture : data.objectPicture,
-                objectDescription : data.objectDescription,
-             }, 
-             {new : true}
-        )
+        const newObjectName = formData.get("objectName");
+        const newObjectDescription = formData.get("objectDescription")
+        const message : string[] = [];
+        const oldData = await Object.findById(id);
+        console.log(oldData)
+        console.log(newObjectName)
+        if (oldData.objectName != newObjectName) {
+            message.push("Changed name of " + oldData.objectName + " into " + newObjectName);
+        }
+        if (oldData.objectDescription != newObjectDescription){
+            message.push("Changed description of " + newObjectName + " into '" + newObjectDescription + "'");
+        }
+        let editedObject; 
+        const objectPictureRaw = formData.get("objectPicture");
+        if (objectPictureRaw instanceof File &&
+            objectPictureRaw .size > 0
+        ){
+            const imageFile = formData.get("objectPicture") as File;
+            const arrayBuffer = await imageFile.arrayBuffer();
+            const buffer = Buffer.from(arrayBuffer);
+            const result : UploadApiResponse = await new Promise((resolve, reject) => {
+                cloudinary.uploader.upload_stream({ folder: "objectPicture" }, (error, result) => {
+                    if (!result) return reject(new Error("No result returned from Cloudinary"));
+                    if (error) return reject(error);
+                    resolve(result);
+                }).end(buffer);
+                });
+            const objectPictureID = result.public_id;
+            message.push("Changed profile picture of " + newObjectName);
+            editedObject = await Object.findByIdAndUpdate(id,
+                {
+                    objectName : newObjectName,
+                    objectDescription : newObjectDescription,
+                    objectPicture : objectPictureID
+                }, 
+                {new : true}
+           )
+        } else {
+            editedObject = await Object.findByIdAndUpdate(id,
+                {
+                   objectName : newObjectName,
+                   objectDescription : newObjectDescription,
+                }, 
+                {new : true}
+           )
+        }
+        const newChange = {
+            description : message,
+            username : currentUser.username,
+        }
+        await World.updateOne({_id: oldData.worldID}, { $push: { changes : newChange} });
         return NextResponse.json({ data : editedObject, message : "Object Edited!"}, { status: 200 });
     } catch(error){
         return errorhandling(error);

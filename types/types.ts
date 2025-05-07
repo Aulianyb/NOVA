@@ -7,7 +7,7 @@ export type ChangeAPI = {
 
 export type Change = {
     _id : string,
-    description : string,
+    description : string[],
     username : string,
     time : string
 }

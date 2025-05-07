@@ -77,12 +77,11 @@ export async function POST(req:NextRequest){
 
 
         const object = await newObject.save();
-
         await World.updateOne({_id: worldID}, { $push: { objects : object.id } });
        
         const currentUser = await User.findById(userID);
         const newChange = {
-            description : "Added " + formData.get("objectName"),
+            description : ["Added " + formData.get("objectName")],
             username : currentUser.username,
         }
         await World.updateOne({_id: worldID}, { $push: { changes : newChange} });

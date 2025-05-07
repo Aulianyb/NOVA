@@ -151,7 +151,7 @@ export default function ObjectCreationDialog({
                   </FormControl>
                   <FormMessage />
                   <FormDescription>
-                    Files can only be JPG and PNG
+                    Only .jpg, .jpeg, and .png formats are supported.
                   </FormDescription>
                 </FormItem>
               )}
