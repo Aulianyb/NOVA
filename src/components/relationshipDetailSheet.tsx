@@ -13,12 +13,14 @@ export default function RelationshipDetailSheet({
   sourceNode,
   targetNode,
   relationshipData,
+  graphRefresh
 }: {
   isEdgeClicked: boolean;
   openFunction: React.Dispatch<React.SetStateAction<boolean>>;
   sourceNode: NodeObject | null;
   targetNode: NodeObject | null;
   relationshipData: Edge<RelationshipData> | null;
+  graphRefresh : () => void;
 }) {
   let usedSourcePicture = "objectPicture/fuetkmzyox2su7tfkib3";
   if (sourceNode) {
@@ -52,7 +54,7 @@ export default function RelationshipDetailSheet({
             <ChevronRight />
           </Button>
           {relationshipData && (
-            <RelationshipSettingDialog relationshipData={relationshipData} />
+            <RelationshipSettingDialog relationshipData={relationshipData} graphRefresh={graphRefresh}/>
           )}
         </div>
 

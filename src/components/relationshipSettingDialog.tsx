@@ -34,8 +34,10 @@ const formSchema = z.object({
 
 export default function RelationshipSettingDialog({
   relationshipData,
+  graphRefresh,
 }: {
   relationshipData: Edge<RelationshipData>;
+  graphRefresh: () => void;
 }) {
   const [isOpen, setIsOpen] = useState(false);
 
@@ -72,8 +74,9 @@ export default function RelationshipSettingDialog({
       if (!res.ok) {
         throw new Error("Relationship edit failed");
       }
+      graphRefresh();
+      setIsOpen(false);
       form.reset();
-      window.location.reload();
     } catch (error) {
       console.error(error);
     }

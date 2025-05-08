@@ -77,9 +77,7 @@ export function FlowContent({
     Edge
   > | null>(null);
   const [selectedNodeId, setSelectedNodeId] = useState<string | null>(null);
-  // const [selectedNode, setSelectedNode] = useState<Node<NodeData> | null>(null);
-  const [selectedEdge, setSelectedEdge] =
-    useState<Edge<RelationshipData> | null>(null);
+  const [selectedEdgeId, setSelectedEdgeId] = useState<string | null>(null);
   const [selectedTarget, setSelectedTarget] = useState<NodeObject | null>(null);
   const [selectedSource, setSelectedSource] = useState<NodeObject | null>(null);
   const [newEdge, setNewEdge] = useState<Edge<RelationshipData> | undefined>(
@@ -136,7 +134,7 @@ export function FlowContent({
       };
       setEdges((eds) => addEdge(newEdge, eds));
       setNewEdge(newEdge as Edge<RelationshipData>);
-      setIsAddingEdge(true); 
+      setIsAddingEdge(true);
     },
     [setEdges, handleChanges]
   );
@@ -298,6 +296,10 @@ export function FlowContent({
     return nodes.find((n) => n.id === selectedNodeId) ?? null;
   }, [nodes, selectedNodeId]);
 
+  const selectedEdge = useMemo(() => {
+    return edges.find((n) => n.id === selectedEdgeId) ?? null;
+  }, [edges, selectedEdgeId]);
+
   const onNodeClick = (event: React.MouseEvent, node: Node) => {
     setSelectedNodeId(node.id);
     setIsNodeClicked(true);
@@ -305,7 +307,7 @@ export function FlowContent({
 
   const onEdgeClick = (event: React.MouseEvent, edge: Edge) => {
     if (objectData) {
-      setSelectedEdge(edge as Edge<RelationshipData>);
+      setSelectedEdgeId(edge.id);
       setSelectedSource(objectMap[edge.source]);
       setSelectedTarget(objectMap[edge.target]);
     }
@@ -391,7 +393,8 @@ export function FlowContent({
             openFunction={setIsEdgeClicked}
             sourceNode={selectedSource}
             targetNode={selectedTarget}
-            relationshipData={selectedEdge}
+            relationshipData={selectedEdge as Edge<RelationshipData>}
+            graphRefresh={graphRefresh}
           />
         </Panel>
         <Background variant={BackgroundVariant.Lines} gap={12} size={1} />
