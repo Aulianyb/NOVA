@@ -10,13 +10,17 @@ export default function ChangeElement({ changeData }: { changeData: Change }) {
         </div>
         <hr />
         <div className="p-2">
-          <ul className="list-disc ml-6">
-            {changeData.description.map((change, index) => {
-              return (
-                <li key={index}>{change}</li>
-              )
-            })}
-          </ul>
+          {changeData.description.length > 1 ? (
+            <>
+              <ul className="list-disc ml-6">
+                {changeData.description.map((change, index) => {
+                  return <li key={index}>{change}</li>;
+                })}
+              </ul>
+            </>
+          ) : (
+            <p>{changeData.description[0]}</p>
+          )}
         </div>
       </div>
     </div>

@@ -2,7 +2,7 @@
 import React, { useCallback } from "react";
 import { useParams } from "next/navigation";
 import { useState, useEffect } from "react";
-import { World, NodeObject, Relationship } from "../../../../types/types";
+import { World, NodeObject, RelationshipJSON } from "../../../../types/types";
 import { ReactFlowProvider } from "@xyflow/react";
 import { FlowContent } from "./flowContent";
 import Loading from "@/app/loading";
@@ -11,7 +11,7 @@ export default function Page() {
   const [loading, setLoading] = useState(true);
   const [world, setWorld] = useState<World | null>(null);
   const [objects, setObjects] = useState<NodeObject[] | null>(null);
-  const [relationships, setRelationships] = useState<Relationship[] | null>(
+  const [relationships, setRelationships] = useState<RelationshipJSON[] | null>(
     null
   );
   // const flow = useReactFlow();
@@ -62,8 +62,8 @@ export default function Page() {
       setObjects(objectArray);
 
       const worldRelationships = NodesAndEdges.data.worldRelationships;
-      const relationArray: Relationship[] = worldRelationships.map(
-        (relation: Relationship) => ({
+      const relationArray: RelationshipJSON[] = worldRelationships.map(
+        (relation: RelationshipJSON) => ({
           _id: relation._id,
           source: relation.source,
           target: relation.target,

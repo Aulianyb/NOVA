@@ -6,6 +6,7 @@ import cloudinary from "@/app/lib/connect";
 import Relationship from "../../../../../model/Relationship";
 import User from "../../../../../model/User";
 import { UploadApiResponse } from "cloudinary";
+import { RelationshipJSON } from "../../../../../types/types";
 
 export async function DELETE(
 req: NextRequest, 
@@ -27,7 +28,17 @@ req: NextRequest,
             await cloudinary.uploader.destroy(object.objectPicture);
         }
         const deletedEdges = object.relationships;
+        const relationshipsToDelete = await Relationship.find({
+            _id: { $in: deletedEdges },
+          });
+        const affectedNodeIds = new Set();
+        relationshipsToDelete.forEach((rel : RelationshipJSON) =>{
+            affectedNodeIds.add(rel.source.toString());
+            affectedNodeIds.add(rel.target.toString());
+        })
+        await Object.updateMany({_id : {$in : Array.from(affectedNodeIds)}}, {$pull : {relationships : {$in : deletedEdges}}})
         await Relationship.deleteMany({_id : {$in : deletedEdges}});
+
         await World.findOneAndUpdate({_id : object.worldID}, { $pull: { objects:id } }); 
         const deletedObject = await Object.findByIdAndDelete({'_id' : id});
 

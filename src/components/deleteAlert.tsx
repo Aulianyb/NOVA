@@ -13,27 +13,28 @@ import { Button } from "@/components/ui/button";
 import { Trash } from "lucide-react";
 
 export default function DeleteAlert({
-  objectID,
-  deleteNodeFunction,
+  id,
+  deleteFunction,
   openFunction,
+  type
 }: {
-  objectID: string;
-  deleteNodeFunction: (objectID: string) => void;
+  id: string;
+  deleteFunction: (id : string) => void;
   openFunction: React.Dispatch<React.SetStateAction<boolean>>;
+  type : string
 }) {
   async function onSubmit() {
     try {
-      console.log(objectID);
-      const res = await fetch(`/api/objects/${objectID}`, {
+      const res = await fetch(`/api/${type}s/${id}`, {
         method: "DELETE",
         headers: {
           "Content-Type": "application/json",
         },
       });
       if (!res.ok) {
-        throw new Error("Object deletion failed");
+        throw new Error(`${type} deletion failed`);
       }
-      deleteNodeFunction(objectID);
+      deleteFunction(id);
       openFunction(false); 
     } catch (error) {
       console.log(error);
@@ -50,7 +51,7 @@ export default function DeleteAlert({
         <AlertDialogHeader>
           <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
           <AlertDialogDescription>
-            This node will be deleted permanently.
+            This {type} will be deleted permanently.
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>

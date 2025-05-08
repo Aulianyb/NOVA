@@ -46,9 +46,10 @@ export default function ObjectDetailSheet({
         {nodeData && <ObjectSettingDialog nodeData={nodeData} graphRefresh={graphRefresh}/>}
         {nodeData && (
           <DeleteAlert
-            objectID={nodeData.id}
-            deleteNodeFunction={deleteNodeFunction}
+            id={nodeData.id}
+            deleteFunction={deleteNodeFunction}
             openFunction={openFunction}
+            type="object"
           />
         )}
       </div>

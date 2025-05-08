@@ -35,7 +35,7 @@ export type NodeObject = {
     positionY : number
 }
 
-export type Relationship = {
+export type RelationshipJSON = {
     _id : string,
     source : string,
     target : string,

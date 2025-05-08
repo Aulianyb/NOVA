@@ -11,7 +11,7 @@ import {
   NodeData,
   NodeObject,
   World,
-  Relationship,
+  RelationshipJSON,
 } from "../../../../types/types";
 import {
   ReactFlow,
@@ -61,7 +61,7 @@ export function FlowContent({
 }: {
   worldData: World | null;
   objectData: NodeObject[] | null;
-  relationshipData: Relationship[] | null;
+  relationshipData: RelationshipJSON[] | null;
   graphRefresh: () => void;
 }) {
   const flow = useReactFlow();
@@ -161,7 +161,7 @@ export function FlowContent({
       setObjectMap(objectMap);
     }
     if (relationshipData) {
-      const currentEdges = relationshipData.map((edge: Relationship) => ({
+      const currentEdges = relationshipData.map((edge: RelationshipJSON) => ({
         id: edge._id,
         source: edge.source,
         target: edge.target,
