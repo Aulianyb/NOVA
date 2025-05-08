@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { errorhandling, verifyWorld, verifyUser } from "@/app/api/function";
+import { errorHandling, verifyWorld, verifyUser } from "@/app/api/function";
 
 export async function GET(
     req: NextRequest, 
@@ -20,6 +20,6 @@ export async function GET(
 
         return NextResponse.json({data : changes, message : "Changes fetched"}, {status : 200});
     } catch(error){
-        return errorhandling(error);
+        return errorHandling(error);
     }
 }

@@ -32,6 +32,7 @@ import {
 import React, { useCallback, useState, useEffect, useMemo } from "react";
 import ChangesSheet from "@/components/changesSheet";
 import CustomNode from "@/components/customNode";
+import RelationshipCreationDialog from "@/components/relationshipCreationDialog";
 
 const connectionLineStyle = {
   stroke: "#b1b1b7",
@@ -81,6 +82,11 @@ export function FlowContent({
     useState<Edge<RelationshipData> | null>(null);
   const [selectedTarget, setSelectedTarget] = useState<NodeObject | null>(null);
   const [selectedSource, setSelectedSource] = useState<NodeObject | null>(null);
+  const [newEdge, setNewEdge] = useState<Edge<RelationshipData> | undefined>(
+    undefined
+  );
+  const [isAddingEdge, setIsAddingEdge] = useState(false);
+
   const router = useRouter();
   const { toast } = useToast();
 
@@ -129,6 +135,8 @@ export function FlowContent({
         type: "straight",
       };
       setEdges((eds) => addEdge(newEdge, eds));
+      setNewEdge(newEdge as Edge<RelationshipData>);
+      setIsAddingEdge(true); 
     },
     [setEdges, handleChanges]
   );
@@ -333,12 +341,26 @@ export function FlowContent({
             <Button size="icon" onClick={() => setIsSheetOpen(true)}>
               <History />
             </Button>
-            {worldData && <WorldSettingDialog worldData={worldData} />}
-            <ObjectCreationDialog
-              createFunction={addNode}
-              worldID={worldData!._id}
-              position={getCenterScreen()}
-            />
+
+            {worldData && (
+              <>
+                <WorldSettingDialog worldData={worldData} />
+                <ObjectCreationDialog
+                  createFunction={addNode}
+                  worldID={worldData._id}
+                  position={getCenterScreen()}
+                />
+                <RelationshipCreationDialog
+                  setIsAddingEdge={setIsAddingEdge}
+                  isAddingEdge={isAddingEdge}
+                  setNewEdge={setNewEdge}
+                  relationshipData={newEdge as Edge<RelationshipData>}
+                  worldID={worldData._id}
+                  graphRefresh={graphRefresh}
+                />
+              </>
+            )}
+
             {hasChange > 1 && (
               <Button
                 size="icon"

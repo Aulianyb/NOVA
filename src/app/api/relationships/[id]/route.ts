@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import Relationship from "../../../../../model/Relationship";
-import { errorhandling } from "../../function";
+import { errorHandling } from "../../function";
 import { verifyRelationship, verifyUser } from "../../function";
 
 export async function PUT(req: NextRequest, 
@@ -21,6 +21,6 @@ export async function PUT(req: NextRequest,
         )
         return NextResponse.json({ data : editedObject, message : "Relationship Edited!"}, { status: 200 });
     } catch(error){
-        return errorhandling(error);
+        return errorHandling(error);
     }
 }

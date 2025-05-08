@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import World from "../../../../../model/World";
 import User from "../../../../../model/User";
-import { errorhandling, verifyWorld, verifyUser} from "../../function";
+import { errorHandling, verifyWorld, verifyUser} from "../../function";
 import Object from "../../../../../model/Object";
 import Relationship from "../../../../../model/Relationship";
 import cloudinary from "@/app/lib/connect";
@@ -17,7 +17,7 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ id: 
         const world = await verifyWorld(id, userID); 
         return NextResponse.json({data : world, message : "World Found!"})
     } catch(error){
-        return errorhandling(error);
+        return errorHandling(error);
     }
 }
 
@@ -64,7 +64,7 @@ export async function DELETE(req: NextRequest, { params }: { params: Promise<{ i
         return NextResponse.json({ data : deletedWorld, message : "World Deleted!"}, { status: 200 });
 
     } catch(error){
-        return errorhandling(error);
+        return errorHandling(error);
     }
 }
 
@@ -88,6 +88,6 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
 
         return NextResponse.json({ data : editedWorld, message : "World Edited!"}, { status: 200 });
     } catch(error){
-        return errorhandling(error);
+        return errorHandling(error);
     }
 }

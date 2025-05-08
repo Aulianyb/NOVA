@@ -7,7 +7,7 @@ import { connectToMongoDB } from "@/app/lib/connect";
 import jwt from "jsonwebtoken";
 import { getSession } from "./auth/session";
 
-export function errorhandling(error : unknown){
+export function errorHandling(error : unknown){
     console.log(error);
     if (error instanceof Error) {
         if (error.message === "No session found" || error.message === "You are not the owner of this world") {

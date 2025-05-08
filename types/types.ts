@@ -61,7 +61,7 @@ export type NodeData = {
     objectDescription?: string;
     images : string[],
     tags : string[],
-    relationship : string[]
+    relationships : string[]
 };
 
 export type EdgeJSON = {

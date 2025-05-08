@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { errorhandling, verifyObject, verifyUser, verifyWorld} from "../../function";
+import { errorHandling, verifyObject, verifyUser, verifyWorld} from "../../function";
 import World from "../../../../../model/World";
 import Object from "../../../../../model/Object"
 import cloudinary from "@/app/lib/connect";
@@ -40,7 +40,7 @@ req: NextRequest,
 
         return NextResponse.json({ data : deletedObject, message : "Object Deleted!"}, { status: 200 });
     } catch(error){
-        return errorhandling(error); 
+        return errorHandling(error); 
     }
 }
 
@@ -111,6 +111,6 @@ req: NextRequest,
         await World.updateOne({_id: oldData.worldID}, { $push: { changes : newChange} });
         return NextResponse.json({ data : editedObject, message : "Object Edited!"}, { status: 200 });
     } catch(error){
-        return errorhandling(error);
+        return errorHandling(error);
     }
 }

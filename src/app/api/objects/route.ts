@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import Object from "../../../../model/Object";
-import { errorhandling, verifyWorld, verifyUser} from "../function";
+import { errorHandling, verifyWorld, verifyUser} from "../function";
 import Relationship from "../../../../model/Relationship";
 import cloudinary from "@/app/lib/connect";
 import { UploadApiResponse } from "cloudinary";
@@ -27,7 +27,7 @@ export async function GET(req:NextRequest){
             worldRelationships : worldRelationships
         }, message : "Objects Fetched!"}, { status: 200 });
     } catch(error){
-        return errorhandling(error);
+        return errorHandling(error);
     }
 }
 
@@ -87,6 +87,6 @@ export async function POST(req:NextRequest){
         await World.updateOne({_id: worldID}, { $push: { changes : newChange} });
         return NextResponse.json({ data : object, message : "Node Added!"}, { status: 200 });
     } catch(error){
-        return errorhandling(error); 
+        return errorHandling(error); 
     }
 }
