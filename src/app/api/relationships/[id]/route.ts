@@ -60,8 +60,6 @@ export async function DELETE(req: NextRequest,
                 username : currentUser.username,
             }
             await World.updateOne({_id: targetNode.worldID}, { $push: { changes : newChange} });
-
-
             return NextResponse.json({ data : deletedRelationship, message : "Relationship Deleted!"}, { status: 200 });
         } catch (error) {
             return errorHandling(error);

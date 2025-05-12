@@ -6,6 +6,7 @@ import { Edge } from "@xyflow/react";
 import { RelationshipData } from "../../types/types";
 import RelationshipSettingDialog from "./relationshipSettingDialog";
 import { CldImage } from "next-cloudinary";
+import DeleteAlert from "./deleteAlert";
 
 export default function RelationshipDetailSheet({
   isEdgeClicked,
@@ -13,14 +14,16 @@ export default function RelationshipDetailSheet({
   sourceNode,
   targetNode,
   relationshipData,
-  graphRefresh
+  graphRefresh,
+  deleteEdgeFunction,
 }: {
   isEdgeClicked: boolean;
   openFunction: React.Dispatch<React.SetStateAction<boolean>>;
   sourceNode: NodeObject | null;
   targetNode: NodeObject | null;
   relationshipData: Edge<RelationshipData> | null;
-  graphRefresh : () => void;
+  graphRefresh: () => void;
+  deleteEdgeFunction: (objectID: string) => void;
 }) {
   let usedSourcePicture = "objectPicture/fuetkmzyox2su7tfkib3";
   if (sourceNode) {
@@ -54,7 +57,18 @@ export default function RelationshipDetailSheet({
             <ChevronRight />
           </Button>
           {relationshipData && (
-            <RelationshipSettingDialog relationshipData={relationshipData} graphRefresh={graphRefresh}/>
+            <>
+              <RelationshipSettingDialog
+                relationshipData={relationshipData}
+                graphRefresh={graphRefresh}
+              />
+              <DeleteAlert
+                id={relationshipData.id}
+                deleteFunction={deleteEdgeFunction}
+                openFunction={openFunction}
+                type="relationship"
+              />
+            </>
           )}
         </div>
 

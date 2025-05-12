@@ -43,14 +43,19 @@ export default function ObjectDetailSheet({
         >
           <ChevronRight />
         </Button>
-        {nodeData && <ObjectSettingDialog nodeData={nodeData} graphRefresh={graphRefresh}/>}
         {nodeData && (
-          <DeleteAlert
-            id={nodeData.id}
-            deleteFunction={deleteNodeFunction}
-            openFunction={openFunction}
-            type="object"
-          />
+          <>
+            <ObjectSettingDialog
+              nodeData={nodeData}
+              graphRefresh={graphRefresh}
+            />
+            <DeleteAlert
+              id={nodeData.id}
+              deleteFunction={deleteNodeFunction}
+              openFunction={openFunction}
+              type="object"
+            />
+          </>
         )}
       </div>
 

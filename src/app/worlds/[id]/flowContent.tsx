@@ -22,7 +22,6 @@ import {
   Panel,
   useReactFlow,
   ConnectionMode,
-  BackgroundVariant,
   Edge,
   Node,
   NodeChange,
@@ -286,10 +285,16 @@ export function FlowContent({
 
   const deleteNode = useCallback(
     (objectID: string) => {
-      console.log("Im called!!");
       setNodes((nds) => nds.filter((node) => node.id !== objectID));
     },
     [setNodes]
+  );
+
+  const deleteEdge = useCallback(
+    (relationshipID: string) => {
+      setEdges((egs) => egs.filter((edge) => edge.id !== relationshipID));
+    },
+    [setEdges]
   );
 
   const selectedNode = useMemo(() => {
@@ -329,6 +334,7 @@ export function FlowContent({
         connectionLineStyle={connectionLineStyle}
         connectionMode={ConnectionMode.Loose}
         onInit={setRfInstance}
+        deleteKeyCode={[]}
       >
         <Panel>
           <div className="flex flex-col gap-2">
@@ -363,7 +369,7 @@ export function FlowContent({
               </>
             )}
 
-            {hasChange > 1 && (
+            {hasChange > 2 && (
               <Button
                 size="icon"
                 variant="destructive"
@@ -395,9 +401,10 @@ export function FlowContent({
             targetNode={selectedTarget}
             relationshipData={selectedEdge as Edge<RelationshipData>}
             graphRefresh={graphRefresh}
+            deleteEdgeFunction={deleteEdge}
           />
         </Panel>
-        <Background variant={BackgroundVariant.Lines} gap={12} size={1} />
+        <Background gap={12} size={1} />
       </ReactFlow>
     </div>
   );
