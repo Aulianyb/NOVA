@@ -193,15 +193,7 @@ export function FlowContent({
       const flow = rfInstance.toObject();
       const nodeArray = flow.nodes.map((node) => ({
         id: node.id,
-        data: node.data,
         position: node.position,
-      }));
-
-      const edgeArray = flow.edges.map((edge) => ({
-        id: edge.id,
-        source: edge.source,
-        target: edge.target,
-        data: edge.data,
       }));
 
       const res = await fetch("/api/objects/layout", {
@@ -210,9 +202,7 @@ export function FlowContent({
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          worldID: worldData._id,
           nodes: nodeArray,
-          edges: edgeArray,
         }),
       });
 
@@ -230,7 +220,7 @@ export function FlowContent({
 
   const handleNodesChange = useCallback(
     (changes: NodeChange[]) => {
-      if (changes[0].type == "position" || changes[0].type == "dimensions") {
+      if (changes[0].type == "position") {
         handleChanges();
       }
       onNodesChange(changes);

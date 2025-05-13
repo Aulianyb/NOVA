@@ -29,7 +29,7 @@ export async function verifyWorld(worldID : string, userID : string){;
     if (!world){
         throw new Error("World not found");
     }
-    if (!world.owners.includes(userID)){
+    if (!world.owners.includes(userID) && !world.collaborators.includes(userID)){
         throw new Error("You are not the owner of this world");
     }
     return world; 

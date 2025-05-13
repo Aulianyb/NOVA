@@ -11,6 +11,7 @@ const world = new Schema({
     worldDescription: { type: String },
     worldCover : {type : String},
     owners: [{ type: Schema.Types.ObjectId, ref: 'User' }],
+    collaborators : [{ type: Schema.Types.ObjectId, ref: 'User' }],
     objects: [{ type: Schema.Types.ObjectId, ref: 'Object' }],
     relationships : [{type: Schema.Types.ObjectId, ref : 'Relationship'}],
     changes: [changes],

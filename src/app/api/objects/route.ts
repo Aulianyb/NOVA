@@ -19,7 +19,7 @@ export async function GET(req:NextRequest){
             throw new Error("World ID is missing");
         }
         const world = await verifyWorld(worldID, userID);
-
+        
         const worldObjects = await Object.find({ _id: { $in: world.objects } })
         const worldRelationships = await Relationship.find({ _id: { $in: world.relationships } })
         return NextResponse.json({ data : {

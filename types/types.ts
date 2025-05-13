@@ -74,3 +74,10 @@ export type EdgeJSON = {
 export type RelationshipData = {
     relationshipDescription : string; 
 };
+
+export type Notification = {
+    _id : string,
+    sender : string,
+    worldID : string,
+    status : string
+}
