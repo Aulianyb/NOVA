@@ -26,6 +26,7 @@ import { useRouter } from "next/navigation";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Collaborator, columns } from "./columns";
 import { DataTable } from "./data-table";
+import { useToast } from "@/hooks/use-toast";
 
 const CollaboratorPlaceholder: Collaborator[] = [
   {
@@ -52,12 +53,18 @@ const formSchema = z.object({
     .max(240, "Description must be under 240 characters long"),
 });
 
+const inviteSchema = z.object({
+  receiver: z.string().min(1, "Your must enter a username to invite"),
+  worldID: z.string(),
+});
+
 export default function WorldSettingDialog({
   worldData,
 }: {
   worldData: World;
 }) {
   const router = useRouter();
+  const { toast } = useToast();
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -66,6 +73,40 @@ export default function WorldSettingDialog({
       worldDescription: worldData.worldDescription,
     },
   });
+
+  const inviteForm = useForm<z.infer<typeof inviteSchema>>({
+    resolver: zodResolver(inviteSchema),
+    defaultValues: {
+      receiver: "",
+      worldID: worldData._id,
+    },
+  });
+
+  const notifyAdded = () => {
+    toast({
+      title: "Invitation Sent!",
+      description: "Collaborator will be added when the other user accepted this invitation.",
+      variant: "success",
+    });
+  };
+
+  async function onInvite(values: z.infer<typeof inviteSchema>) {
+    try {
+      const res = await fetch(`/api/notifications`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(values),
+      });
+      if (!res.ok) {
+        throw new Error("Invite failed");
+      }
+      notifyAdded();
+    } catch (error) {
+      console.log(error);
+    }
+  }
 
   async function onEdit(values: z.infer<typeof formSchema>) {
     try {
@@ -164,13 +205,45 @@ export default function WorldSettingDialog({
           <div className="space-y-2 mt-10">
             <div className="flex justify-between items-center">
               <h2>Manage Collaborators</h2>
-              <Button variant="outline" size="sm" className="rounded-md">
-                Add People
-              </Button>
             </div>
             <hr />
-            <div>
-              <DataTable columns={columns} data={CollaboratorPlaceholder} />
+            <div className="flex flex-col gap-5">
+              <div>
+                <Label>Invite New Collaborators</Label>
+                <div className="mt-2 flex">
+                  <Form {...inviteForm}>
+                    <form
+                      onSubmit={inviteForm.handleSubmit(onInvite)}
+                      className="flex items-center gap-2"
+                    >
+                      <FormField
+                        control={inviteForm.control}
+                        name="receiver"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormControl>
+                              <Input {...field} placeholder="Find username" />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                      <Button
+                        type="submit"
+                        variant="outline"
+                        className="rounded-md"
+                      >
+                        Invite
+                      </Button>
+                    </form>
+                  </Form>
+                </div>
+              </div>
+
+              <div>
+                <Label>Collaborators in this world</Label>
+                <DataTable columns={columns} data={CollaboratorPlaceholder} />
+              </div>
             </div>
           </div>
           <div className="space-y-2  mt-10">

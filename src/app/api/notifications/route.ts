@@ -10,7 +10,9 @@ export async function GET(){
         if (!userID) {
             throw new Error("No Session Found"); 
         }
-        const currentUser = await User.findById(userID);
+        const currentUser = await User.findById(userID)
+        .populate("notifications.worldID", "worldName")
+        .populate("notifications.sender", "username");  
         return NextResponse.json({data : currentUser.notifications, message : "Notifications retrieved!"}, {status : 200});
     } catch(error){
         return errorHandling(error);
@@ -26,7 +28,12 @@ export async function POST(req : NextRequest){
         const data = await req.json();
         const worldID = data.worldID;
         await verifyWorld(worldID, userID);
-        const receiverID = data.receiver; 
+        const receiverName = data.receiver; 
+        const receiver = await User.findOne({username : receiverName});
+        const receiverID = receiver._id.toString();
+        if (!receiver){
+            throw new Error("User not found!");
+        }
 
         const world = await World.findById(worldID);
         if (world.collaborators.includes(receiverID)){

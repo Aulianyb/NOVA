@@ -34,6 +34,11 @@ export async function DELETE(req: NextRequest, { params }: { params: Promise<{ i
             { _id: { $in: world.owners } },
             { $pull: { ownedWorlds: id } }
         );
+                
+        await User.updateMany(
+            { _id: { $in: world.collaborators } },
+            { $pull: { ownedWorlds: id } }
+        );
 
         // Note to self : after Image is added : 
         // Don't forget to cascade images that is connected to said object.

@@ -77,7 +77,13 @@ export type RelationshipData = {
 
 export type Notification = {
     _id : string,
-    sender : string,
-    worldID : string,
+    sender : {
+        _id : string,
+        username : string
+    },
+    worldID : {
+        _id : string,
+        worldName : string
+    },
     status : string
 }

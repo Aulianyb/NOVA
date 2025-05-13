@@ -1,8 +1,4 @@
-import {
-  CircleUserRound,
-  ChevronsUpDown,
-  Bell,
-} from "lucide-react";
+import { CircleUserRound, ChevronsUpDown } from "lucide-react";
 import { Button } from "./ui/button";
 import { quantico } from "@/app/fonts";
 import {
@@ -16,13 +12,14 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { useRouter } from "next/navigation";
 import { CreateWorldDialog } from "./worldCreationDialog";
+import NotificationDropdown from "./notificationDropdown";
 
 export function Navbar({
   username,
   worldRefresh,
 }: {
   username: string;
-  worldRefresh : () => void
+  worldRefresh: () => void;
 }) {
   const router = useRouter();
 
@@ -46,13 +43,11 @@ export function Navbar({
     <div className="w-full text-[var(--white)] bg-[var(--primary)] flex items-center justify-between py-3 px-12">
       <div className="flex items-center gap-4">
         <h1 className={`${quantico.className}`}>NOVA</h1>
-        <CreateWorldDialog worldRefresh={worldRefresh}/>
+        <CreateWorldDialog worldRefresh={worldRefresh} />
       </div>
 
       <div>
-        <Button variant="ghost" size="icon">
-          <Bell />
-        </Button>
+        <NotificationDropdown worldRefresh={worldRefresh}/>
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="ghost" className="gap-4 h-12 rounded-md">
