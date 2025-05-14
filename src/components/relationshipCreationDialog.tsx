@@ -36,6 +36,7 @@ export default function RelationshipCreationDialog({
   relationshipData,
   worldID,
   graphRefresh,
+  addEdgeFunction
 }: {
   setIsAddingEdge: React.Dispatch<React.SetStateAction<boolean>>;
   isAddingEdge: boolean;
@@ -45,6 +46,7 @@ export default function RelationshipCreationDialog({
   relationshipData: Edge<RelationshipData>;
   worldID: string;
   graphRefresh: () => void;
+  addEdgeFunction : (newEdge : Edge) => void; 
 }) {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -82,6 +84,7 @@ export default function RelationshipCreationDialog({
       if (!res.ok) {
         throw new Error("Relationship creation failed");
       }
+      addEdgeFunction(relationshipData);
       graphRefresh();
       form.reset();
       setIsAddingEdge(false);

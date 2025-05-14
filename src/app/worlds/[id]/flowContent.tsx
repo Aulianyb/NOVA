@@ -119,6 +119,10 @@ export function FlowContent({
     });
   };
 
+  function addingEdges(newEdge : Edge) {
+    setEdges((eds) => addEdge(newEdge, eds));
+  }
+
   const onConnect: OnConnect = useCallback(
     (connection) => {
       handleChanges();
@@ -131,11 +135,11 @@ export function FlowContent({
         },
         type: "straight",
       };
-      setEdges((eds) => addEdge(newEdge, eds));
+      // setEdges((eds) => addEdge(newEdge, eds));
       setNewEdge(newEdge as Edge<RelationshipData>);
       setIsAddingEdge(true);
     },
-    [setEdges, handleChanges]
+    [handleChanges]
   );
 
   const fetchData = useCallback(() => {
@@ -358,6 +362,7 @@ export function FlowContent({
                   relationshipData={newEdge as Edge<RelationshipData>}
                   worldID={worldData._id}
                   graphRefresh={graphRefresh}
+                  addEdgeFunction={addingEdges}
                 />
               </>
             )}
