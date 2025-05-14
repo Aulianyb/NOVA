@@ -12,6 +12,11 @@ export type Change = {
     time : string
 }
 
+export type Collaborator = {
+    _id : string,
+    username : string
+}
+
 export type World = {
     _id : string,
     worldName : string, 
@@ -20,7 +25,8 @@ export type World = {
     owners : string[],
     objects : string[],
     changes : Change[],
-    relationships : string[]
+    relationships : string[],
+    collaborators : Collaborator[]
 }
 
 export type NodeObject = {

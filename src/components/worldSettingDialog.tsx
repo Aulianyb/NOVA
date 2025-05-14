@@ -24,24 +24,9 @@ import { Settings } from "lucide-react";
 import { World } from "../../types/types";
 import { useRouter } from "next/navigation";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Collaborator, columns } from "./columns";
+import { columns } from "./columns";
 import { DataTable } from "./data-table";
 import { useToast } from "@/hooks/use-toast";
-
-const CollaboratorPlaceholder: Collaborator[] = [
-  {
-    id: "1",
-    username: "JohnDoe",
-  },
-  {
-    id: "2",
-    username: "JaneDoe",
-  },
-  {
-    id: "3",
-    username: "MaskDoodles",
-  },
-];
 
 const formSchema = z.object({
   worldName: z
@@ -85,7 +70,16 @@ export default function WorldSettingDialog({
   const notifyAdded = () => {
     toast({
       title: "Invitation Sent!",
-      description: "Collaborator will be added when the other user accepted this invitation.",
+      description:
+        "Collaborator will be added when the other user accepted this invitation.",
+      variant: "success",
+    });
+  };
+
+  const notifyDeleted = () => {
+    toast({
+      title: "Collaborator Removed!",
+      description: "Collaborator has been removed from this world.",
       variant: "success",
     });
   };
@@ -242,7 +236,10 @@ export default function WorldSettingDialog({
 
               <div>
                 <Label>Collaborators in this world</Label>
-                <DataTable columns={columns} data={CollaboratorPlaceholder} />
+                <DataTable
+                  columns={columns(worldData._id, notifyDeleted)}
+                  data={worldData.collaborators}
+                />
               </div>
             </div>
           </div>

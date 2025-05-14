@@ -14,7 +14,10 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ id: 
             throw new Error("No Session Found"); 
         }
         const { id } = await params;
-        const world = await verifyWorld(id, userID); 
+        await verifyWorld(id, userID); 
+        const world = await World.findById(id)
+        .populate("collaborators", "username");
+        
         return NextResponse.json({data : world, message : "World Found!"})
     } catch(error){
         return errorHandling(error);

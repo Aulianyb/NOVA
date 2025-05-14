@@ -36,6 +36,7 @@ export default function Page() {
         changes: worldData.data.changes,
         relationships: worldData.data.relationships,
         worldCover: worldData.data.worldCover,
+        collaborators: worldData.data.collaborators ?? []
       };
       setWorld(currentWorld);
       const resNodesEdges = await fetch(
@@ -60,7 +61,6 @@ export default function Page() {
         })
       );
       setObjects(objectArray);
-
       const worldRelationships = NodesAndEdges.data.worldRelationships;
       const relationArray: RelationshipJSON[] = worldRelationships.map(
         (relation: RelationshipJSON) => ({
