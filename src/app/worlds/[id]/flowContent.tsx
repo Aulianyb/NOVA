@@ -32,6 +32,7 @@ import React, { useCallback, useState, useEffect, useMemo } from "react";
 import ChangesSheet from "@/components/changesSheet";
 import CustomNode from "@/components/customNode";
 import RelationshipCreationDialog from "@/components/relationshipCreationDialog";
+import WorldSavingAlert from "@/components/worldSavingAlert";
 
 const connectionLineStyle = {
   stroke: "#b1b1b7",
@@ -119,7 +120,7 @@ export function FlowContent({
     });
   };
 
-  function addingEdges(newEdge : Edge) {
+  function addingEdges(newEdge: Edge) {
     setEdges((eds) => addEdge(newEdge, eds));
   }
 
@@ -135,7 +136,6 @@ export function FlowContent({
         },
         type: "straight",
       };
-      // setEdges((eds) => addEdge(newEdge, eds));
       setNewEdge(newEdge as Edge<RelationshipData>);
       setIsAddingEdge(true);
     },
@@ -332,14 +332,20 @@ export function FlowContent({
       >
         <Panel>
           <div className="flex flex-col gap-2">
-            <Button
-              onClick={() => {
-                router.back();
-              }}
-              size="icon"
-            >
-              <ArrowLeft />
-            </Button>
+            {hasChange > 2 ? (
+              <WorldSavingAlert />
+            ) : (
+              <>
+                <Button
+                  onClick={() => {
+                    router.back();
+                  }}
+                  size="icon"
+                >
+                  <ArrowLeft />
+                </Button>
+              </>
+            )}
             <Button size="icon" onClick={() => setIsSheetOpen(true)}>
               <History />
             </Button>

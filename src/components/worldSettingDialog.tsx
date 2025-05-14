@@ -4,7 +4,7 @@ import {
   FormField,
   FormItem,
   FormMessage,
-  FormDescription
+  FormDescription,
 } from "@/components/ui/form";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
@@ -23,11 +23,11 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Settings } from "lucide-react";
 import { World } from "../../types/types";
-import { useRouter } from "next/navigation";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { columns } from "./columns";
 import { DataTable } from "./data-table";
 import { useToast } from "@/hooks/use-toast";
+import WorldDeleteAlert from "./worldDeleteAlert";
 
 const MAX_FILE_SIZE = 5000000;
 const ACCEPTED_IMAGE_TYPES = [
@@ -71,7 +71,6 @@ export default function WorldSettingDialog({
   worldData: World;
   graphRefresh: () => void;
 }) {
-  const router = useRouter();
   const { toast } = useToast();
 
   const form = useForm<z.infer<typeof formSchema>>({
@@ -90,22 +89,20 @@ export default function WorldSettingDialog({
     },
   });
 
-  const notifyAdded = () => {
-    toast({
-      title: "Invitation Sent!",
-      description:
-        "Collaborator will be added when the other user accepted this invitation.",
-      variant: "success",
-    });
-  };
-
-  const notifyEdited = () => {
-    toast({
-      title: "World Edited!",
-      description: "Your changes are saved!",
-      variant: "success",
-    });
-  };
+  function showNotification(
+    title: string,
+    description: string,
+    variant: "default" | "destructive" | "success" | null | undefined
+  ) {
+    const notify = () => {
+      toast({
+        title: title,
+        description: description,
+        variant: variant,
+      });
+    };
+    notify();
+  }
 
   const notifyDeleted = () => {
     toast({
@@ -127,7 +124,11 @@ export default function WorldSettingDialog({
       if (!res.ok) {
         throw new Error("Invite failed");
       }
-      notifyAdded();
+      showNotification(
+        "Invitation Sent!",
+        "Collaborator will be added when the other user accepted this invitation.",
+        "success"
+      );
     } catch (error) {
       console.log(error);
     }
@@ -146,27 +147,10 @@ export default function WorldSettingDialog({
       if (!res.ok) {
         throw new Error("World edit failed");
       }
-      notifyEdited();
+      showNotification("World Edited!", "Your changes are saved.", "success");
       graphRefresh();
     } catch (error) {
       console.log(error);
-    }
-  }
-
-  async function onDelete() {
-    try {
-      const res = await fetch(`/api/worlds/${worldData._id}`, {
-        method: "DELETE",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
-      if (!res.ok) {
-        throw new Error("World delete failed");
-      }
-      router.push("/worlds");
-    } catch (error) {
-      console.error(error);
     }
   }
 
@@ -305,14 +289,7 @@ export default function WorldSettingDialog({
                 Delete your world and it's contents. This action is
                 irreversible.
               </DialogDescription>
-              <Button
-                className="rounded-lg w-full bg-red-500 hover:bg-red-600"
-                onClick={() => {
-                  onDelete();
-                }}
-              >
-                Destroy World
-              </Button>
+              <WorldDeleteAlert id={worldData._id} />
             </div>
           </div>
         </ScrollArea>
