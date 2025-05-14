@@ -43,8 +43,6 @@ export async function POST(req:NextRequest){
             worldCoverID = result.public_id;
         } 
 
-
-
         const userID = await verifyUser();
         if (!userID) {
             throw new Error("No Session Found"); 
@@ -55,6 +53,7 @@ export async function POST(req:NextRequest){
             worldDescription: formData.get("worldDescription"),
             worldCover : worldCoverID,
             owners: [userID],
+            collaborators : [],
             objects: [],
             relationships: [],
             changes: [],

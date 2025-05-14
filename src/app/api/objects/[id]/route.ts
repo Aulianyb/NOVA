@@ -73,8 +73,6 @@ req: NextRequest,
         const newObjectDescription = formData.get("objectDescription")
         const message : string[] = [];
         const oldData = await Object.findById(id);
-        console.log(oldData)
-        console.log(newObjectName)
         if (oldData.objectName != newObjectName) {
             message.push("Changed name of " + oldData.objectName + " into " + newObjectName);
         }

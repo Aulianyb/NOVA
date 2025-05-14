@@ -144,7 +144,7 @@ export function CreateWorldDialog({
               name="worldCover"
               render={() => (
                 <FormItem>
-                  <Label htmlFor="picture">Profile Picture</Label>
+                  <Label htmlFor="picture">World Cover</Label>
                   <FormControl>
                     <Input
                       id="picture"
@@ -157,7 +157,6 @@ export function CreateWorldDialog({
                     If you left this blank, it'll give you a default world
                     cover!
                   </FormDescription>
-
                   <FormMessage />
                 </FormItem>
               )}

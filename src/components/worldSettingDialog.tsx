@@ -4,6 +4,7 @@ import {
   FormField,
   FormItem,
   FormMessage,
+  FormDescription
 } from "@/components/ui/form";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
@@ -28,6 +29,14 @@ import { columns } from "./columns";
 import { DataTable } from "./data-table";
 import { useToast } from "@/hooks/use-toast";
 
+const MAX_FILE_SIZE = 5000000;
+const ACCEPTED_IMAGE_TYPES = [
+  "image/jpeg",
+  "image/jpg",
+  "image/png",
+  "image/webp",
+];
+
 const formSchema = z.object({
   worldName: z
     .string()
@@ -36,6 +45,18 @@ const formSchema = z.object({
   worldDescription: z
     .string()
     .max(240, "Description must be under 240 characters long"),
+  worldCover: z
+    .any()
+    .transform((val) => (val instanceof FileList ? val[0] : val))
+    .optional()
+    .refine(
+      (file) => file === undefined || file?.size <= MAX_FILE_SIZE,
+      `Max image size is 5MB.`
+    )
+    .refine(
+      (file) => file === undefined || ACCEPTED_IMAGE_TYPES.includes(file?.type),
+      "Only .jpg, .jpeg, .png and .webp formats are supported."
+    ),
 });
 
 const inviteSchema = z.object({
@@ -45,8 +66,10 @@ const inviteSchema = z.object({
 
 export default function WorldSettingDialog({
   worldData,
+  graphRefresh,
 }: {
   worldData: World;
+  graphRefresh: () => void;
 }) {
   const router = useRouter();
   const { toast } = useToast();
@@ -72,6 +95,14 @@ export default function WorldSettingDialog({
       title: "Invitation Sent!",
       description:
         "Collaborator will be added when the other user accepted this invitation.",
+      variant: "success",
+    });
+  };
+
+  const notifyEdited = () => {
+    toast({
+      title: "World Edited!",
+      description: "Your changes are saved!",
       variant: "success",
     });
   };
@@ -104,17 +135,19 @@ export default function WorldSettingDialog({
 
   async function onEdit(values: z.infer<typeof formSchema>) {
     try {
+      const formData = new FormData();
+      formData.append("worldName", values.worldName);
+      formData.append("worldDescription", values.worldDescription);
+      formData.append("worldCover", values.worldCover);
       const res = await fetch(`/api/worlds/${worldData._id}`, {
         method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(values),
+        body: formData,
       });
       if (!res.ok) {
         throw new Error("World edit failed");
       }
-      window.location.reload();
+      notifyEdited();
+      graphRefresh();
     } catch (error) {
       console.log(error);
     }
@@ -157,6 +190,27 @@ export default function WorldSettingDialog({
             <hr />
             <Form {...form}>
               <form onSubmit={form.handleSubmit(onEdit)}>
+                <FormField
+                  control={form.control}
+                  name="worldCover"
+                  render={() => (
+                    <FormItem>
+                      <Label htmlFor="picture">World Cover</Label>
+                      <FormControl>
+                        <Input
+                          id="picture"
+                          type="file"
+                          className="bg-white border border-slate-200"
+                          {...form.register("worldCover")}
+                        />
+                      </FormControl>
+                      <FormDescription>
+                        If you left this blank, it won't change anything!
+                      </FormDescription>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
                 <FormField
                   control={form.control}
                   name="worldName"

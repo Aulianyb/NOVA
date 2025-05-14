@@ -6,7 +6,7 @@ import Object from "../../../../../model/Object";
 import Relationship from "../../../../../model/Relationship";
 import cloudinary from "@/app/lib/connect";
 import { verifyObject } from "../../function";
-
+import { UploadApiResponse } from "cloudinary";
 export async function GET(req: NextRequest, { params }: { params: Promise<{ id: string }> }){
     try {
         const userID = await verifyUser();
@@ -83,17 +83,57 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
         if (!userID) {
             throw new Error("No Session Found"); 
         }
-        const data = await req.json();
+
+        const formData = await req.formData();
         const { id } = await params;
 
         await verifyWorld(id, userID); 
+        const message : string[] = [];
+        const worldCoverRaw = formData.get("worldCover");
+        const newWorldName = formData.get("worldName");
+        const newWorldDesc = formData.get("worldDescription");
 
+        if (worldCoverRaw instanceof File &&
+            worldCoverRaw.size > 0
+        ){
+            const imageFile = formData.get("worldCover") as File;
+            const arrayBuffer = await imageFile.arrayBuffer();
+            const buffer = Buffer.from(arrayBuffer);
+            const result : UploadApiResponse = await new Promise((resolve, reject) => {
+                cloudinary.uploader.upload_stream({ folder: "worldCover" }, (error, result) => {
+                    if (!result) return reject(new Error("No result returned from Cloudinary"));
+                    if (error) return reject(error);
+                    resolve(result);
+                }).end(buffer);
+                });
+            const worldCoverID = result.public_id;
+            await World.findByIdAndUpdate(id, {
+                worldCover : worldCoverID
+            })
+            message.push("Changed cover picture of " + formData.get("worldName"));
+        } 
+        const oldData = await World.findById(id);
         const editedWorld = await World.findByIdAndUpdate(id,
-            {worldName : data.worldName,
-            worldDescription : data.worldDescription},
+            {worldName : newWorldName,
+            worldDescription : newWorldDesc},
             {new: true}
         );
 
+        console.log(oldData.worldName);
+        console.log(newWorldName);
+        if (oldData.worldName != newWorldName) {
+            message.push("Changed name of " + oldData.worldName + " into " + newWorldName);
+        }
+        if (oldData.worldDescription != formData.get("worldDescription")){
+            message.push("Changed description of " + newWorldName + " into '" + newWorldDesc + "'");
+        }
+
+        const currentUser = await User.findById(userID);
+        const newChange = {
+            description : message,
+            username : currentUser.username,
+        }
+        await World.updateOne({_id: id}, { $push: { changes : newChange} });
         return NextResponse.json({ data : editedWorld, message : "World Edited!"}, { status: 200 });
     } catch(error){
         return errorHandling(error);

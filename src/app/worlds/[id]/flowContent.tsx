@@ -342,7 +342,10 @@ export function FlowContent({
 
             {worldData && (
               <>
-                <WorldSettingDialog worldData={worldData} />
+                <WorldSettingDialog
+                  worldData={worldData}
+                  graphRefresh={graphRefresh}
+                />
                 <ObjectCreationDialog
                   createFunction={addNode}
                   worldID={worldData._id}
