@@ -66,6 +66,14 @@ export default function NotificationElement({
     );
   }
 
+  if (notificationData.status == "kicked") {
+    return (
+      <div className="flex justify-between text-sm p-2 items-center italic">
+        <p> You were kicked out from {notificationData.worldID.worldName}</p>
+      </div>
+    );
+  }
+
   return (
     <div className="flex justify-between text-sm p-2 items-center">
       <p>

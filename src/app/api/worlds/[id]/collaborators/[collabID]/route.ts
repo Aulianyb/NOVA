@@ -15,9 +15,19 @@ export async function DELETE(
         if (!userID) {
             throw new Error("No Session Found"); 
         }
-
+        const collaborator = User.findById(collabID);
+        if (!collaborator) {
+            throw new Error("Collaborator Not Found"); 
+        }
         await User.updateOne({_id : collabID}, {$pull : {ownedWorlds : worldID}})
         const res = await World.updateOne({_id : worldID}, {$pull : {collaborators : collabID}})
+        
+        const newNotif = {
+            sender : userID,
+            worldID : worldID,
+            status : "kicked"
+        }
+        await User.updateOne({_id : collabID}, {$push : {notifications : newNotif}});
         return NextResponse.json({data : res, message : "Collaborator Deleted"}, {status : 200})
     } catch(error){
         return errorHandling(error);

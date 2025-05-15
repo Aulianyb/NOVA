@@ -39,7 +39,9 @@ export default function Worlds() {
       setSession(session);
       const resWorld = await fetch(`api/worlds`);
       if (!resWorld.ok) {
-        throw new Error("Failed to get world data");
+        const errorData = await resWorld.json();
+        console.log(errorData);
+        throw new Error(errorData.error || "Something went wrong");
       }
       const worldData = await resWorld.json();
       const worldArray: World[] = worldData.data.map((world: World) => ({

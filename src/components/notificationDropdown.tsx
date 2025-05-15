@@ -6,7 +6,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Button } from "./ui/button";
-import { Bell } from "lucide-react";
+import { Bell, BellDot } from "lucide-react";
 import { ScrollArea } from "./ui/scroll-area";
 import NotificationElement from "./notificationElement";
 import { Notification } from "../../types/types";
@@ -20,6 +20,10 @@ export default function NotificationDropdown({
 }) {
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const { toast } = useToast();
+  function isPending(notif: Notification) {
+    return notif.status == "pending";
+  }
+
   const fetchNotifications = useCallback(async () => {
     function showError(message: string) {
       const notify = () => {
@@ -60,7 +64,7 @@ export default function NotificationDropdown({
     <DropdownMenu onOpenChange={handleOpenChange}>
       <DropdownMenuTrigger asChild>
         <Button variant="ghost" size="icon">
-          <Bell />
+          {notifications.some(isPending) ? <BellDot /> : <Bell />}
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent>

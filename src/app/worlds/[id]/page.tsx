@@ -7,9 +7,14 @@ import { ReactFlowProvider } from "@xyflow/react";
 import { FlowContent } from "./flowContent";
 import Loading from "@/app/loading";
 import { useToast } from "@/hooks/use-toast";
+import Image from "next/image";
+import { quantico } from "@/app/fonts";
+import { Button } from "@/components/ui/button";
+import { useRouter } from "next/navigation";
 
 export default function Page() {
   const [loading, setLoading] = useState(true);
+  const [unAuthAccess, setUnAuthAccess] = useState(false);
   const [world, setWorld] = useState<World | null>(null);
   const [objects, setObjects] = useState<NodeObject[] | null>(null);
   const [relationships, setRelationships] = useState<RelationshipJSON[] | null>(
@@ -17,6 +22,7 @@ export default function Page() {
   );
   const params = useParams();
   const { toast } = useToast();
+  const router = useRouter();
 
   const fetchSession = useCallback(async () => {
     function showError(message: string) {
@@ -33,12 +39,20 @@ export default function Page() {
       const res = await fetch("/api/auth/self");
       if (!res.ok) {
         const errorData = await res.json();
-        console.log(errorData);
+        console.log(errorData.error);
         throw new Error(errorData.error || "Something went wrong");
       }
       const world = await fetch(`/api/worlds/${params.id}`);
       if (!world.ok) {
-        throw new Error("Failed to get world");
+        console.log(world.status);
+        if (world.status == 401) {
+          setUnAuthAccess(true);
+          throw new Error("You have no access to this world!");
+        } else {
+          const worldErrorData = await world.json();
+          console.log(worldErrorData.error);
+          throw new Error(worldErrorData.error || "Something went wrong");
+        }
       }
       const worldData = await world.json();
       const currentWorld: World = {
@@ -100,6 +114,38 @@ export default function Page() {
   useEffect(() => {
     fetchSession();
   }, [fetchSession]);
+
+  if (unAuthAccess) {
+    return (
+      <div className="flex flex-col gap-8 justify-center items-center min-h-screen">
+        <div className="flex flex-row items-center gap-4">
+          <Image
+            src={`/NOVA-lost.png`}
+            alt="NOVA, the mascot, greeting you"
+            width="250"
+            height="250"
+          />
+          <h1
+            className={`${quantico.className} font-bold text-[var(--primary)] text-[180px]`}
+          >
+            401
+          </h1>
+        </div>
+        <p className="text-center text-lg">
+          <strong>Trying to access a world without permission?</strong>
+          <br /> Nuh uh, you can't do that!
+        </p>
+        <Button
+          size="lg"
+          onClick={() => {
+            router.push("/");
+          }}
+        >
+          Take me back!
+        </Button>
+      </div>
+    );
+  }
 
   if (loading) {
     return <Loading />;

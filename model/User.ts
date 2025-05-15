@@ -4,7 +4,7 @@ const { Schema } = mongoose;
 const notification = new Schema({
     sender : {type : Schema.Types.ObjectId, ref : 'User'},
     worldID : {type : Schema.Types.ObjectId, ref : 'World'},
-    status : {type : String, enum : ['pending', 'rejected', 'accepted'], default : 'pending'}
+    status : {type : String, enum : ['pending', 'rejected', 'accepted', 'kicked'], default : 'pending'}
 }, {timestamps : true})
 
 const user = new Schema({
