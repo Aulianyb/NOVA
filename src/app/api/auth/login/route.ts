@@ -4,6 +4,8 @@ import jwt from 'jsonwebtoken'
 import { Session, setSession } from '../session';
 import * as bcrypt from 'bcrypt';  
 import { connectToMongoDB } from '@/app/lib/connect';
+import { verifyUser } from '../../function';
+import { errorHandling } from '../../function';
 
 export async function POST(
   req: NextRequest
@@ -11,11 +13,13 @@ export async function POST(
   try {
     await connectToMongoDB();
     const data = await req.json();
-
-    console.log(data.username)
     const user = await User.where({ username : data.username }).findOne()
-    if (!user) throw new Error('User not found')
-      
+    const userID = await verifyUser();
+    if (userID) {
+        throw new Error("User already logged in"); 
+    }
+
+    if (!user) throw new Error('User not found')      
     const validPassword = await bcrypt.compare(data.password, user.password)
     if (!validPassword) throw new Error('Invalid Password')
     
@@ -37,10 +41,6 @@ export async function POST(
     return res;
 
   } catch (error) {
-    console.log(error)
-    return NextResponse.json(
-      { error: error instanceof Error ? error.message : error },
-      { status: 500 }
-    );
+    return errorHandling(error); 
   }
 }

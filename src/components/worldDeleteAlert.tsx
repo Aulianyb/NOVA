@@ -13,7 +13,6 @@ import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import { useRouter } from "next/navigation";
 
-
 export default function WorldDeleteAlert({ id }: { id: string }) {
   const router = useRouter();
   const { toast } = useToast();
@@ -33,6 +32,10 @@ export default function WorldDeleteAlert({ id }: { id: string }) {
     notify();
   }
 
+  function showError(message: string) {
+    showNotification("An Error has Occcured", message, "destructive");
+  }
+
   async function onSubmit() {
     try {
       const res = await fetch(`/api/worlds/${id}`, {
@@ -42,12 +45,20 @@ export default function WorldDeleteAlert({ id }: { id: string }) {
         },
       });
       if (!res.ok) {
-        throw new Error(`World deletion failed!`);
+        const errorData = await res.json();
+        console.log(errorData);
+        throw new Error(errorData.error || "Something went wrong");
       }
-      showNotification("World Deleted!", "This world is successfully deleted.", "success");
+      showNotification(
+        "World Deleted!",
+        "This world is successfully deleted.",
+        "success"
+      );
       router.push("/worlds");
     } catch (error) {
-      console.log(error);
+      if (error instanceof Error) {
+        showError(error.message);
+      }
     }
   }
   return (

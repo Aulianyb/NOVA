@@ -4,6 +4,7 @@ import { ScrollArea } from "./ui/scroll-area";
 import ChangeElement from "./changeElement";
 import { useCallback, useState, useEffect } from "react";
 import { Change, ChangeAPI } from "../../types/types";
+import { useToast } from "@/hooks/use-toast";
 
 function convertDate(ISODate: string) {
   const date = new Date(ISODate);
@@ -28,12 +29,25 @@ export default function ChangesSheet({
   worldID: string;
 }) {
   const [changesList, setChangesList] = useState<Change[]>([]);
+  const { toast } = useToast();
 
   const fetchData = useCallback(async () => {
+    function showError(message: string) {
+      const notify = () => {
+        toast({
+          title: "An Error has Occured!",
+          description: message,
+          variant: "destructive",
+        });
+      };
+      notify();
+    }
     try {
       const res = await fetch(`/api/worlds/${worldID}/changes`);
       if (!res.ok) {
-        throw new Error("Failed to get changes");
+        const errorData = await res.json();
+        console.log(errorData);
+        throw new Error(errorData.error || "Something went wrong.");
       }
       const changesData = await res.json();
       const changes: Change[] = changesData.data.map((change: ChangeAPI) => ({
@@ -44,9 +58,11 @@ export default function ChangesSheet({
       }));
       setChangesList(changes);
     } catch (error) {
-      console.log({ error });
+      if (error instanceof Error) {
+        showError(error.message);
+      }
     }
-  }, [worldID]);
+  }, [worldID, toast]);
 
   useEffect(() => {
     if (isOpen) {

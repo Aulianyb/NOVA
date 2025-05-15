@@ -27,6 +27,7 @@ import { useCallback, useState } from "react";
 import { Node } from "@xyflow/react";
 import { NodeData } from "../../types/types";
 import { useEffect } from "react";
+import { useToast } from "@/hooks/use-toast";
 
 const MAX_FILE_SIZE = 5000000;
 const ACCEPTED_IMAGE_TYPES = [
@@ -92,6 +93,25 @@ export default function ObjectSettingDialog({
   useEffect(() => {
     resetForm();
   }, [nodeData, form, resetForm]);
+  
+  const { toast } = useToast();
+  function showNotification(
+    title: string,
+    description: string,
+    variant: "default" | "destructive" | "success" | null | undefined
+  ) {
+    const notify = () => {
+      toast({
+        title: title,
+        description: description,
+        variant: variant,
+      });
+    };
+    notify();
+  }
+  function showError(message: string) {
+    showNotification("An Error has Occcured", message, "destructive");
+  }
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     try {
@@ -104,12 +124,16 @@ export default function ObjectSettingDialog({
         body: formData,
       });
       if (!res.ok) {
-        throw new Error("Object edit failed");
+        const errorData = await res.json();
+        console.log(errorData);
+        throw new Error(errorData.error || "Something went wrong");
       }
       graphRefresh();
       setIsOpen(false);
     } catch (error) {
-      console.error(error);
+      if (error instanceof Error) {
+        showError(error.message);
+      }
     } finally {
       form.reset();
     }
@@ -150,7 +174,9 @@ export default function ObjectSettingDialog({
                     />
                   </FormControl>
                   <FormMessage />
-                  <FormDescription>Only .jpg, .jpeg, and .png formats are supported.</FormDescription>
+                  <FormDescription>
+                    Only .jpg, .jpeg, and .png formats are supported.
+                  </FormDescription>
                 </FormItem>
               )}
             />

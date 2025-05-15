@@ -30,10 +30,11 @@ export async function POST(req : NextRequest){
         await verifyWorld(worldID, userID);
         const receiverName = data.receiver; 
         const receiver = await User.findOne({username : receiverName});
-        const receiverID = receiver._id.toString();
         if (!receiver){
-            throw new Error("User not found!");
+            throw new Error("Username not found!");
         }
+        const receiverID = receiver._id.toString();
+
 
         const world = await World.findById(worldID);
         if (world.collaborators.includes(receiverID)){

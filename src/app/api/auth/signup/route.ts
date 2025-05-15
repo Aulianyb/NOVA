@@ -4,6 +4,7 @@ import * as bcrypt from 'bcrypt';
 import { connectToMongoDB } from '@/app/lib/connect';
 import jwt from 'jsonwebtoken'; 
 import { Session, setSession } from '../session';
+import { errorHandling } from '../../function';
 
 export async function POST(req: NextRequest){
     try {
@@ -42,10 +43,6 @@ export async function POST(req: NextRequest){
         await setSession(session); 
         return NextResponse.json({ data : newUser, message : "New User Created!"}, { status: 200 });
     } catch(error){
-        console.log(error);
-        return NextResponse.json(
-            { error: error instanceof Error ? error.message : error },
-            { status: 500 }
-        );
+        return errorHandling(error);
     }
 }

@@ -25,6 +25,7 @@ import { useCallback, useState } from "react";
 import { useEffect } from "react";
 import { Edge } from "@xyflow/react";
 import { RelationshipData } from "../../types/types";
+import { useToast } from "@/hooks/use-toast";
 
 const formSchema = z.object({
   relationshipDescription: z
@@ -58,6 +59,25 @@ export default function RelationshipSettingDialog({
     resetForm();
   }, [relationshipData, form, resetForm]);
 
+  const { toast } = useToast();
+  function showNotification(
+    title: string,
+    description: string,
+    variant: "default" | "destructive" | "success" | null | undefined
+  ) {
+    const notify = () => {
+      toast({
+        title: title,
+        description: description,
+        variant: variant,
+      });
+    };
+    notify();
+  }
+  function showError(message: string) {
+    showNotification("An Error has Occcured", message, "destructive");
+  }
+
   async function onSubmit(values: z.infer<typeof formSchema>) {
     try {
       const reqBody = {
@@ -72,13 +92,22 @@ export default function RelationshipSettingDialog({
         body: JSON.stringify(reqBody),
       });
       if (!res.ok) {
-        throw new Error("Relationship edit failed");
+        const errorData = await res.json();
+        console.log(errorData);
+        throw new Error(errorData.error || "Something went wrong");
       }
       graphRefresh();
       setIsOpen(false);
+      showNotification(
+        "Successfuly edited relationship!",
+        "Changes of the relaionship is saved",
+        "success"
+      );
       form.reset();
     } catch (error) {
-      console.error(error);
+      if (error instanceof Error) {
+        showError(error.message);
+      }
     }
   }
 

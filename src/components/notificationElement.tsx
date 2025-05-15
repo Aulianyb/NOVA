@@ -21,6 +21,17 @@ export default function NotificationElement({
     notifyResponded();
   }
 
+  function showError(message: string) {
+    const notify = () => {
+      toast({
+        title: "An Error has Occured!",
+        description: message,
+        variant: "destructive",
+      });
+    };
+    notify();
+  }
+
   async function handleRespond(response: string) {
     try {
       const req = {
@@ -34,12 +45,16 @@ export default function NotificationElement({
         body: JSON.stringify(req),
       });
       if (!res.ok) {
-        throw new Error("Response Failed!");
+        const errorData = await res.json();
+        console.log(errorData);
+        throw new Error(errorData.error || "Something went wrong");
       }
       worldRefresh();
       showNotification(response);
     } catch (error) {
-      console.log(error);
+      if (error instanceof Error) {
+        showError(error.message);
+      }
     }
   }
 

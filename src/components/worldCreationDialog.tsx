@@ -24,6 +24,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { SquarePlus } from "lucide-react";
 import { useState } from "react";
+import { useToast } from "@/hooks/use-toast";
 
 const MAX_FILE_SIZE = 5000000;
 const ACCEPTED_IMAGE_TYPES = [
@@ -69,6 +70,26 @@ export function CreateWorldDialog({
       worldCover: undefined,
     },
   });
+  const { toast } = useToast();
+
+  function showNotification(
+    title: string,
+    description: string,
+    variant: "default" | "destructive" | "success" | null | undefined
+  ) {
+    const notify = () => {
+      toast({
+        title: title,
+        description: description,
+        variant: variant,
+      });
+    };
+    notify();
+  }
+
+  function showError(message: string) {
+    showNotification("An Error has Occcured", message, "destructive");
+  }
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     try {
@@ -82,12 +103,21 @@ export function CreateWorldDialog({
         body: formData,
       });
       if (!res.ok) {
-        throw new Error("World creation failed");
+        const errorData = await res.json();
+        console.log(errorData);
+        throw new Error(errorData.error || "Something went wrong");
       }
       worldRefresh();
+      showNotification(
+        "World successfully created!",
+        "You can click on the world to see more info about it.",
+        "success"
+      );
       setIsOpen(false);
     } catch (error) {
-      console.log(error);
+      if (error instanceof Error) {
+        showError(error.message);
+      }
     } finally {
       form.reset();
     }

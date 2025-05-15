@@ -22,6 +22,7 @@ import { useCallback } from "react";
 import { useEffect } from "react";
 import { Edge } from "@xyflow/react";
 import { RelationshipData } from "../../types/types";
+import { useToast } from "@/hooks/use-toast";
 
 const formSchema = z.object({
   relationshipDescription: z
@@ -36,7 +37,7 @@ export default function RelationshipCreationDialog({
   relationshipData,
   worldID,
   graphRefresh,
-  addEdgeFunction
+  addEdgeFunction,
 }: {
   setIsAddingEdge: React.Dispatch<React.SetStateAction<boolean>>;
   isAddingEdge: boolean;
@@ -46,7 +47,7 @@ export default function RelationshipCreationDialog({
   relationshipData: Edge<RelationshipData>;
   worldID: string;
   graphRefresh: () => void;
-  addEdgeFunction : (newEdge : Edge) => void; 
+  addEdgeFunction: (newEdge: Edge) => void;
 }) {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -64,8 +65,19 @@ export default function RelationshipCreationDialog({
   useEffect(() => {
     resetForm();
   }, [relationshipData, form, resetForm]);
+  const { toast } = useToast();
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
+    function showError(message: string) {
+      const notify = () => {
+        toast({
+          title: "An Error has Occured!",
+          description: message,
+          variant: "destructive",
+        });
+      };
+      notify();
+    }
     try {
       const reqBody = {
         relationshipDescription: values.relationshipDescription,
@@ -82,14 +94,18 @@ export default function RelationshipCreationDialog({
         body: JSON.stringify(reqBody),
       });
       if (!res.ok) {
-        throw new Error("Relationship creation failed");
+        const errorData = await res.json();
+        console.log(errorData);
+        throw new Error(errorData.error || "Failed to get session");
       }
       addEdgeFunction(relationshipData);
       graphRefresh();
       form.reset();
       setIsAddingEdge(false);
     } catch (error) {
-      console.error(error);
+      if (error instanceof Error) {
+        showError(error.message);
+      }
     } finally {
       setNewEdge(undefined);
     }

@@ -102,6 +102,25 @@ export function FlowContent({
     });
   }, [toast]);
 
+  function showNotification(
+    title: string,
+    description: string,
+    variant: "default" | "destructive" | "success" | null | undefined
+  ) {
+    const notify = () => {
+      toast({
+        title: title,
+        description: description,
+        variant: variant,
+      });
+    };
+    notify();
+  }
+
+  function showError(message: string) {
+    showNotification("An Error has Occcured", message, "destructive");
+  }
+
   const handleChanges = useCallback(() => {
     if (hasChange < 2) {
       setHasChanged(hasChange + 1);
@@ -111,14 +130,6 @@ export function FlowContent({
       setHasChanged(hasChange + 1);
     }
   }, [hasChange, notifyChanges]);
-
-  const notifySaved = () => {
-    toast({
-      title: "Changes are saved!",
-      description: "You can continue editing now :D",
-      variant: "success",
-    });
-  };
 
   function addingEdges(newEdge: Edge) {
     setEdges((eds) => addEdge(newEdge, eds));
@@ -211,12 +222,20 @@ export function FlowContent({
       });
 
       if (!res.ok) {
-        throw new Error(`Failed to save objects: ${res.status}`);
+        const errorData = await res.json();
+        console.log(errorData);
+        throw new Error(errorData.error || "Something went wrong");
       }
 
-      notifySaved();
+      showNotification(
+        "Graph layout is saved!",
+        "You can continue editing now :D",
+        "success"
+      );
     } catch (error) {
-      console.log(error);
+      if (error instanceof Error) {
+        showError(error.message);
+      }
     } finally {
       setHasChanged(1);
     }
@@ -252,7 +271,6 @@ export function FlowContent({
       objectDescription: string;
       objectPicture: string;
     }) => {
-      try {
         const newNode = {
           id: objectID,
           position: flow.screenToFlowPosition({
@@ -270,9 +288,6 @@ export function FlowContent({
           },
         };
         setNodes((nds) => nds.concat(newNode));
-      } catch (error) {
-        console.log(error);
-      }
     },
     [setNodes, flow]
   );

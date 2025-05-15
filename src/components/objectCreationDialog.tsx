@@ -25,6 +25,7 @@ import { Button } from "@/components/ui/button";
 import { SquarePlus } from "lucide-react";
 import { useState } from "react";
 import { XYPosition } from "@xyflow/react";
+import { useToast } from "@/hooks/use-toast";
 
 const MAX_FILE_SIZE = 5000000;
 const ACCEPTED_IMAGE_TYPES = [
@@ -71,6 +72,17 @@ export default function ObjectCreationDialog({
   position: XYPosition;
 }) {
   const [isOpen, setIsOpen] = useState(false);
+  const { toast } = useToast();
+  function showError(message: string) {
+    const notify = () => {
+      toast({
+        title: "An Error has Occured!",
+        description: message,
+        variant: "destructive",
+      });
+    };
+    notify();
+  }
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -96,7 +108,9 @@ export default function ObjectCreationDialog({
         body: formData,
       });
       if (!res.ok) {
-        throw new Error("Object creation failed");
+        const errorData = await res.json();
+        console.log(errorData)
+        throw new Error(errorData.error || "Something went wrong");
       }
 
       const responseData = await res.json();
@@ -110,7 +124,9 @@ export default function ObjectCreationDialog({
       form.reset();
       setIsOpen(false);
     } catch (error) {
-      console.log(error);
+      if (error instanceof Error) {
+        showError(error.message);
+      }
     }
   }
 

@@ -104,6 +104,10 @@ export default function WorldSettingDialog({
     notify();
   }
 
+  function showError(message: string) {
+    showNotification("An Error has Occcured", message, "destructive");
+  }
+
   const notifyDeleted = () => {
     toast({
       title: "Collaborator Removed!",
@@ -122,7 +126,9 @@ export default function WorldSettingDialog({
         body: JSON.stringify(values),
       });
       if (!res.ok) {
-        throw new Error("Invite failed");
+        const errorData = await res.json();
+        console.log(errorData);
+        throw new Error(errorData.error || "Something went wrong");
       }
       showNotification(
         "Invitation Sent!",
@@ -130,7 +136,9 @@ export default function WorldSettingDialog({
         "success"
       );
     } catch (error) {
-      console.log(error);
+      if (error instanceof Error) {
+        showError(error.message);
+      }
     }
   }
 
@@ -145,12 +153,16 @@ export default function WorldSettingDialog({
         body: formData,
       });
       if (!res.ok) {
-        throw new Error("World edit failed");
+        const errorData = await res.json();
+        console.log(errorData);
+        throw new Error(errorData.error || "Something went wrong");
       }
       showNotification("World Edited!", "Your changes are saved.", "success");
       graphRefresh();
     } catch (error) {
-      console.log(error);
+      if (error instanceof Error) {
+        showError(error.message);
+      }
     }
   }
 

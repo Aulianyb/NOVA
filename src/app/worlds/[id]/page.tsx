@@ -6,6 +6,7 @@ import { World, NodeObject, RelationshipJSON } from "../../../../types/types";
 import { ReactFlowProvider } from "@xyflow/react";
 import { FlowContent } from "./flowContent";
 import Loading from "@/app/loading";
+import { useToast } from "@/hooks/use-toast";
 
 export default function Page() {
   const [loading, setLoading] = useState(true);
@@ -14,13 +15,26 @@ export default function Page() {
   const [relationships, setRelationships] = useState<RelationshipJSON[] | null>(
     null
   );
-  // const flow = useReactFlow();
   const params = useParams();
+  const { toast } = useToast();
+
   const fetchSession = useCallback(async () => {
+    function showError(message: string) {
+      const notify = () => {
+        toast({
+          title: "An Error has Occured!",
+          description: message,
+          variant: "destructive",
+        });
+      };
+      notify();
+    }
     try {
       const res = await fetch("/api/auth/self");
       if (!res.ok) {
-        throw new Error("Failed to get session");
+        const errorData = await res.json();
+        console.log(errorData);
+        throw new Error(errorData.error || "Something went wrong");
       }
       const world = await fetch(`/api/worlds/${params.id}`);
       if (!world.ok) {
@@ -36,7 +50,7 @@ export default function Page() {
         changes: worldData.data.changes,
         relationships: worldData.data.relationships,
         worldCover: worldData.data.worldCover,
-        collaborators: worldData.data.collaborators ?? []
+        collaborators: worldData.data.collaborators ?? [],
       };
       setWorld(currentWorld);
       const resNodesEdges = await fetch(
@@ -75,11 +89,13 @@ export default function Page() {
       setObjects(objectArray);
       setRelationships(relationArray);
     } catch (error) {
-      console.log({ error: error instanceof Error ? error.message : error });
+      if (error instanceof Error) {
+        showError(error.message);
+      }
     } finally {
       setLoading(false);
     }
-  }, [setObjects, setRelationships, setWorld, params.id]);
+  }, [setObjects, toast, setRelationships, setWorld, params.id]);
 
   useEffect(() => {
     fetchSession();

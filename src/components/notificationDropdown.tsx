@@ -12,27 +12,42 @@ import NotificationElement from "./notificationElement";
 import { Notification } from "../../types/types";
 import { useState, useCallback } from "react";
 import React from "react";
-
+import { useToast } from "@/hooks/use-toast";
 export default function NotificationDropdown({
   worldRefresh,
 }: {
   worldRefresh: () => void;
 }) {
   const [notifications, setNotifications] = useState<Notification[]>([]);
+  const { toast } = useToast();
   const fetchNotifications = useCallback(async () => {
+    function showError(message: string) {
+      const notify = () => {
+        toast({
+          title: "An Error has Occured!",
+          description: message,
+          variant: "destructive",
+        });
+      };
+      notify();
+    }
     try {
       const res = await fetch("/api/notifications");
       if (!res.ok) {
-        throw new Error("Failed to get notifications");
+        const errorData = await res.json();
+        console.log(errorData);
+        throw new Error(errorData.error || "Something went wrong");
       }
       const notifRes = await res.json();
       const notifData = notifRes.data;
       console.log(notifData);
       setNotifications(notifData);
     } catch (error) {
-      console.log(error);
+      if (error instanceof Error) {
+        showError(error.message);
+      }
     }
-  }, []);
+  }, [toast]);
 
   const handleOpenChange = (isOpen: boolean) => {
     console.log(isOpen);

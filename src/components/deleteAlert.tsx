@@ -11,18 +11,39 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
 import { Trash } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
 
 export default function DeleteAlert({
   id,
   deleteFunction,
   openFunction,
-  type
+  type,
 }: {
   id: string;
-  deleteFunction: (id : string) => void;
+  deleteFunction: (id: string) => void;
   openFunction: React.Dispatch<React.SetStateAction<boolean>>;
-  type : string
+  type: string;
 }) {
+  const { toast } = useToast();
+  function showNotification(
+    title: string,
+    description: string,
+    variant: "default" | "destructive" | "success" | null | undefined
+  ) {
+    const notify = () => {
+      toast({
+        title: title,
+        description: description,
+        variant: variant,
+      });
+    };
+    notify();
+  }
+
+  function showError(message: string) {
+    showNotification("An Error has Occcured", message, "destructive");
+  }
+
   async function onSubmit() {
     try {
       const res = await fetch(`/api/${type}s/${id}`, {
@@ -32,12 +53,21 @@ export default function DeleteAlert({
         },
       });
       if (!res.ok) {
-        throw new Error(`${type} deletion failed`);
+        const errorData = await res.json();
+        console.log(errorData);
+        throw new Error(errorData.error || "Something went wrong");
       }
       deleteFunction(id);
-      openFunction(false); 
+      openFunction(false);
+      showNotification(
+        "Deleted " + type + "!",
+        type + " is deleted succesfully",
+        "success"
+      );
     } catch (error) {
-      console.log(error);
+      if (error instanceof Error) {
+        showError(error.message);
+      }
     }
   }
   return (
