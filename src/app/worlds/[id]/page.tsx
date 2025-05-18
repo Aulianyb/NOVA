@@ -158,6 +158,7 @@ export default function Page() {
         objectData={objects}
         relationshipData={relationships}
         graphRefresh={fetchSession}
+
       />
     </ReactFlowProvider>
   );

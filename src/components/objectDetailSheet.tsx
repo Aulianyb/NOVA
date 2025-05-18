@@ -68,17 +68,17 @@ export default function ObjectDetailSheet({
             height="150"
             className="rounded-md"
           />
-          <div className="space-y-4 p-2">
+          <div className="space-y-2 p-2">
             <h2 className="font-bold"> {nodeData.data.objectName} </h2>
             <p className="italic"> {nodeData.data.objectDescription} </p>
             <div className="flex gap-1">
               <div className="p-1 px-2 text-xs text-red-500 bg-red-200 w-fit rounded-sm flex gap-1 items-center">
                 <Hash size={13} />
-                <span> Tags 1 </span>
+                <span> Placeholder </span>
               </div>
               <div className="p-1 px-2 text-xs text-blue-500 bg-blue-200 w-fit rounded-sm flex gap-1 items-center">
                 <Hash size={13} />
-                <span> Tags 1 </span>
+                <span> Placeholder Two </span>
               </div>
             </div>
           </div>

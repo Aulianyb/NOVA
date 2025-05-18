@@ -35,7 +35,7 @@ import RelationshipCreationDialog from "@/components/relationshipCreationDialog"
 import WorldSavingAlert from "@/components/worldSavingAlert";
 
 const connectionLineStyle = {
-  stroke: "#b1b1b7",
+  stroke: "#791dab",
 };
 
 const nodeTypes = {
@@ -183,6 +183,10 @@ export function FlowContent({
           relationshipDescription: edge.relationshipDescription,
         },
         type: "straight",
+        style:{
+          strokeWidth : 2,
+          stroke : "#791dab"
+        }
       }));
       setEdges(currentEdges);
     }
@@ -344,6 +348,7 @@ export function FlowContent({
         connectionMode={ConnectionMode.Loose}
         onInit={setRfInstance}
         deleteKeyCode={[]}
+        minZoom={0.1}
       >
         <Panel>
           <div className="flex flex-col gap-2">
