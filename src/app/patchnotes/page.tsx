@@ -3,7 +3,6 @@
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
-import { CldImage } from "next-cloudinary";
 
 export default function PatchNotesPage() {
   const router = useRouter();
@@ -17,13 +16,6 @@ export default function PatchNotesPage() {
           width="200"
           height="200"
           className="rounded-full"
-        />
-        <CldImage
-          width="200"
-          height="200"
-          src="nova/iq0jj82afy4nlg1awsa7"
-          sizes="100vw"
-          alt="Description of my image"
         />
         <p>Hi there, this page won't be in the final product.</p>
         <div className="space-y-5">
@@ -46,6 +38,16 @@ export default function PatchNotesPage() {
             <li>Added World Graph, changing and saving nodes and edges</li>
             <li>Added node and graph editing</li>
             <li>Fixed buncha bugs! 🐛🐛</li>
+          </div>
+          <div>
+            <h2>NOVA v0.3.0</h2>
+            <li>Added Changes Tracker</li>
+            <li>Added the ability to change profile pictures and world cover</li>
+            <li>Added Collaboration Feature, you can invite people with their username</li>
+            <li>Fix saving bug, making sure everything is well synchronized</li>
+            <li>Fix deleting UI, now deleting requires user to press the delete button</li>
+            <li>Changed background, line size, and line color</li>
+            <li>Added error alert and confirmation pop up for better user experience</li>
           </div>
         </div>
         <Button

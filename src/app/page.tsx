@@ -88,7 +88,7 @@ export default function LandingPage() {
       </div>
       <footer className="row-start-3 flex gap-6 flex-wrap items-center justify-center p-4">
         <h3 className="text-[var(--white)]">
-          Final project by @TheVoidMask - v0.2.0
+          Final project by @TheVoidMask - v0.3.0
         </h3>
       </footer>
     </main>
