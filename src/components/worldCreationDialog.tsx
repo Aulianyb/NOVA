@@ -4,6 +4,7 @@ import {
   FormField,
   FormItem,
   FormMessage,
+  FormDescription,
 } from "@/components/ui/form";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
@@ -23,6 +24,15 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { SquarePlus } from "lucide-react";
 import { useState } from "react";
+import { useToast } from "@/hooks/use-toast";
+
+const MAX_FILE_SIZE = 5000000;
+const ACCEPTED_IMAGE_TYPES = [
+  "image/jpeg",
+  "image/jpg",
+  "image/png",
+  "image/webp",
+];
 
 const formSchema = z.object({
   worldName: z
@@ -32,6 +42,18 @@ const formSchema = z.object({
   worldDescription: z
     .string()
     .max(240, "Description must be under 240 characters long"),
+  worldCover: z
+    .any()
+    .transform((val) => (val instanceof FileList ? val[0] : val))
+    .optional()
+    .refine(
+      (file) => file === undefined || file?.size <= MAX_FILE_SIZE,
+      `Max image size is 5MB.`
+    )
+    .refine(
+      (file) => file === undefined || ACCEPTED_IMAGE_TYPES.includes(file?.type),
+      "Only .jpg, .jpeg, .png and .webp formats are supported."
+    ),
 });
 
 export function CreateWorldDialog({
@@ -45,25 +67,57 @@ export function CreateWorldDialog({
     defaultValues: {
       worldName: "",
       worldDescription: "",
+      worldCover: undefined,
     },
   });
+  const { toast } = useToast();
+
+  function showNotification(
+    title: string,
+    description: string,
+    variant: "default" | "destructive" | "success" | null | undefined
+  ) {
+    const notify = () => {
+      toast({
+        title: title,
+        description: description,
+        variant: variant,
+      });
+    };
+    notify();
+  }
+
+  function showError(message: string) {
+    showNotification("An Error has Occcured", message, "destructive");
+  }
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     try {
+      const formData = new FormData();
+      formData.append("worldName", values.worldName);
+      formData.append("worldDescription", values.worldDescription);
+      formData.append("worldCover", values.worldCover);
+
       const res = await fetch("/api/worlds", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(values),
+        body: formData,
       });
       if (!res.ok) {
-        throw new Error("World creation failed");
+        const errorData = await res.json();
+        console.log(errorData);
+        throw new Error(errorData.error || "Something went wrong");
       }
       worldRefresh();
+      showNotification(
+        "World successfully created!",
+        "You can click on the world to see more info about it.",
+        "success"
+      );
       setIsOpen(false);
     } catch (error) {
-      console.log(error);
+      if (error instanceof Error) {
+        showError(error.message);
+      }
     } finally {
       form.reset();
     }
@@ -111,6 +165,28 @@ export function CreateWorldDialog({
                   <FormControl>
                     <Textarea {...field} className="resize-none h-[100px]" />
                   </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="worldCover"
+              render={() => (
+                <FormItem>
+                  <Label htmlFor="picture">World Cover</Label>
+                  <FormControl>
+                    <Input
+                      id="picture"
+                      type="file"
+                      className="bg-white border border-slate-200"
+                      {...form.register("worldCover")}
+                    />
+                  </FormControl>
+                  <FormDescription>
+                    If you left this blank, it'll give you a default world
+                    cover!
+                  </FormDescription>
                   <FormMessage />
                 </FormItem>
               )}

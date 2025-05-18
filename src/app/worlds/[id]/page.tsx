@@ -2,362 +2,57 @@
 import React, { useCallback } from "react";
 import { useParams } from "next/navigation";
 import { useState, useEffect } from "react";
-import {
-  World,
-  NodeObject,
-  Relationship,
-  NodeData,
-  RelationshipData,
-} from "../../../../types/types";
-import {
-  ReactFlow,
-  useNodesState,
-  useEdgesState,
-  addEdge,
-  Background,
-  Panel,
-  useReactFlow,
-  ReactFlowProvider,
-  ConnectionMode,
-  BackgroundVariant,
-  Edge,
-  Node,
-  NodeChange,
-  ReactFlowInstance,
-  OnConnect,
-} from "@xyflow/react";
-import CustomNode from "@/components/CustomNode";
-import { Button } from "@/components/ui/button";
-import { ArrowLeft, Save } from "lucide-react";
-import { useRouter } from "next/navigation";
-import WorldSettingDialog from "@/components/worldSettingDialog";
-import ObjectCreationDialog from "@/components/objectCreationDialog";
-import { useToast } from "@/hooks/use-toast";
+import { World, NodeObject, RelationshipJSON } from "../../../../types/types";
+import { ReactFlowProvider } from "@xyflow/react";
+import { FlowContent } from "./flowContent";
 import Loading from "@/app/loading";
-import ObjectDetailSheet from "@/components/objectDetailSheet";
-import RelationshipDetailSheet from "@/components/relationshipDetailSheet";
-
-// const flowKey = "example-flow";
-
-const connectionLineStyle = {
-  stroke: "#b1b1b7",
-};
-
-const nodeTypes = {
-  customNode: CustomNode,
-};
-
-const initialEdges: Edge[] = [];
-const initialNodes: Node[] = [];
-
-function generateObjectId(): string {
-  const timestamp = Math.floor(new Date().getTime() / 1000).toString(16);
-  const random = "xxxxxxxxxxxxxxxx".replace(/[x]/g, () =>
-    ((Math.random() * 16) | 0).toString(16)
-  );
-  return timestamp + random;
-}
-
-function FlowContent({
-  worldData,
-  objectData,
-  relationshipData,
-}: {
-  worldData: World | null;
-  objectData: NodeObject[] | null;
-  relationshipData: Relationship[] | null;
-}) {
-  const flow = useReactFlow();
-  const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
-  const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
-  const [isNodeClicked, setIsNodeClicked] = useState(false);
-  const [isEdgeClicked, setIsEdgeClicked] = useState(false);
-  const [hasChange, setHasChanged] = useState(0);
-  const [objectMap, setObjectMap] = useState<Record<string, NodeObject>>({});
-  const [rfInstance, setRfInstance] = useState<ReactFlowInstance<
-    Node,
-    Edge
-  > | null>(null);
-  const [selectedNode, setSelectedNode] = useState<Node<NodeData> | null>(null);
-  const [selectedEdge, setSelectedEdge] =
-    useState<Edge<RelationshipData> | null>(null);
-  const [selectedTarget, setSelectedTarget] = useState<NodeObject | null>(null);
-  const [selectedSource, setSelectedSource] = useState<NodeObject | null>(null);
-  const router = useRouter();
-  const { toast } = useToast();
-
-  const notifyChanges = useCallback(() => {
-    toast({
-      title: "Your changes are not saved.",
-      description: (
-        <div className="flex gap-1">
-          <span>Save your changes with the</span>
-          <Save size={15} />
-          <span>button!</span>
-        </div>
-      ),
-      variant: "destructive",
-    });
-  }, [toast]);
-
-  const handleChanges = useCallback(() => {
-    if (hasChange < 2) {
-      setHasChanged(hasChange + 1);
-    }
-    if (hasChange > 1 && hasChange < 3) {
-      notifyChanges();
-      setHasChanged(hasChange + 1);
-    }
-  }, [hasChange, notifyChanges]);
-
-  const notifySaved = () => {
-    toast({
-      title: "Changes are saved!",
-      description: "You can continue editing now :D",
-      variant: "success",
-    });
-  };
-
-  const onConnect: OnConnect = useCallback(
-    (connection) => {
-      handleChanges();
-      const id = generateObjectId();
-      const newEdge: Edge = {
-        ...connection,
-        id: id,
-        data: {
-          relationshipDescription: "Describe their relationship!",
-        },
-        type: "straight",
-      };
-      setEdges((eds) => addEdge(newEdge, eds));
-    },
-    [setEdges, handleChanges]
-  );
-
-  const fetchData = useCallback(() => {
-    if (objectData) {
-      const currentNodes = objectData.map((object: NodeObject) => ({
-        id: object._id,
-        position: { x: object.positionX, y: object.positionY },
-        data: {
-          objectName: object.objectName,
-          objectDescription: object.objectDescription,
-          objectPicture: object.objectPicture,
-          images: object.images,
-          tags: object.tags,
-          relationships: object.relationships,
-        },
-        type: "customNode",
-      }));
-      setNodes(currentNodes);
-      const objectMap = Object.fromEntries(
-        objectData.map((obj) => [obj._id, obj])
-      );
-      setObjectMap(objectMap);
-    }
-    if (relationshipData) {
-      const currentEdges = relationshipData.map((edge: Relationship) => ({
-        id: edge._id,
-        source: edge.source,
-        target: edge.target,
-        data: {
-          relationshipDescription: edge.relationshipDescription,
-        },
-        type: "straight",
-      }));
-      setEdges(currentEdges);
-    }
-  }, [objectData, relationshipData, setEdges, setNodes]);
-
-  async function handleSave() {
-    try {
-      if (!rfInstance) {
-        throw new Error("React flow instance not found.");
-      }
-      if (!worldData) {
-        throw new Error("World not found.");
-      }
-
-      const flow = rfInstance.toObject();
-      const nodeArray = flow.nodes.map((node) => ({
-        id: node.id,
-        data: node.data,
-        position: node.position,
-      }));
-
-      const edgeArray = flow.edges.map((edge) => ({
-        id: edge.id,
-        source: edge.source,
-        target: edge.target,
-        data: edge.data,
-      }));
-
-      const res = await fetch("/api/objects", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          worldID: worldData._id,
-          nodes: nodeArray,
-          edges: edgeArray,
-        }),
-      });
-
-      if (!res.ok) {
-        throw new Error(`Failed to save objects: ${res.status}`);
-      }
-
-      notifySaved();
-    } catch (error) {
-      console.log(error);
-    } finally {
-      setHasChanged(1);
-    }
-  }
-
-  const handleNodesChange = useCallback(
-    (changes: NodeChange[]) => {
-      if (changes[0].type == "position" || changes[0].type == "dimensions") {
-        handleChanges();
-      }
-      onNodesChange(changes);
-    },
-    [onNodesChange, handleChanges]
-  );
-
-  const handleEdgesDelete = useCallback(() => {
-    handleChanges();
-  }, [handleChanges]);
-
-  useEffect(() => {
-    fetchData();
-  }, [fetchData]);
-
-  const addNode = useCallback(
-    ({
-      objectName,
-      objectDescription,
-      objectPicture,
-    }: {
-      objectName: string;
-      objectDescription: string;
-      objectPicture: string | undefined;
-    }) => {
-      const id = generateObjectId();
-      const newNode = {
-        id: id,
-        position: flow.screenToFlowPosition({
-          x: window.innerWidth / 2,
-          y: window.innerHeight / 2,
-        }),
-        type: "customNode",
-        data: {
-          objectName: objectName,
-          objectDescription: objectDescription,
-          objectPicture: objectPicture,
-          images: [],
-          tags: [],
-          relationships: [],
-        },
-      };
-      setNodes((nds) => nds.concat(newNode));
-    },
-    [setNodes, flow]
-  );
-
-  const onNodeClick = (event: React.MouseEvent, node: Node) => {
-    console.log("click node", node);
-    setSelectedNode(node as Node<NodeData>);
-    setIsNodeClicked(true);
-  };
-
-  const onEdgeClick = (event: React.MouseEvent, edge: Edge) => {
-    console.log("click edge", edge);
-    if (objectData) {
-      setSelectedEdge(edge as Edge<RelationshipData>);
-      setSelectedSource(objectMap[edge.source]);
-      setSelectedTarget(objectMap[edge.target]);
-    }
-    setIsEdgeClicked(true);
-  };
-
-  return (
-    <div style={{ width: "100vw", height: "100vh" }}>
-      <ReactFlow
-        nodes={nodes}
-        edges={edges}
-        onNodesChange={handleNodesChange}
-        onEdgesChange={onEdgesChange}
-        onEdgesDelete={handleEdgesDelete}
-        onNodeClick={onNodeClick}
-        onEdgeClick={onEdgeClick}
-        onConnect={onConnect}
-        nodeTypes={nodeTypes}
-        connectionLineStyle={connectionLineStyle}
-        connectionMode={ConnectionMode.Loose}
-        onInit={setRfInstance}
-      >
-        <Panel>
-          <div className="flex flex-col gap-2">
-            <Button
-              onClick={() => {
-                router.back();
-              }}
-              size="icon"
-            >
-              <ArrowLeft />
-            </Button>
-            {worldData && <WorldSettingDialog worldData={worldData} />}
-            <ObjectCreationDialog createFunction={addNode} />
-            {hasChange > 1 && (
-              <Button
-                size="icon"
-                variant="destructive"
-                onClick={() => handleSave()}
-              >
-                <Save />
-              </Button>
-            )}
-          </div>
-          <ObjectDetailSheet
-            isNodeClicked={isNodeClicked}
-            openFunction={setIsNodeClicked}
-            nodeData={selectedNode}
-          />
-          <RelationshipDetailSheet
-            isEdgeClicked={isEdgeClicked}
-            openFunction={setIsEdgeClicked}
-            sourceNode={selectedSource}
-            targetNode={selectedTarget}
-            relationshipData={selectedEdge}
-          />
-        </Panel>
-        <Background variant={BackgroundVariant.Lines} gap={12} size={1} />
-      </ReactFlow>
-    </div>
-  );
-}
+import { useToast } from "@/hooks/use-toast";
+import Image from "next/image";
+import { quantico } from "@/app/fonts";
+import { Button } from "@/components/ui/button";
+import { useRouter } from "next/navigation";
 
 export default function Page() {
   const [loading, setLoading] = useState(true);
+  const [unAuthAccess, setUnAuthAccess] = useState(false);
   const [world, setWorld] = useState<World | null>(null);
   const [objects, setObjects] = useState<NodeObject[] | null>(null);
-  const [relationships, setRelationships] = useState<Relationship[] | null>(
+  const [relationships, setRelationships] = useState<RelationshipJSON[] | null>(
     null
   );
-  // const flow = useReactFlow();
   const params = useParams();
+  const { toast } = useToast();
+  const router = useRouter();
+
   const fetchSession = useCallback(async () => {
+    function showError(message: string) {
+      const notify = () => {
+        toast({
+          title: "An Error has Occured!",
+          description: message,
+          variant: "destructive",
+        });
+      };
+      notify();
+    }
     try {
       const res = await fetch("/api/auth/self");
       if (!res.ok) {
-        throw new Error("Failed to get session");
+        const errorData = await res.json();
+        console.log(errorData.error);
+        throw new Error(errorData.error || "Something went wrong");
       }
       const world = await fetch(`/api/worlds/${params.id}`);
       if (!world.ok) {
-        throw new Error("Failed to get world");
+        console.log(world.status);
+        if (world.status == 401) {
+          setUnAuthAccess(true);
+          throw new Error("You have no access to this world!");
+        } else {
+          const worldErrorData = await world.json();
+          console.log(worldErrorData.error);
+          throw new Error(worldErrorData.error || "Something went wrong");
+        }
       }
       const worldData = await world.json();
       const currentWorld: World = {
@@ -368,6 +63,8 @@ export default function Page() {
         objects: worldData.data.object,
         changes: worldData.data.changes,
         relationships: worldData.data.relationships,
+        worldCover: worldData.data.worldCover,
+        collaborators: worldData.data.collaborators ?? [],
       };
       setWorld(currentWorld);
       const resNodesEdges = await fetch(
@@ -392,10 +89,9 @@ export default function Page() {
         })
       );
       setObjects(objectArray);
-
       const worldRelationships = NodesAndEdges.data.worldRelationships;
-      const relationArray: Relationship[] = worldRelationships.map(
-        (relation: Relationship) => ({
+      const relationArray: RelationshipJSON[] = worldRelationships.map(
+        (relation: RelationshipJSON) => ({
           _id: relation._id,
           source: relation.source,
           target: relation.target,
@@ -407,15 +103,49 @@ export default function Page() {
       setObjects(objectArray);
       setRelationships(relationArray);
     } catch (error) {
-      console.log({ error: error instanceof Error ? error.message : error });
+      if (error instanceof Error) {
+        showError(error.message);
+      }
     } finally {
       setLoading(false);
     }
-  }, [setObjects, setRelationships, setWorld, params.id]);
+  }, [setObjects, toast, setRelationships, setWorld, params.id]);
 
   useEffect(() => {
     fetchSession();
   }, [fetchSession]);
+
+  if (unAuthAccess) {
+    return (
+      <div className="flex flex-col gap-8 justify-center items-center min-h-screen">
+        <div className="flex flex-row items-center gap-4">
+          <Image
+            src={`/NOVA-lost.png`}
+            alt="NOVA, the mascot, greeting you"
+            width="250"
+            height="250"
+          />
+          <h1
+            className={`${quantico.className} font-bold text-[var(--primary)] text-[180px]`}
+          >
+            401
+          </h1>
+        </div>
+        <p className="text-center text-lg">
+          <strong>Trying to access a world without permission?</strong>
+          <br /> Nuh uh, you can't do that!
+        </p>
+        <Button
+          size="lg"
+          onClick={() => {
+            router.push("/");
+          }}
+        >
+          Take me back!
+        </Button>
+      </div>
+    );
+  }
 
   if (loading) {
     return <Loading />;
@@ -427,6 +157,8 @@ export default function Page() {
         worldData={world}
         objectData={objects}
         relationshipData={relationships}
+        graphRefresh={fetchSession}
+
       />
     </ReactFlowProvider>
   );

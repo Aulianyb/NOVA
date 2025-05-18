@@ -1,11 +1,32 @@
+export type ChangeAPI = {
+    _id : string,
+    description : string,
+    username : string,
+    createdAt : string
+}
+
+export type Change = {
+    _id : string,
+    description : string[],
+    username : string,
+    time : string
+}
+
+export type Collaborator = {
+    _id : string,
+    username : string
+}
+
 export type World = {
     _id : string,
     worldName : string, 
     worldDescription : string,
+    worldCover : string | undefined,
     owners : string[],
     objects : string[],
-    changes : string[],
-    relationships : string[]
+    changes : Change[],
+    relationships : string[],
+    collaborators : Collaborator[]
 }
 
 export type NodeObject = {
@@ -20,7 +41,7 @@ export type NodeObject = {
     positionY : number
 }
 
-export type Relationship = {
+export type RelationshipJSON = {
     _id : string,
     source : string,
     target : string,
@@ -46,7 +67,7 @@ export type NodeData = {
     objectDescription?: string;
     images : string[],
     tags : string[],
-    relationship : string[]
+    relationships : string[]
 };
 
 export type EdgeJSON = {
@@ -59,3 +80,16 @@ export type EdgeJSON = {
 export type RelationshipData = {
     relationshipDescription : string; 
 };
+
+export type Notification = {
+    _id : string,
+    sender : {
+        _id : string,
+        username : string
+    },
+    worldID : {
+        _id : string,
+        worldName : string
+    },
+    status : string
+}

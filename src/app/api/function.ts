@@ -7,7 +7,7 @@ import { connectToMongoDB } from "@/app/lib/connect";
 import jwt from "jsonwebtoken";
 import { getSession } from "./auth/session";
 
-export function errorhandling(error : unknown){
+export function errorHandling(error : unknown){
     console.log(error);
     if (error instanceof Error) {
         if (error.message === "No session found" || error.message === "You are not the owner of this world") {
@@ -21,7 +21,7 @@ export function errorhandling(error : unknown){
     );
 }
 
-export async function verifyWorld(worldID : string, userID : string){
+export async function verifyWorld(worldID : string, userID : string){;
     if (!mongoose.Types.ObjectId.isValid(worldID)) {
         throw new Error("Invalid world ID format");
     }
@@ -29,13 +29,13 @@ export async function verifyWorld(worldID : string, userID : string){
     if (!world){
         throw new Error("World not found");
     }
-    if (!world.owners.includes(userID)){
+    if (!world.owners.includes(userID) && !world.collaborators.includes(userID)){
         throw new Error("You are not the owner of this world");
     }
     return world; 
 }
 
-export async function verifyObject(objectID : string, userID : string){
+export async function verifyObject(objectID : string){
     if (!mongoose.Types.ObjectId.isValid(objectID)) {
         throw new Error("Invalid object ID format");
     }
@@ -43,7 +43,6 @@ export async function verifyObject(objectID : string, userID : string){
     if (!object){
         throw new Error("Object not found");
     }
-    verifyWorld(object.worldID, userID);
     return object;
 }
 

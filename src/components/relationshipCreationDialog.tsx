@@ -12,16 +12,13 @@ import { useForm } from "react-hook-form";
 import {
   Dialog,
   DialogContent,
-  DialogDescription,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
   DialogFooter,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { PencilLine } from "lucide-react";
-import { useCallback, useState } from "react";
+import { useCallback } from "react";
 import { useEffect } from "react";
 import { Edge } from "@xyflow/react";
 import { RelationshipData } from "../../types/types";
@@ -33,59 +30,64 @@ const formSchema = z.object({
     .max(240, "Description must be under 240 characters long"),
 });
 
-export default function RelationshipSettingDialog({
+export default function RelationshipCreationDialog({
+  setIsAddingEdge,
+  isAddingEdge,
+  setNewEdge,
   relationshipData,
+  worldID,
   graphRefresh,
+  addEdgeFunction,
 }: {
+  setIsAddingEdge: React.Dispatch<React.SetStateAction<boolean>>;
+  isAddingEdge: boolean;
+  setNewEdge: React.Dispatch<
+    React.SetStateAction<Edge<RelationshipData> | undefined>
+  >;
   relationshipData: Edge<RelationshipData>;
+  worldID: string;
   graphRefresh: () => void;
+  addEdgeFunction: (newEdge: Edge) => void;
 }) {
-  const [isOpen, setIsOpen] = useState(false);
-
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      relationshipDescription: relationshipData.data!.relationshipDescription,
+      relationshipDescription: "",
     },
   });
 
   const resetForm = useCallback(() => {
     form.reset({
-      relationshipDescription: relationshipData.data!.relationshipDescription,
+      relationshipDescription: "",
     });
-  }, [form, relationshipData.data]);
+  }, [form]);
 
   useEffect(() => {
     resetForm();
   }, [relationshipData, form, resetForm]);
-
   const { toast } = useToast();
-  function showNotification(
-    title: string,
-    description: string,
-    variant: "default" | "destructive" | "success" | null | undefined
-  ) {
-    const notify = () => {
-      toast({
-        title: title,
-        description: description,
-        variant: variant,
-      });
-    };
-    notify();
-  }
-  function showError(message: string) {
-    showNotification("An Error has Occcured", message, "destructive");
-  }
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
+    function showError(message: string) {
+      const notify = () => {
+        toast({
+          title: "An Error has Occured!",
+          description: message,
+          variant: "destructive",
+        });
+      };
+      notify();
+    }
     try {
       const reqBody = {
         relationshipDescription: values.relationshipDescription,
+        target: relationshipData.target,
+        source: relationshipData.source,
+        worldID: worldID,
       };
       console.log(JSON.stringify(reqBody));
-      const res = await fetch(`/api/relationships/${relationshipData.id}`, {
-        method: "PUT",
+      const res = await fetch(`/api/relationships/`, {
+        method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
@@ -94,39 +96,27 @@ export default function RelationshipSettingDialog({
       if (!res.ok) {
         const errorData = await res.json();
         console.log(errorData);
-        throw new Error(errorData.error || "Something went wrong");
+        throw new Error(errorData.error || "Failed to get session");
       }
+      addEdgeFunction(relationshipData);
       graphRefresh();
-      setIsOpen(false);
-      showNotification(
-        "Successfuly edited relationship!",
-        "Changes of the relaionship is saved",
-        "success"
-      );
       form.reset();
+      setIsAddingEdge(false);
     } catch (error) {
       if (error instanceof Error) {
         showError(error.message);
       }
+    } finally {
+      setNewEdge(undefined);
     }
   }
 
   return (
-    <Dialog open={isOpen} onOpenChange={setIsOpen}>
-      <DialogTrigger asChild>
-        <Button
-          variant="ghost"
-          size="iconSm"
-          onClick={() => console.log("Edit")}
-        >
-          <PencilLine />
-        </Button>
-      </DialogTrigger>
+    <Dialog open={isAddingEdge} onOpenChange={setIsAddingEdge}>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Edit Relationship</DialogTitle>
+          <DialogTitle>Create Relationships</DialogTitle>
         </DialogHeader>
-        <DialogDescription>Change Relationship Description</DialogDescription>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)}>
             <FormField
@@ -135,7 +125,7 @@ export default function RelationshipSettingDialog({
               render={({ field }) => (
                 <FormItem>
                   <Label htmlFor="name" className="text-right">
-                    Relationship Description
+                    Describe their relationship!
                   </Label>
                   <FormControl>
                     <Input {...field} />

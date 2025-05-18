@@ -1,29 +1,47 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { quantico } from "../fonts";
 import { Navbar } from "@/components/navbar";
 import { WorldElement } from "@/components/worldElement";
 import { World } from "../../../types/types";
 import Loading from "../loading";
+import { useToast } from "@/hooks/use-toast";
 
 export default function Worlds() {
   const [session, setSession] = useState<{ username: string } | null>(null);
   const [loading, setLoading] = useState(true);
   const [worlds, setWorlds] = useState<World[]>([]);
 
-  async function fetchSession() {
+  const { toast } = useToast();
+
+  const fetchSession = useCallback(async () => {
+    function showError(message: string) {
+      const notify = () => {
+        toast({
+          title: "An Error has Occured!",
+          description: message,
+          variant: "destructive",
+        });
+      };
+      notify();
+    }
+
     try {
       const res = await fetch("/api/auth/self");
       if (!res.ok) {
-        throw new Error("Failed to get session");
+        const errorData = await res.json();
+        console.log(errorData);
+        throw new Error(errorData.error || "Failed to get session");
       }
       const sessionData = await res.json();
       const session = sessionData.session;
       setSession(session);
       const resWorld = await fetch(`api/worlds`);
       if (!resWorld.ok) {
-        throw new Error("Failed to get world data");
+        const errorData = await resWorld.json();
+        console.log(errorData);
+        throw new Error(errorData.error || "Something went wrong");
       }
       const worldData = await resWorld.json();
       const worldArray: World[] = worldData.data.map((world: World) => ({
@@ -34,19 +52,21 @@ export default function Worlds() {
         objects: world.objects,
         relationships: world.relationships,
         changes: world.changes,
+        worldCover: world.worldCover,
       }));
       setWorlds(worldArray);
-      console.log(worldArray);
     } catch (error) {
-      console.log({ error: error instanceof Error ? error.message : error });
+      if (error instanceof Error) {
+        showError(error.message);
+      }
     } finally {
       setLoading(false);
     }
-  }
+  }, [toast]);
 
   useEffect(() => {
     fetchSession();
-  }, []);
+  }, [fetchSession]);
 
   if (loading) {
     return <Loading />;
@@ -69,6 +89,7 @@ export default function Worlds() {
                 worldName={world.worldName}
                 worldDescription={world.worldDescription}
                 worldID={world._id}
+                worldCover={world.worldCover}
               />
             );
           })}

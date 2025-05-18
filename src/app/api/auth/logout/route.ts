@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { getSession, removeSession } from "../session";
 import { connectToMongoDB } from '@/app/lib/connect';
-import { errorhandling } from "../../function";
+import { errorHandling } from "../../function";
 
 export async function POST(){
     try {
@@ -13,6 +13,6 @@ export async function POST(){
         await removeSession();
         return NextResponse.json({message : "Logout successful"}, {status: 200});
     } catch (error){
-        return errorhandling(error); 
+        return errorHandling(error); 
     }
 };

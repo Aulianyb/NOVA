@@ -27,6 +27,15 @@ import { useCallback, useState } from "react";
 import { Node } from "@xyflow/react";
 import { NodeData } from "../../types/types";
 import { useEffect } from "react";
+import { useToast } from "@/hooks/use-toast";
+
+const MAX_FILE_SIZE = 5000000;
+const ACCEPTED_IMAGE_TYPES = [
+  "image/jpeg",
+  "image/jpg",
+  "image/png",
+  "image/webp",
+];
 
 const formSchema = z.object({
   objectName: z
@@ -36,14 +45,26 @@ const formSchema = z.object({
   objectDescription: z
     .string()
     .max(240, "Description must be under 240 characters long"),
-  // Temporary, of course
-  objectPicture: z.string().optional(),
+  objectPicture: z
+    .any()
+    .transform((val) => (val instanceof FileList ? val[0] : val))
+    .optional()
+    .refine(
+      (file) => file === undefined || file?.size <= MAX_FILE_SIZE,
+      `Max image size is 5MB.`
+    )
+    .refine(
+      (file) => file === undefined || ACCEPTED_IMAGE_TYPES.includes(file?.type),
+      "Only .jpg, .jpeg, and .png formats are supported."
+    ),
 });
 
 export default function ObjectSettingDialog({
   nodeData,
+  graphRefresh,
 }: {
   nodeData: Node<NodeData>;
+  graphRefresh: () => void;
 }) {
   const [isOpen, setIsOpen] = useState(false);
 
@@ -52,7 +73,7 @@ export default function ObjectSettingDialog({
     defaultValues: {
       objectName: nodeData.data.objectName,
       objectDescription: nodeData.data.objectDescription,
-      objectPicture: "/NOVA-placeholder.png",
+      objectPicture: undefined,
     },
   });
 
@@ -60,36 +81,61 @@ export default function ObjectSettingDialog({
     form.reset({
       objectName: nodeData.data.objectName,
       objectDescription: nodeData.data.objectDescription,
-      objectPicture: "/NOVA-placeholder.png",
+      objectPicture: nodeData.data.objectPicture,
     });
-  }, [form, nodeData.data.objectDescription, nodeData.data.objectName]);
+  }, [
+    form,
+    nodeData.data.objectDescription,
+    nodeData.data.objectName,
+    nodeData.data.objectPicture,
+  ]);
 
   useEffect(() => {
     resetForm();
   }, [nodeData, form, resetForm]);
+  
+  const { toast } = useToast();
+  function showNotification(
+    title: string,
+    description: string,
+    variant: "default" | "destructive" | "success" | null | undefined
+  ) {
+    const notify = () => {
+      toast({
+        title: title,
+        description: description,
+        variant: variant,
+      });
+    };
+    notify();
+  }
+  function showError(message: string) {
+    showNotification("An Error has Occcured", message, "destructive");
+  }
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     try {
-      const reqBody = {
-        objectName: values.objectName,
-        objectDescription: values.objectDescription,
-        objectPicture: values.objectPicture,
-      };
-      console.log(JSON.stringify(reqBody));
+      const formData = new FormData();
+      formData.append("objectName", values.objectName);
+      formData.append("objectDescription", values.objectDescription);
+      formData.append("objectPicture", values.objectPicture);
       const res = await fetch(`/api/objects/${nodeData.id}`, {
         method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(reqBody),
+        body: formData,
       });
       if (!res.ok) {
-        throw new Error("Object edit failed");
+        const errorData = await res.json();
+        console.log(errorData);
+        throw new Error(errorData.error || "Something went wrong");
       }
-      form.reset();
-      window.location.reload();
+      graphRefresh();
+      setIsOpen(false);
     } catch (error) {
-      console.error(error);
+      if (error instanceof Error) {
+        showError(error.message);
+      }
+    } finally {
+      form.reset();
     }
   }
 
@@ -121,14 +167,16 @@ export default function ObjectSettingDialog({
                   <Label htmlFor="picture">Profile Picture</Label>
                   <FormControl>
                     <Input
-                      disabled
                       id="picture"
                       type="file"
                       className="bg-white border border-slate-200"
+                      {...form.register("objectPicture")}
                     />
                   </FormControl>
                   <FormMessage />
-                  <FormDescription>This will be added later!</FormDescription>
+                  <FormDescription>
+                    Only .jpg, .jpeg, and .png formats are supported.
+                  </FormDescription>
                 </FormItem>
               )}
             />

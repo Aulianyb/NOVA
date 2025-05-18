@@ -3,6 +3,7 @@
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
+import { CldImage } from "next-cloudinary";
 
 export default function PatchNotesPage() {
   const router = useRouter();
@@ -16,6 +17,13 @@ export default function PatchNotesPage() {
           width="200"
           height="200"
           className="rounded-full"
+        />
+        <CldImage
+          width="200"
+          height="200"
+          src="nova/iq0jj82afy4nlg1awsa7"
+          sizes="100vw"
+          alt="Description of my image"
         />
         <p>Hi there, this page won't be in the final product.</p>
         <div className="space-y-5">
@@ -46,8 +54,7 @@ export default function PatchNotesPage() {
             router.push("/");
           }}
         >
-          {" "}
-          GO BACK{" "}
+          GO BACK
         </Button>
       </div>
     </main>
