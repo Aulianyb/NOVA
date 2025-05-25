@@ -30,7 +30,7 @@ import {
 } from "@xyflow/react";
 import React, { useCallback, useState, useEffect, useMemo } from "react";
 import ChangesSheet from "@/components/changesSheet";
-import CustomNode from "@/components/customNode";
+import CustomNode from "@/components/CustomNode";
 import RelationshipCreationDialog from "@/components/relationshipCreationDialog";
 import WorldSavingAlert from "@/components/worldSavingAlert";
 
