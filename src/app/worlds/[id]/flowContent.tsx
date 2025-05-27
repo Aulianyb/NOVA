@@ -33,6 +33,8 @@ import ChangesSheet from "@/components/changesSheet";
 import CustomNode from "@/components/CustomNode";
 import RelationshipCreationDialog from "@/components/relationshipCreationDialog";
 import WorldSavingAlert from "@/components/worldSavingAlert";
+import WorldTagsDialog from "@/components/worldTagsDialog";
+import CustomEdge from "@/components/CustomEdge";
 
 const connectionLineStyle = {
   stroke: "#791dab",
@@ -40,6 +42,10 @@ const connectionLineStyle = {
 
 const nodeTypes = {
   customNode: CustomNode,
+};
+
+const edgeTypes = {
+  "custom-edge": CustomEdge,
 };
 
 const initialEdges: Edge[] = [];
@@ -145,7 +151,7 @@ export function FlowContent({
         data: {
           relationshipDescription: "Describe their relationship!",
         },
-        type: "straight",
+        type: "custom-edge",
       };
       setNewEdge(newEdge as Edge<RelationshipData>);
       setIsAddingEdge(true);
@@ -182,11 +188,11 @@ export function FlowContent({
         data: {
           relationshipDescription: edge.relationshipDescription,
         },
-        type: "straight",
-        style:{
-          strokeWidth : 2,
-          stroke : "#791dab"
-        }
+        type: "custom-edge",
+        style: {
+          strokeWidth: 2,
+          stroke: "#791dab",
+        },
       }));
       setEdges(currentEdges);
     }
@@ -275,23 +281,23 @@ export function FlowContent({
       objectDescription: string;
       objectPicture: string;
     }) => {
-        const newNode = {
-          id: objectID,
-          position: flow.screenToFlowPosition({
-            x: window.innerWidth / 2,
-            y: window.innerHeight / 2,
-          }),
-          type: "customNode",
-          data: {
-            objectName: objectName,
-            objectDescription: objectDescription,
-            objectPicture: objectPicture,
-            images: [],
-            tags: [],
-            relationships: [],
-          },
-        };
-        setNodes((nds) => nds.concat(newNode));
+      const newNode = {
+        id: objectID,
+        position: flow.screenToFlowPosition({
+          x: window.innerWidth / 2,
+          y: window.innerHeight / 2,
+        }),
+        type: "customNode",
+        data: {
+          objectName: objectName,
+          objectDescription: objectDescription,
+          objectPicture: objectPicture,
+          images: [],
+          tags: [],
+          relationships: [],
+        },
+      };
+      setNodes((nds) => nds.concat(newNode));
     },
     [setNodes, flow]
   );
@@ -329,6 +335,7 @@ export function FlowContent({
       setSelectedSource(objectMap[edge.source]);
       setSelectedTarget(objectMap[edge.target]);
     }
+    console.log(selectedEdge);
     setIsEdgeClicked(true);
   };
 
@@ -344,6 +351,7 @@ export function FlowContent({
         onEdgeClick={onEdgeClick}
         onConnect={onConnect}
         nodeTypes={nodeTypes}
+        edgeTypes={edgeTypes}
         connectionLineStyle={connectionLineStyle}
         connectionMode={ConnectionMode.Loose}
         onInit={setRfInstance}
@@ -381,6 +389,7 @@ export function FlowContent({
                   worldID={worldData._id}
                   position={getCenterScreen()}
                 />
+                <WorldTagsDialog />
                 <RelationshipCreationDialog
                   setIsAddingEdge={setIsAddingEdge}
                   isAddingEdge={isAddingEdge}

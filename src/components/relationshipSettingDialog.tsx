@@ -1,6 +1,7 @@
 import {
   Form,
   FormControl,
+  FormDescription,
   FormField,
   FormItem,
   FormMessage,
@@ -26,6 +27,16 @@ import { useEffect } from "react";
 import { Edge } from "@xyflow/react";
 import { RelationshipData } from "../../types/types";
 import { useToast } from "@/hooks/use-toast";
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectLabel,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Hash, X } from "lucide-react";
 
 const formSchema = z.object({
   relationshipDescription: z
@@ -144,6 +155,69 @@ export default function RelationshipSettingDialog({
                 </FormItem>
               )}
             />
+            <div className="space-y-2 mt-4">
+              <Label htmlFor="name">Main Tag</Label>
+              <Select>
+                <SelectTrigger className="w-[180px]">
+                  <SelectValue placeholder="Select Tag" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectGroup>
+                    <SelectLabel>Select Tag</SelectLabel>
+                    <SelectItem value="apple">Doomed</SelectItem>
+                    <SelectItem value="banana">Toxic</SelectItem>
+                    <SelectItem value="blueberry">Parent</SelectItem>
+                  </SelectGroup>
+                </SelectContent>
+              </Select>
+              <FormDescription>This will shown in the graph</FormDescription>
+            </div>
+            <div className="space-y-2 mt-4">
+              <Label htmlFor="name">Add Tags</Label>
+              <div className="flex gap-2">
+                <Select>
+                  <SelectTrigger className="w-[180px]">
+                    <SelectValue placeholder="Select Tag" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectGroup>
+                      <SelectLabel>Select Tag</SelectLabel>
+                      <SelectItem value="apple">Doomed</SelectItem>
+                      <SelectItem value="banana">Toxic</SelectItem>
+                      <SelectItem value="blueberry">Parent</SelectItem>
+                    </SelectGroup>
+                  </SelectContent>
+                </Select>
+                <Button variant="outline" className="rounded-md">
+                  Add
+                </Button>
+              </div>
+
+              <div className="flex flex-wrap gap-2">
+                <div
+                  className={`p-1 text-red-500 bg-red-200 w-fit rounded-sm flex gap-1 items-center justify-between`}
+                >
+                  <Hash size={15} />
+                  <span className="mr-2">Placeholder</span>
+                  <X size={18} className="ml-2" />
+                </div>
+                <div
+                  className={`p-1 text-red-500 bg-red-200 w-fit rounded-sm flex gap-1 items-center justify-between`}
+                >
+                  <Hash size={15} />
+                  <span className="mr-2">Placeholder</span>
+                  <X size={18} className="ml-2" />
+                </div>
+                <div
+                  className={`p-1 text-red-500 bg-red-200 w-fit rounded-sm flex gap-1 items-center justify-between`}
+                >
+                  <Hash size={15} />
+                  <span className="mr-2">Placeholder</span>
+                  <X size={18} className="ml-2" />
+                </div>
+              </div>
+            </div>
+
             <DialogFooter>
               <Button type="submit" className="rounded-lg mt-4">
                 Save

@@ -28,6 +28,16 @@ import { Node } from "@xyflow/react";
 import { NodeData } from "../../types/types";
 import { useEffect } from "react";
 import { useToast } from "@/hooks/use-toast";
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectLabel,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Hash, X } from "lucide-react";
 
 const MAX_FILE_SIZE = 5000000;
 const ACCEPTED_IMAGE_TYPES = [
@@ -93,7 +103,7 @@ export default function ObjectSettingDialog({
   useEffect(() => {
     resetForm();
   }, [nodeData, form, resetForm]);
-  
+
   const { toast } = useToast();
   function showNotification(
     title: string,
@@ -150,73 +160,125 @@ export default function ObjectSettingDialog({
           <PencilLine />
         </Button>
       </DialogTrigger>
-      <DialogContent>
+      <DialogContent className="min-w-[50vw]">
         <DialogHeader>
           <DialogTitle>Edit Object</DialogTitle>
         </DialogHeader>
         <DialogDescription>
           Change the object's name or description
         </DialogDescription>
-        <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)}>
-            <FormField
-              control={form.control}
-              name="objectPicture"
-              render={() => (
-                <FormItem>
-                  <Label htmlFor="picture">Profile Picture</Label>
-                  <FormControl>
-                    <Input
-                      id="picture"
-                      type="file"
-                      className="bg-white border border-slate-200"
-                      {...form.register("objectPicture")}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                  <FormDescription>
-                    Only .jpg, .jpeg, and .png formats are supported.
-                  </FormDescription>
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="objectName"
-              render={({ field }) => (
-                <FormItem>
-                  <Label htmlFor="name" className="text-right">
-                    Object Name
-                  </Label>
-                  <FormControl>
-                    <Input {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="objectDescription"
-              render={({ field }) => (
-                <FormItem>
-                  <Label htmlFor="name" className="text-right">
-                    Object Description
-                  </Label>
-                  <FormControl>
-                    <Textarea {...field} className="resize-none h-[100px]" />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <DialogFooter>
-              <Button type="submit" className="rounded-lg mt-4">
-                Save
+        <div className="flex gap-5">
+          <div className="flex-1">
+            <Form {...form}>
+              <form onSubmit={form.handleSubmit(onSubmit)}>
+                <FormField
+                  control={form.control}
+                  name="objectPicture"
+                  render={() => (
+                    <FormItem>
+                      <Label htmlFor="picture">Profile Picture</Label>
+                      <FormControl>
+                        <Input
+                          id="picture"
+                          type="file"
+                          className="bg-white border border-slate-200"
+                          {...form.register("objectPicture")}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                      <FormDescription>
+                        Only .jpg, .jpeg, and .png formats are supported.
+                      </FormDescription>
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="objectName"
+                  render={({ field }) => (
+                    <FormItem>
+                      <Label htmlFor="name" className="text-right">
+                        Object Name
+                      </Label>
+                      <FormControl>
+                        <Input {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="objectDescription"
+                  render={({ field }) => (
+                    <FormItem>
+                      <Label htmlFor="name" className="text-right">
+                        Object Description
+                      </Label>
+                      <FormControl>
+                        <Textarea
+                          {...field}
+                          className="resize-none h-[100px]"
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <DialogFooter>
+                  <Button type="submit" className="rounded-lg mt-4">
+                    Save
+                  </Button>
+                </DialogFooter>
+              </form>
+            </Form>
+          </div>
+          <div className="pl-4 border-l border-zinc-300 space-y-2 mt-4 flex-1">
+            <Label htmlFor="name">Add Tags</Label>
+            <div className="flex gap-2">
+              <Select>
+                <SelectTrigger className="w-[180px]">
+                  <SelectValue placeholder="Select Tag" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectGroup>
+                    <SelectLabel>Select Tag</SelectLabel>
+                    <SelectItem value="apple">Doomed</SelectItem>
+                    <SelectItem value="banana">Toxic</SelectItem>
+                    <SelectItem value="blueberry">Parent</SelectItem>
+                  </SelectGroup>
+                </SelectContent>
+              </Select>
+              <Button variant="outline" className="rounded-md">
+                Add
               </Button>
-            </DialogFooter>
-          </form>
-        </Form>
+            </div>
+            <div className="flex flex-wrap gap-2">
+              <div
+                className={`p-1 text-red-500 bg-red-200 w-fit rounded-sm flex gap-1 items-center justify-between`}
+              >
+                <Hash size={15} />
+                <span className="mr-2">Placeholder</span>
+                <X size={18} className="ml-2" />
+              </div>
+              <div
+                className={`p-1 text-red-500 bg-red-200 w-fit rounded-sm flex gap-1 items-center justify-between`}
+              >
+                <Hash size={15} />
+                <span className="mr-2">Placeholder</span>
+                <X size={18} className="ml-2" />
+              </div>
+              <div
+                className={`p-1 text-red-500 bg-red-200 w-fit rounded-sm flex gap-1 items-center justify-between`}
+              >
+                <Hash size={15} />
+                <span className="mr-2">Placeholder</span>
+                <X size={18} className="ml-2" />
+              </div>
+            </div>
+          </div>
+        </div>
       </DialogContent>
     </Dialog>
   );

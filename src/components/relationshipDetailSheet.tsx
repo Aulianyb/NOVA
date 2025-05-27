@@ -8,6 +8,7 @@ import RelationshipSettingDialog from "./relationshipSettingDialog";
 import { CldImage } from "next-cloudinary";
 import DeleteAlert from "./deleteAlert";
 
+
 export default function RelationshipDetailSheet({
   isEdgeClicked,
   openFunction,
@@ -86,21 +87,16 @@ export default function RelationshipDetailSheet({
             </div>
 
             <div className="flex flex-col space-y-4 p-2 flex-grow items-center">
+              <div className="p-1 px-2 text-s text-zinc-500 bg-zinc-200 w-fit rounded-sm flex gap-1 items-center">
+                <Hash size={13} />
+                <span> Tags 1 </span>
+              </div>
               {relationshipData.data && (
                 <p className="italic">
                   {relationshipData.data.relationshipDescription}
                 </p>
               )}
-              <div className="flex gap-1">
-                <div className="p-1 px-2 text-xs text-red-500 bg-red-200 w-fit rounded-sm flex gap-1 items-center">
-                  <Hash size={13} />
-                  <span> Tags 1 </span>
-                </div>
-                <div className="p-1 px-2 text-xs text-blue-500 bg-blue-200 w-fit rounded-sm flex gap-1 items-center">
-                  <Hash size={13} />
-                  <span> Tags 1 </span>
-                </div>
-              </div>
+              <div className="flex gap-1"></div>
             </div>
             <div className="text-center">
               <CldImage
