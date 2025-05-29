@@ -389,7 +389,7 @@ export function FlowContent({
                   worldID={worldData._id}
                   position={getCenterScreen()}
                 />
-                <WorldTagsDialog />
+                <WorldTagsDialog worldID={worldData._id} />
                 <RelationshipCreationDialog
                   setIsAddingEdge={setIsAddingEdge}
                   isAddingEdge={isAddingEdge}
@@ -413,20 +413,23 @@ export function FlowContent({
             )}
           </div>
           {worldData && (
-            <ChangesSheet
-              isOpen={isSheetOpen}
-              openFunction={setIsSheetOpen}
-              worldID={worldData._id}
-            />
+            <>
+              <ChangesSheet
+                isOpen={isSheetOpen}
+                openFunction={setIsSheetOpen}
+                worldID={worldData._id}
+              />
+              <ObjectDetailSheet
+                isNodeClicked={isNodeClicked}
+                openFunction={setIsNodeClicked}
+                nodeData={selectedNode as Node<NodeData>}
+                deleteNodeFunction={deleteNode}
+                graphRefresh={graphRefresh}
+                worldID={worldData._id}
+              />
+            </>
           )}
 
-          <ObjectDetailSheet
-            isNodeClicked={isNodeClicked}
-            openFunction={setIsNodeClicked}
-            nodeData={selectedNode as Node<NodeData>}
-            deleteNodeFunction={deleteNode}
-            graphRefresh={graphRefresh}
-          />
           <RelationshipDetailSheet
             isEdgeClicked={isEdgeClicked}
             openFunction={setIsEdgeClicked}

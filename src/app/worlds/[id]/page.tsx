@@ -43,7 +43,6 @@ export default function Page() {
         throw new Error(errorData.error || "Something went wrong");
       }
       const world = await fetch(`/api/worlds/${params.id}`);
-      console.log(params.id)
       if (!world.ok) {
         console.log(world.status);
         if (world.status == 401) {
@@ -100,7 +99,6 @@ export default function Page() {
           relationshipDescription: relation.relationshipDescription,
         })
       );
-
       setObjects(objectArray);
       setRelationships(relationArray);
     } catch (error) {

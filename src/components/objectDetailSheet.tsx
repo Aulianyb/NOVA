@@ -1,10 +1,14 @@
 import { CldImage } from "next-cloudinary";
-import { Volleyball, ChevronRight, Hash } from "lucide-react";
+import { Volleyball, ChevronRight } from "lucide-react";
 import { Button } from "./ui/button";
 import { Node } from "@xyflow/react";
 import { NodeData } from "../../types/types";
 import ObjectSettingDialog from "./objectSettingDialog";
 import DeleteAlert from "./deleteAlert";
+import { useCallback, useEffect, useState } from "react";
+import { useToast } from "@/hooks/use-toast";
+import { Tag, TagAPI } from "../../types/types";
+import { GraphTags } from "./graphTags";
 
 export default function ObjectDetailSheet({
   isNodeClicked,
@@ -12,13 +16,17 @@ export default function ObjectDetailSheet({
   nodeData,
   deleteNodeFunction,
   graphRefresh,
+  worldID,
 }: {
   isNodeClicked: boolean;
   openFunction: React.Dispatch<React.SetStateAction<boolean>>;
   nodeData: Node<NodeData> | null;
   deleteNodeFunction: (objectID: string) => void;
   graphRefresh: () => void;
+  worldID: string;
 }) {
+  const [tagsList, setTagsList] = useState<Tag[]>([]);
+
   let usedPicture = "objectPicture/fuetkmzyox2su7tfkib3";
   if (nodeData) {
     const objectPicture = nodeData.data.objectPicture;
@@ -26,6 +34,49 @@ export default function ObjectDetailSheet({
       usedPicture = objectPicture;
     }
   }
+
+  const { toast } = useToast();
+  const fetchData = useCallback(async () => {
+    function showError(message: string) {
+      const notify = () => {
+        toast({
+          title: "An Error has Occured!",
+          description: message,
+          variant: "destructive",
+        });
+      };
+      notify();
+    }
+    try {
+      if (!nodeData) {
+        throw new Error("nodeData not found");
+      }
+      console.log(nodeData.id);
+      const res = await fetch(`/api/objects/${nodeData.id}/tags`);
+      if (!res.ok) {
+        const errorData = await res.json();
+        console.log(errorData);
+        throw new Error(errorData.error || "Something went wrong.");
+      }
+      const tagData = await res.json();
+      const tags: Tag[] = tagData.data.map((tag: TagAPI) => ({
+        _id: tag._id,
+        tagName: tag.tagName,
+        tagColor: tag.tagColor,
+      }));
+      setTagsList(tags);
+    } catch (error) {
+      if (error instanceof Error) {
+        showError(error.message);
+      }
+    }
+  }, [nodeData, toast]);
+
+  useEffect(() => {
+    if (isNodeClicked) {
+      fetchData();
+    }
+  }, [fetchData, isNodeClicked]);
 
   return (
     <div
@@ -48,6 +99,9 @@ export default function ObjectDetailSheet({
             <ObjectSettingDialog
               nodeData={nodeData}
               graphRefresh={graphRefresh}
+              worldID={worldID}
+              currentTags={tagsList}
+              fetchData={fetchData}
             />
             <DeleteAlert
               id={nodeData.id}
@@ -72,14 +126,15 @@ export default function ObjectDetailSheet({
             <h2 className="font-bold"> {nodeData.data.objectName} </h2>
             <p className="italic"> {nodeData.data.objectDescription} </p>
             <div className="flex gap-1">
-              <div className="p-1 px-2 text-xs text-red-500 bg-red-200 w-fit rounded-sm flex gap-1 items-center">
-                <Hash size={13} />
-                <span> Placeholder </span>
-              </div>
-              <div className="p-1 px-2 text-xs text-blue-500 bg-blue-200 w-fit rounded-sm flex gap-1 items-center">
-                <Hash size={13} />
-                <span> Placeholder Two </span>
-              </div>
+              {tagsList.map((tag) => {
+                return (
+                  <GraphTags
+                    key={tag._id}
+                    color={tag.tagColor}
+                    tagName={tag.tagName}
+                  />
+                );
+              })}
             </div>
           </div>
         </div>

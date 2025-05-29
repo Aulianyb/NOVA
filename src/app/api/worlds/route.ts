@@ -12,7 +12,6 @@ export async function GET(){
             throw new Error("No Session Found"); 
         }
         const user = await User.findById(userID); 
-
         const ownedWorlds = await World.find({ _id: { $in: user.ownedWorlds } })
         return NextResponse.json({ data : ownedWorlds, message : "World Fetched!"}, { status: 200 });
     } catch(error){

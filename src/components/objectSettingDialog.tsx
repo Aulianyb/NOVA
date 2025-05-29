@@ -37,7 +37,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Hash, X } from "lucide-react";
+import { Tag, TagAPI } from "../../types/types";
+import { GraphTags } from "./graphTags";
 
 const MAX_FILE_SIZE = 5000000;
 const ACCEPTED_IMAGE_TYPES = [
@@ -69,14 +70,64 @@ const formSchema = z.object({
     ),
 });
 
+const tagSchema = z.object({
+  tagID: z.string(),
+});
+
 export default function ObjectSettingDialog({
   nodeData,
   graphRefresh,
+  worldID,
+  currentTags,
+  fetchData,
 }: {
   nodeData: Node<NodeData>;
   graphRefresh: () => void;
+  worldID: string;
+  currentTags: Tag[];
+  fetchData: () => Promise<void>;
 }) {
   const [isOpen, setIsOpen] = useState(false);
+  const [tagsList, setTagsList] = useState<Tag[]>([]);
+  const { toast } = useToast();
+
+  const fetchWorldTags = useCallback(async () => {
+    function showError(message: string) {
+      const notify = () => {
+        toast({
+          title: "An Error has Occured!",
+          description: message,
+          variant: "destructive",
+        });
+      };
+      notify();
+    }
+    try {
+      const res = await fetch(`/api/worlds/${worldID}/tags`);
+      if (!res.ok) {
+        const errorData = await res.json();
+        console.log(errorData);
+        throw new Error(errorData.error || "Something went wrong.");
+      }
+      const tagData = await res.json();
+      const tags: Tag[] = tagData.data.map((tag: TagAPI) => ({
+        _id: tag._id,
+        tagName: tag.tagName,
+        tagColor: tag.tagColor,
+      }));
+      setTagsList(tags);
+    } catch (error) {
+      if (error instanceof Error) {
+        showError(error.message);
+      }
+    }
+  }, [worldID, toast]);
+
+  useEffect(() => {
+    if (isOpen) {
+      fetchWorldTags();
+    }
+  }, [fetchWorldTags, isOpen, currentTags]);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -84,6 +135,13 @@ export default function ObjectSettingDialog({
       objectName: nodeData.data.objectName,
       objectDescription: nodeData.data.objectDescription,
       objectPicture: undefined,
+    },
+  });
+
+  const tagForm = useForm<z.infer<typeof tagSchema>>({
+    resolver: zodResolver(tagSchema),
+    defaultValues: {
+      tagID: "",
     },
   });
 
@@ -104,7 +162,6 @@ export default function ObjectSettingDialog({
     resetForm();
   }, [nodeData, form, resetForm]);
 
-  const { toast } = useToast();
   function showNotification(
     title: string,
     description: string,
@@ -146,6 +203,29 @@ export default function ObjectSettingDialog({
       }
     } finally {
       form.reset();
+    }
+  }
+
+  async function onTagging(values: z.infer<typeof tagSchema>) {
+    try {
+      const res = await fetch(`/api/objects/${nodeData.id}/tags`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(values),
+      });
+      if (!res.ok) {
+        const errorData = await res.json();
+        console.log(errorData);
+        throw new Error(errorData.error || "Something went wrong");
+      }
+      form.reset();
+      fetchData();
+    } catch (error) {
+      if (error instanceof Error) {
+        showError(error.message);
+      }
     }
   }
 
@@ -237,45 +317,51 @@ export default function ObjectSettingDialog({
           <div className="pl-4 border-l border-zinc-300 space-y-2 mt-4 flex-1">
             <Label htmlFor="name">Add Tags</Label>
             <div className="flex gap-2">
-              <Select>
-                <SelectTrigger className="w-[180px]">
-                  <SelectValue placeholder="Select Tag" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectGroup>
-                    <SelectLabel>Select Tag</SelectLabel>
-                    <SelectItem value="apple">Doomed</SelectItem>
-                    <SelectItem value="banana">Toxic</SelectItem>
-                    <SelectItem value="blueberry">Parent</SelectItem>
-                  </SelectGroup>
-                </SelectContent>
-              </Select>
-              <Button variant="outline" className="rounded-md">
-                Add
-              </Button>
+              <Form {...tagForm}>
+                <form onSubmit={tagForm.handleSubmit(onTagging)}>
+                  <FormField
+                    control={tagForm.control}
+                    name="tagID"
+                    render={({ field }) => (
+                      <Select onValueChange={field.onChange}>
+                        <SelectTrigger className="w-[180px]">
+                          <SelectValue placeholder="Select Tag" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectGroup>
+                            <SelectLabel>Select Tag</SelectLabel>
+                            {tagsList.map((tag) => {
+                              return (
+                                <SelectItem value={tag._id} key={tag._id}>
+                                  {tag.tagName}
+                                </SelectItem>
+                              );
+                            })}
+                          </SelectGroup>
+                        </SelectContent>
+                      </Select>
+                    )}
+                  />
+                  <Button
+                    type="submit"
+                    variant="outline"
+                    className="rounded-md"
+                  >
+                    Add
+                  </Button>
+                </form>
+              </Form>
             </div>
             <div className="flex flex-wrap gap-2">
-              <div
-                className={`p-1 text-red-500 bg-red-200 w-fit rounded-sm flex gap-1 items-center justify-between`}
-              >
-                <Hash size={15} />
-                <span className="mr-2">Placeholder</span>
-                <X size={18} className="ml-2" />
-              </div>
-              <div
-                className={`p-1 text-red-500 bg-red-200 w-fit rounded-sm flex gap-1 items-center justify-between`}
-              >
-                <Hash size={15} />
-                <span className="mr-2">Placeholder</span>
-                <X size={18} className="ml-2" />
-              </div>
-              <div
-                className={`p-1 text-red-500 bg-red-200 w-fit rounded-sm flex gap-1 items-center justify-between`}
-              >
-                <Hash size={15} />
-                <span className="mr-2">Placeholder</span>
-                <X size={18} className="ml-2" />
-              </div>
+              {currentTags.map((tag: Tag) => {
+                return (
+                  <GraphTags
+                    key={tag._id}
+                    color={tag.tagColor}
+                    tagName={tag.tagName}
+                  />
+                );
+              })}
             </div>
           </div>
         </div>

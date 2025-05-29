@@ -17,6 +17,20 @@ export type Collaborator = {
     username : string
 }
 
+export type Tag = {
+    _id : string,
+    tagName : string,
+    tagColor : string,
+}
+
+export type TagAPI = {
+    _id : string,
+    tagName : string,
+    tagColor : string,
+    tagRelationships : string[],
+    tagObjects : string[]
+}
+
 export type World = {
     _id : string,
     worldName : string, 

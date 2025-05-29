@@ -3,6 +3,30 @@ import Tag from "../../../../../../model/Tag";
 import { errorHandling, verifyUser, verifyObject } from "@/app/api/function";
 import Object from "../../../../../../model/Object";
 
+export async function GET(
+    req: NextRequest, 
+    { params }: { params: Promise<{ id: string }> }
+){
+    try {
+        const { id } = await params;
+        const userID = await verifyUser();
+        if (!userID) {
+            throw new Error("No Session Found"); 
+        }
+        const object = await verifyObject(id);
+        if (!object) {
+            throw new Error("Object not Found"); 
+        }
+        const objectTags = await Tag.find({_id : {$in : object.tags}})
+        return NextResponse.json({
+            data : objectTags,
+            message : "Tags Fetched!"
+        }, {status : 200})
+    } catch(error){
+        return errorHandling(error);
+    }
+}
+
 export async function POST(
     req: NextRequest, 
     { params }: { params: Promise<{ id: string }> }

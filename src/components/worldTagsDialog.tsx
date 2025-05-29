@@ -21,6 +21,9 @@ import { Button } from "@/components/ui/button";
 import { Hash } from "lucide-react";
 import TagElement from "./TagElement";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { useCallback, useState, useEffect } from "react";
+import { useToast } from "@/hooks/use-toast";
+import { Tag, TagAPI } from "../../types/types";
 
 const formSchema = z.object({
   tagName: z
@@ -29,7 +32,9 @@ const formSchema = z.object({
     .max(20, "Tag name must be at most 20 characters long"),
 });
 
-export default function WorldTagsDialog() {
+export default function WorldTagsDialog({ worldID }: { worldID: string }) {
+  const [tagsList, setTagsList] = useState<Tag[]>([]);
+  const [isOpen, setIsOpen] = useState(false);
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -37,16 +42,94 @@ export default function WorldTagsDialog() {
     },
   });
 
-  async function onCreate(values: z.infer<typeof formSchema>) {
-    console.log("Create tag " + values.tagName);
+  const { toast } = useToast();
+
+  const handleOpenChange = (newOpenState: boolean) => {
+    setIsOpen(newOpenState);
+  };
+
+  const fetchData = useCallback(async () => {
+    function showError(message: string) {
+      const notify = () => {
+        toast({
+          title: "An Error has Occured!",
+          description: message,
+          variant: "destructive",
+        });
+      };
+      notify();
+    }
+    try {
+      const res = await fetch(`/api/worlds/${worldID}/tags`);
+      if (!res.ok) {
+        const errorData = await res.json();
+        console.log(errorData);
+        throw new Error(errorData.error || "Something went wrong.");
+      }
+      const tagData = await res.json();
+      const tags: Tag[] = tagData.data.map((tag: TagAPI) => ({
+        _id: tag._id,
+        tagName: tag.tagName,
+        tagColor: tag.tagColor,
+      }));
+      setTagsList(tags);
+    } catch (error) {
+      if (error instanceof Error) {
+        showError(error.message);
+      }
+    }
+  }, [worldID, toast]);
+
+  useEffect(() => {
+    if (isOpen) {
+      fetchData();
+    }
+  }, [fetchData, isOpen]);
+
+  function showNotification(
+    title: string,
+    description: string,
+    variant: "default" | "destructive" | "success" | null | undefined
+  ) {
+    const notify = () => {
+      toast({
+        title: title,
+        description: description,
+        variant: variant,
+      });
+    };
+    notify();
   }
 
-  // async function onDelete() {
-  //   console.log("Deleted X");
-  // }
+  function showError(message: string) {
+    showNotification("An Error has Occcured", message, "destructive");
+  }
+
+  async function onCreate(values: z.infer<typeof formSchema>) {
+    try {
+      const res = await fetch(`/api/worlds/${worldID}/tags`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(values),
+      });
+      if (!res.ok) {
+        const errorData = await res.json();
+        console.log(errorData);
+        throw new Error(errorData.error || "Something went wrong");
+      }
+      form.reset();
+      fetchData();
+    } catch (error) {
+      if (error instanceof Error) {
+        showError(error.message);
+      }
+    }
+  }
 
   return (
-    <Dialog>
+    <Dialog onOpenChange={handleOpenChange}>
       <DialogTrigger asChild>
         <Button size="icon">
           <Hash />
@@ -87,9 +170,15 @@ export default function WorldTagsDialog() {
 
           <ScrollArea className="h-[50vh] w-full">
             <div className="flex flex-wrap gap-2">
-              <TagElement color="red" tagName="Placeholder"/>
-              <TagElement color="blue" tagName="Family"/>
-              <TagElement color ="zinc" tagName="Romantic"/>
+              {tagsList.map((tag) => {
+                return (
+                  <TagElement
+                    key={tag._id}
+                    color={tag.tagColor}
+                    tagName={tag.tagName}
+                  />
+                );
+              })}
             </div>
           </ScrollArea>
         </div>

@@ -7,6 +7,7 @@ import Relationship from "../../../../../model/Relationship";
 import cloudinary from "@/app/lib/connect";
 import { verifyObject } from "../../function";
 import { UploadApiResponse } from "cloudinary";
+
 export async function GET(req: NextRequest, { params }: { params: Promise<{ id: string }> }){
     try {
         const userID = await verifyUser();
@@ -16,8 +17,7 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ id: 
         const { id } = await params;
         await verifyWorld(id, userID); 
         const world = await World.findById(id)
-        .populate("collaborators", "username");
-        
+        .populate("collaborators", "username")
         return NextResponse.json({data : world, message : "World Found!"})
     } catch(error){
         return errorHandling(error);
