@@ -61,7 +61,7 @@ export async function POST(req:NextRequest){
         });
         
         const world = await newWorld.save();
-        await User.updateOne({_id: userID}, { $push: { ownedWorlds: newWorld._id } });
+        await User.updateOne({_id: userID}, { $push: { ownedWorlds: world._id } });
         return NextResponse.json({ data : world, message : "New World Created!"}, { status: 200 });
     } catch(error){
         return errorHandling(error);
