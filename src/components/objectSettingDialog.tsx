@@ -316,42 +316,39 @@ export default function ObjectSettingDialog({
           </div>
           <div className="pl-4 border-l border-zinc-300 space-y-2 mt-4 flex-1">
             <Label htmlFor="name">Add Tags</Label>
-            <div className="flex gap-2">
-              <Form {...tagForm}>
-                <form onSubmit={tagForm.handleSubmit(onTagging)}>
-                  <FormField
-                    control={tagForm.control}
-                    name="tagID"
-                    render={({ field }) => (
-                      <Select onValueChange={field.onChange}>
-                        <SelectTrigger className="w-[180px]">
-                          <SelectValue placeholder="Select Tag" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectGroup>
-                            <SelectLabel>Select Tag</SelectLabel>
-                            {tagsList.map((tag) => {
-                              return (
-                                <SelectItem value={tag._id} key={tag._id}>
-                                  {tag.tagName}
-                                </SelectItem>
-                              );
-                            })}
-                          </SelectGroup>
-                        </SelectContent>
-                      </Select>
-                    )}
-                  />
-                  <Button
-                    type="submit"
-                    variant="outline"
-                    className="rounded-md"
-                  >
-                    Add
-                  </Button>
-                </form>
-              </Form>
-            </div>
+            <Form {...tagForm}>
+              <form
+                onSubmit={tagForm.handleSubmit(onTagging)}
+                className="flex gap-2"
+              >
+                <FormField
+                  control={tagForm.control}
+                  name="tagID"
+                  render={({ field }) => (
+                    <Select onValueChange={field.onChange}>
+                      <SelectTrigger className="w-[180px]">
+                        <SelectValue placeholder="Select Tag" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectGroup>
+                          <SelectLabel>Select Tag</SelectLabel>
+                          {tagsList.map((tag) => {
+                            return (
+                              <SelectItem value={tag._id} key={tag._id}>
+                                {tag.tagName}
+                              </SelectItem>
+                            );
+                          })}
+                        </SelectGroup>
+                      </SelectContent>
+                    </Select>
+                  )}
+                />
+                <Button type="submit" variant="outline" className="rounded-md">
+                  Add
+                </Button>
+              </form>
+            </Form>
             <div className="flex flex-wrap gap-2">
               {currentTags.map((tag: Tag) => {
                 return (

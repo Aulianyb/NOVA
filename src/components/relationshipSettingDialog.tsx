@@ -36,7 +36,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Hash, X } from "lucide-react";
+import { Tag, TagAPI } from "../../types/types";
+import { GraphTags } from "./graphTags";
 
 const formSchema = z.object({
   relationshipDescription: z
@@ -44,19 +45,37 @@ const formSchema = z.object({
     .max(240, "Description must be under 240 characters long"),
 });
 
+const tagSchema = z.object({
+  tagID: z.string(),
+});
+
 export default function RelationshipSettingDialog({
   relationshipData,
   graphRefresh,
+  worldID,
+  currentTags,
+  fetchData,
 }: {
   relationshipData: Edge<RelationshipData>;
   graphRefresh: () => void;
+  worldID: string;
+  currentTags: Tag[];
+  fetchData: () => Promise<void>;
 }) {
   const [isOpen, setIsOpen] = useState(false);
+  const [tagsList, setTagsList] = useState<Tag[]>([]);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       relationshipDescription: relationshipData.data!.relationshipDescription,
+    },
+  });
+
+  const tagForm = useForm<z.infer<typeof tagSchema>>({
+    resolver: zodResolver(tagSchema),
+    defaultValues: {
+      tagID: "",
     },
   });
 
@@ -89,12 +108,49 @@ export default function RelationshipSettingDialog({
     showNotification("An Error has Occcured", message, "destructive");
   }
 
+  const fetchWorldTags = useCallback(async () => {
+    function showError(message: string) {
+      const notify = () => {
+        toast({
+          title: "An Error has Occured!",
+          description: message,
+          variant: "destructive",
+        });
+      };
+      notify();
+    }
+    try {
+      const res = await fetch(`/api/worlds/${worldID}/tags`);
+      if (!res.ok) {
+        const errorData = await res.json();
+        console.log(errorData);
+        throw new Error(errorData.error || "Something went wrong.");
+      }
+      const tagData = await res.json();
+      const tags: Tag[] = tagData.data.map((tag: TagAPI) => ({
+        _id: tag._id,
+        tagName: tag.tagName,
+        tagColor: tag.tagColor,
+      }));
+      setTagsList(tags);
+    } catch (error) {
+      if (error instanceof Error) {
+        showError(error.message);
+      }
+    }
+  }, [worldID, toast]);
+
+  useEffect(() => {
+    if (isOpen) {
+      fetchWorldTags();
+    }
+  }, [fetchWorldTags, isOpen, currentTags]);
+
   async function onSubmit(values: z.infer<typeof formSchema>) {
     try {
       const reqBody = {
         relationshipDescription: values.relationshipDescription,
       };
-      console.log(JSON.stringify(reqBody));
       const res = await fetch(`/api/relationships/${relationshipData.id}`, {
         method: "PUT",
         headers: {
@@ -122,6 +178,32 @@ export default function RelationshipSettingDialog({
     }
   }
 
+  async function onTagging(values: z.infer<typeof tagSchema>) {
+    try {
+      const res = await fetch(
+        `/api/relationships/${relationshipData.id}/tags`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(values),
+        }
+      );
+      if (!res.ok) {
+        const errorData = await res.json();
+        console.log(errorData);
+        throw new Error(errorData.error || "Something went wrong");
+      }
+      form.reset();
+      fetchData();
+    } catch (error) {
+      if (error instanceof Error) {
+        showError(error.message);
+      }
+    }
+  }
+
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
@@ -133,98 +215,107 @@ export default function RelationshipSettingDialog({
           <PencilLine />
         </Button>
       </DialogTrigger>
-      <DialogContent>
+      <DialogContent className="min-w-[50vw]">
         <DialogHeader>
           <DialogTitle>Edit Relationship</DialogTitle>
         </DialogHeader>
         <DialogDescription>Change Relationship Description</DialogDescription>
-        <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)}>
-            <FormField
-              control={form.control}
-              name="relationshipDescription"
-              render={({ field }) => (
-                <FormItem>
-                  <Label htmlFor="name" className="text-right">
-                    Relationship Description
-                  </Label>
-                  <FormControl>
-                    <Input {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <div className="space-y-2 mt-4">
-              <Label htmlFor="name">Main Tag</Label>
-              <Select>
-                <SelectTrigger className="w-[180px]">
-                  <SelectValue placeholder="Select Tag" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectGroup>
-                    <SelectLabel>Select Tag</SelectLabel>
-                    <SelectItem value="apple">Doomed</SelectItem>
-                    <SelectItem value="banana">Toxic</SelectItem>
-                    <SelectItem value="blueberry">Parent</SelectItem>
-                  </SelectGroup>
-                </SelectContent>
-              </Select>
-              <FormDescription>This will shown in the graph</FormDescription>
-            </div>
-            <div className="space-y-2 mt-4">
-              <Label htmlFor="name">Add Tags</Label>
-              <div className="flex gap-2">
-                <Select>
-                  <SelectTrigger className="w-[180px]">
-                    <SelectValue placeholder="Select Tag" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectGroup>
-                      <SelectLabel>Select Tag</SelectLabel>
-                      <SelectItem value="apple">Doomed</SelectItem>
-                      <SelectItem value="banana">Toxic</SelectItem>
-                      <SelectItem value="blueberry">Parent</SelectItem>
-                    </SelectGroup>
-                  </SelectContent>
-                </Select>
-                <Button variant="outline" className="rounded-md">
+        <div className="flex gap-5">
+          <div className="flex-1">
+            <Form {...form}>
+              <form onSubmit={form.handleSubmit(onSubmit)}>
+                <FormField
+                  control={form.control}
+                  name="relationshipDescription"
+                  render={({ field }) => (
+                    <FormItem>
+                      <Label htmlFor="name" className="text-right">
+                        Relationship Description
+                      </Label>
+                      <FormControl>
+                        <Input {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <div className="space-y-2 mt-4">
+                  <Label htmlFor="name">Main Tag</Label>
+                  <Select>
+                    <SelectTrigger className="w-[180px]">
+                      <SelectValue placeholder="Select Tag" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectGroup>
+                        <SelectLabel>Select Tag</SelectLabel>
+                        <SelectItem value="apple">Doomed</SelectItem>
+                        <SelectItem value="banana">Toxic</SelectItem>
+                        <SelectItem value="blueberry">Parent</SelectItem>
+                      </SelectGroup>
+                    </SelectContent>
+                  </Select>
+                  <FormDescription>
+                    This will shown in the graph
+                  </FormDescription>
+                </div>
+                <DialogFooter>
+                  <Button type="submit" className="rounded-lg mt-4">
+                    Save
+                  </Button>
+                </DialogFooter>
+              </form>
+            </Form>
+          </div>
+
+          <div className="pl-4 border-l border-zinc-300 flex-1 space-y-2 mt-4 ">
+            <Label htmlFor="name">Add Tags</Label>
+            <Form {...tagForm}>
+              <form
+                onSubmit={tagForm.handleSubmit(onTagging)}
+                className="flex gap-2"
+              >
+                <FormField
+                  control={tagForm.control}
+                  name="tagID"
+                  render={({ field }) => (
+                    <Select onValueChange={field.onChange}>
+                      <SelectTrigger className="w-[180px]">
+                        <SelectValue placeholder="Select Tag" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectGroup>
+                          <SelectLabel>Select Tag</SelectLabel>
+                          {tagsList.map((tag) => {
+                            return (
+                              <SelectItem value={tag._id} key={tag._id}>
+                                {tag.tagName}
+                              </SelectItem>
+                            );
+                          })}
+                        </SelectGroup>
+                      </SelectContent>
+                    </Select>
+                  )}
+                />
+                <Button type="submit" variant="outline" className="rounded-md">
                   Add
                 </Button>
-              </div>
+              </form>
+            </Form>
 
-              <div className="flex flex-wrap gap-2">
-                <div
-                  className={`p-1 text-red-500 bg-red-200 w-fit rounded-sm flex gap-1 items-center justify-between`}
-                >
-                  <Hash size={15} />
-                  <span className="mr-2">Placeholder</span>
-                  <X size={18} className="ml-2" />
-                </div>
-                <div
-                  className={`p-1 text-red-500 bg-red-200 w-fit rounded-sm flex gap-1 items-center justify-between`}
-                >
-                  <Hash size={15} />
-                  <span className="mr-2">Placeholder</span>
-                  <X size={18} className="ml-2" />
-                </div>
-                <div
-                  className={`p-1 text-red-500 bg-red-200 w-fit rounded-sm flex gap-1 items-center justify-between`}
-                >
-                  <Hash size={15} />
-                  <span className="mr-2">Placeholder</span>
-                  <X size={18} className="ml-2" />
-                </div>
-              </div>
+            <div className="flex flex-wrap gap-2">
+              {currentTags.map((tag: Tag) => {
+                return (
+                  <GraphTags
+                    key={tag._id}
+                    color={tag.tagColor}
+                    tagName={tag.tagName}
+                  />
+                );
+              })}
             </div>
-
-            <DialogFooter>
-              <Button type="submit" className="rounded-lg mt-4">
-                Save
-              </Button>
-            </DialogFooter>
-          </form>
-        </Form>
+          </div>
+        </div>
       </DialogContent>
     </Dialog>
   );

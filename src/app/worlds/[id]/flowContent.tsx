@@ -427,18 +427,18 @@ export function FlowContent({
                 graphRefresh={graphRefresh}
                 worldID={worldData._id}
               />
+              <RelationshipDetailSheet
+                isEdgeClicked={isEdgeClicked}
+                openFunction={setIsEdgeClicked}
+                sourceNode={selectedSource}
+                targetNode={selectedTarget}
+                relationshipData={selectedEdge as Edge<RelationshipData>}
+                graphRefresh={graphRefresh}
+                deleteEdgeFunction={deleteEdge}
+                worldID={worldData._id}
+              />
             </>
           )}
-
-          <RelationshipDetailSheet
-            isEdgeClicked={isEdgeClicked}
-            openFunction={setIsEdgeClicked}
-            sourceNode={selectedSource}
-            targetNode={selectedTarget}
-            relationshipData={selectedEdge as Edge<RelationshipData>}
-            graphRefresh={graphRefresh}
-            deleteEdgeFunction={deleteEdge}
-          />
         </Panel>
         <Background gap={12} size={1} />
       </ReactFlow>

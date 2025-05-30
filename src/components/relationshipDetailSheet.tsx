@@ -1,4 +1,3 @@
-import { Hash } from "lucide-react";
 import { Volleyball, ChevronRight } from "lucide-react";
 import { Button } from "./ui/button";
 import { NodeObject } from "../../types/types";
@@ -7,7 +6,10 @@ import { RelationshipData } from "../../types/types";
 import RelationshipSettingDialog from "./relationshipSettingDialog";
 import { CldImage } from "next-cloudinary";
 import DeleteAlert from "./deleteAlert";
-
+import { Tag, TagAPI } from "../../types/types";
+import { useState, useCallback, useEffect } from "react";
+import { useToast } from "@/hooks/use-toast";
+import { GraphTags } from "./graphTags";
 
 export default function RelationshipDetailSheet({
   isEdgeClicked,
@@ -17,6 +19,7 @@ export default function RelationshipDetailSheet({
   relationshipData,
   graphRefresh,
   deleteEdgeFunction,
+  worldID,
 }: {
   isEdgeClicked: boolean;
   openFunction: React.Dispatch<React.SetStateAction<boolean>>;
@@ -25,7 +28,12 @@ export default function RelationshipDetailSheet({
   relationshipData: Edge<RelationshipData> | null;
   graphRefresh: () => void;
   deleteEdgeFunction: (objectID: string) => void;
+  worldID: string;
 }) {
+  const [tagsList, setTagsList] = useState<Tag[]>([]);
+
+  const { toast } = useToast();
+
   let usedSourcePicture = "objectPicture/fuetkmzyox2su7tfkib3";
   if (sourceNode) {
     const sourcePicture = sourceNode.objectPicture;
@@ -40,6 +48,49 @@ export default function RelationshipDetailSheet({
       usedTargetPicture = targetPicture;
     }
   }
+
+  const fetchData = useCallback(async () => {
+    function showError(message: string) {
+      const notify = () => {
+        toast({
+          title: "An Error has Occured!",
+          description: message,
+          variant: "destructive",
+        });
+      };
+      notify();
+    }
+    try {
+      if (!relationshipData) {
+        throw new Error("relationshipData not found");
+      }
+      console.log(relationshipData.id);
+      const res = await fetch(`/api/relationships/${relationshipData.id}/tags`);
+      if (!res.ok) {
+        const errorData = await res.json();
+        console.log(errorData);
+        throw new Error(errorData.error || "Something went wrong.");
+      }
+      const tagData = await res.json();
+      const tags: Tag[] = tagData.data.map((tag: TagAPI) => ({
+        _id: tag._id,
+        tagName: tag.tagName,
+        tagColor: tag.tagColor,
+      }));
+      setTagsList(tags);
+    } catch (error) {
+      if (error instanceof Error) {
+        showError(error.message);
+      }
+    }
+  }, [relationshipData, toast]);
+
+  useEffect(() => {
+    if (isEdgeClicked) {
+      fetchData();
+    }
+  }, [fetchData, isEdgeClicked]);
+
   return (
     <div>
       <div
@@ -62,6 +113,9 @@ export default function RelationshipDetailSheet({
               <RelationshipSettingDialog
                 relationshipData={relationshipData}
                 graphRefresh={graphRefresh}
+                worldID={worldID}
+                currentTags={tagsList}
+                fetchData={fetchData}
               />
               <DeleteAlert
                 id={relationshipData.id}
@@ -87,9 +141,16 @@ export default function RelationshipDetailSheet({
             </div>
 
             <div className="flex flex-col space-y-4 p-2 flex-grow items-center">
-              <div className="p-1 px-2 text-s text-zinc-500 bg-zinc-200 w-fit rounded-sm flex gap-1 items-center">
-                <Hash size={13} />
-                <span> Tags 1 </span>
+              <div className="flex gap-2">
+              {tagsList.map((tag) => {
+                return (
+                  <GraphTags
+                    key={tag._id}
+                    color={tag.tagColor}
+                    tagName={tag.tagName}
+                  />
+                );
+              })}
               </div>
               {relationshipData.data && (
                 <p className="italic">

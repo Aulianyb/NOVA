@@ -3,6 +3,30 @@ import Tag from "../../../../../../model/Tag";
 import { errorHandling, verifyUser, verifyRelationship } from "@/app/api/function";
 import Relationship from "../../../../../../model/Relationship";
 
+export async function GET(
+    req: NextRequest, 
+    { params }: { params: Promise<{ id: string }> }
+){
+    try {
+        const { id } = await params;
+        const userID = await verifyUser();
+        if (!userID) {
+            throw new Error("No Session Found"); 
+        }
+        const relationship = await verifyRelationship(id);
+        if (!relationship) {
+            throw new Error("Relationship not Found"); 
+        }
+        const relationshipTags = await Tag.find({_id : {$in : relationship.tags}})
+        return NextResponse.json({
+            data : relationshipTags,
+            message : "Tags Fetched!"
+        }, {status : 200})
+    } catch(error){
+        return errorHandling(error);
+    }
+}
+
 export async function POST(
     req: NextRequest, 
     { params }: { params: Promise<{ id: string }> }
