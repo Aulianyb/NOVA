@@ -172,11 +172,7 @@ export default function WorldTagsDialog({ worldID }: { worldID: string }) {
             <div className="flex flex-wrap gap-2">
               {tagsList.map((tag) => {
                 return (
-                  <TagElement
-                    key={tag._id}
-                    color={tag.tagColor}
-                    tagName={tag.tagName}
-                  />
+                  <TagElement key={tag._id} worldID={worldID} tagData={tag} />
                 );
               })}
             </div>
