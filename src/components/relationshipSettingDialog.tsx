@@ -25,7 +25,7 @@ import { PencilLine } from "lucide-react";
 import { useCallback, useState } from "react";
 import { useEffect } from "react";
 import { Edge } from "@xyflow/react";
-import { RelationshipData, Tag, TagAPI } from "@type/types";
+import { RelationshipData, Tag, TagAPI } from "@shared/types";
 import { useToast } from "@/hooks/use-toast";
 import {
   Select,
@@ -305,12 +305,7 @@ export default function RelationshipSettingDialog({
             <div className="flex flex-wrap gap-2">
               {currentTags.map((tag: Tag) => {
                 return (
-                  <GraphTags
-                    key={tag._id}
-                    color={tag.tagColor}
-                    tagName={tag.tagName}
-                    isReadOnly={false}
-                  />
+                  <GraphTags key={tag._id} tagData={tag} isReadOnly={false} />
                 );
               })}
             </div>

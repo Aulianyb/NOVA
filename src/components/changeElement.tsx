@@ -1,4 +1,4 @@
-import { Change } from "@type/types";
+import { Change } from "@shared/types";
 
 export default function ChangeElement({ changeData }: { changeData: Change }) {
   return (

@@ -12,7 +12,7 @@ import {
   NodeObject,
   World,
   RelationshipJSON,
-} from "@type/types";
+} from "@shared/types";
 import {
   ReactFlow,
   useNodesState,
@@ -427,16 +427,16 @@ export function FlowContent({
                 graphRefresh={graphRefresh}
                 worldID={worldData._id}
               />
-                        <RelationshipDetailSheet
-            isEdgeClicked={isEdgeClicked}
-            openFunction={setIsEdgeClicked}
-            sourceNode={selectedSource}
-            targetNode={selectedTarget}
-            relationshipData={selectedEdge as Edge<RelationshipData>}
-            graphRefresh={graphRefresh}
-            deleteEdgeFunction={deleteEdge}
-            worldID={worldData._id}
-          />
+              <RelationshipDetailSheet
+                isEdgeClicked={isEdgeClicked}
+                openFunction={setIsEdgeClicked}
+                sourceNode={selectedSource}
+                targetNode={selectedTarget}
+                relationshipData={selectedEdge as Edge<RelationshipData>}
+                graphRefresh={graphRefresh}
+                deleteEdgeFunction={deleteEdge}
+                worldID={worldData._id}
+              />
             </>
           )}
         </Panel>

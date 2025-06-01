@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { NodeJSON} from "@type/types";
+import { NodeJSON} from "@shared/types";
 import { verifyUser, errorHandling } from "../../function";
 import Object from "@model/Object";
 

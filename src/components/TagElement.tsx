@@ -1,6 +1,6 @@
 import { X } from "lucide-react";
 import TagEditingPopover from "./tagEditingPopover";
-import { Tag } from "@type/types";
+import { Tag } from "@shared/types";
 import { useState } from "react";
 
 const BackgroundColorMap: Record<string, string> = {

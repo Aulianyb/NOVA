@@ -23,7 +23,7 @@ import TagElement from "./TagElement";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useCallback, useState, useEffect } from "react";
 import { useToast } from "@/hooks/use-toast";
-import { Tag, TagAPI } from "@type/types";
+import { Tag, TagAPI } from "@shared/types";
 
 const formSchema = z.object({
   tagName: z

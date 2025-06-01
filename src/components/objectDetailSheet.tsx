@@ -2,7 +2,7 @@ import { CldImage } from "next-cloudinary";
 import { Volleyball, ChevronRight } from "lucide-react";
 import { Button } from "./ui/button";
 import { Node } from "@xyflow/react";
-import { NodeData, Tag, TagAPI } from "@type/types";
+import { NodeData, Tag, TagAPI } from "@shared/types";
 import ObjectSettingDialog from "./objectSettingDialog";
 import DeleteAlert from "./deleteAlert";
 import { useCallback, useEffect, useState } from "react";
@@ -127,12 +127,7 @@ export default function ObjectDetailSheet({
             <div className="flex gap-1">
               {tagsList.map((tag) => {
                 return (
-                  <GraphTags
-                    key={tag._id}
-                    color={tag.tagColor}
-                    tagName={tag.tagName}
-                    isReadOnly={true}
-                  />
+                  <GraphTags key={tag._id} tagData={tag} isReadOnly={true} />
                 );
               })}
             </div>

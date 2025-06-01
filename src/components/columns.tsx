@@ -2,9 +2,12 @@
 import { Trash } from "lucide-react";
 import { ColumnDef } from "@tanstack/react-table";
 import { Button } from "@/components/ui/button";
-import { Collaborator } from "@type/types";
+import { Collaborator } from "@shared/types";
 
-export const columns = (worldID: string, notify : () => void): ColumnDef<Collaborator>[] => [
+export const columns = (
+  worldID: string,
+  notify: () => void
+): ColumnDef<Collaborator>[] => [
   {
     accessorKey: "username",
     header: "Username",

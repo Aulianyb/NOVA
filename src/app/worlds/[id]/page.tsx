@@ -2,7 +2,7 @@
 import React, { useCallback } from "react";
 import { useParams } from "next/navigation";
 import { useState, useEffect } from "react";
-import { World, NodeObject, RelationshipJSON } from "@type/types";
+import { World, NodeObject, RelationshipJSON } from "@shared/types";
 import { ReactFlowProvider } from "@xyflow/react";
 import { FlowContent } from "./flowContent";
 import Loading from "@/app/loading";
@@ -157,7 +157,6 @@ export default function Page() {
         objectData={objects}
         relationshipData={relationships}
         graphRefresh={fetchSession}
-
       />
     </ReactFlowProvider>
   );

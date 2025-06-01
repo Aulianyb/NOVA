@@ -25,7 +25,7 @@ import { Button } from "@/components/ui/button";
 import { PencilLine } from "lucide-react";
 import { useCallback, useState } from "react";
 import { Node } from "@xyflow/react";
-import { NodeData, Tag, TagAPI } from "@type/types";
+import { NodeData, Tag, TagAPI } from "@shared/types";
 import { useEffect } from "react";
 import { useToast } from "@/hooks/use-toast";
 import {
@@ -351,12 +351,7 @@ export default function ObjectSettingDialog({
             <div className="flex flex-wrap gap-2">
               {currentTags.map((tag: Tag) => {
                 return (
-                  <GraphTags
-                    key={tag._id}
-                    color={tag.tagColor}
-                    tagName={tag.tagName}
-                    isReadOnly={true}
-                  />
+                  <GraphTags key={tag._id} tagData={tag} isReadOnly={false} />
                 );
               })}
             </div>

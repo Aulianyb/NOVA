@@ -1,6 +1,6 @@
 import { Volleyball, ChevronRight } from "lucide-react";
 import { Button } from "./ui/button";
-import { NodeObject, RelationshipData, Tag, TagAPI } from "@type/types";
+import { NodeObject, RelationshipData, Tag, TagAPI } from "@shared/types";
 import { Edge } from "@xyflow/react";
 import RelationshipSettingDialog from "./relationshipSettingDialog";
 import { CldImage } from "next-cloudinary";
@@ -142,12 +142,7 @@ export default function RelationshipDetailSheet({
               <div className="flex flex-wrap justify-center gap-2">
                 {tagsList.map((tag) => {
                   return (
-                    <GraphTags
-                      key={tag._id}
-                      color={tag.tagColor}
-                      tagName={tag.tagName}
-                      isReadOnly={true}
-                    />
+                    <GraphTags key={tag._id} tagData={tag} isReadOnly={true} />
                   );
                 })}
               </div>

@@ -1,25 +1,24 @@
 import { Hash, X } from "lucide-react";
+import { Tag } from "@shared/types";
 
 export function GraphTags({
-  tagName,
-  color,
+  tagData,
   isReadOnly,
 }: {
-  tagName: string;
-  color: string;
+  tagData: Tag;
   isReadOnly: boolean;
 }) {
-
-  function onRemoveTag(){
-    console.log(tagName);
+  function onRemoveTag() {
+    console.log(tagData._id);
   }
 
   return (
     <div
-      className={`p-1 px-2 text-xs text-${color}-500 bg-${color}-200 w-fit rounded-sm flex gap-1 items-center`}
+      className={`p-1 px-2 text-xs text-${tagData.tagColor}-500 bg-${tagData.tagColor}-200 w-fit rounded-sm flex gap-1 items-center`}
     >
       <Hash size={13} />
-      <span>{tagName}</span> {isReadOnly && <X size={13} onClick={()=>onRemoveTag()}/>}
+      <span>{tagData.tagColor}</span>{" "}
+      {!isReadOnly && <X size={13} onClick={() => onRemoveTag()} />}
     </div>
   );
 }

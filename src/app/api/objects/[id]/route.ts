@@ -6,7 +6,7 @@ import cloudinary from "@/app/lib/connect";
 import Relationship from "@model/Relationship";
 import User from "@model/User";
 import { UploadApiResponse } from "cloudinary";
-import { RelationshipJSON } from "@type/types";
+import { RelationshipJSON } from "@shared/types";
 
 export async function DELETE(
 req: NextRequest, 
