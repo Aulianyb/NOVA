@@ -2,7 +2,7 @@
 import { Trash } from "lucide-react";
 import { ColumnDef } from "@tanstack/react-table";
 import { Button } from "@/components/ui/button";
-import { Collaborator } from "../../types/types";
+import { Collaborator } from "@type/types";
 
 export const columns = (worldID: string, notify : () => void): ColumnDef<Collaborator>[] => [
   {

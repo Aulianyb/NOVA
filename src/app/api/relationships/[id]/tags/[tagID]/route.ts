@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { errorHandling, verifyUser, verifyRelationship } from "@/app/api/function";
-import Relationship from "../../../../../../../model/Relationship";
-import Tag from "../../../../../../../model/Tag";
+import Relationship from "@model/Relationship";
+import Tag from "@model/Tag";
 
 export async function DELETE(
     req: NextRequest, 

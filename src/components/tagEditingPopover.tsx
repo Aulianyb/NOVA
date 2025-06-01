@@ -6,7 +6,7 @@ import {
 import { Ellipsis } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "./ui/button";
-import { Tag } from "../../types/types";
+import { Tag } from "@type/types";
 import { Dispatch, SetStateAction } from "react";
 import {
   Form,

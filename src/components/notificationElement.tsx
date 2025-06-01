@@ -1,4 +1,4 @@
-import { Notification } from "../../types/types";
+import { Notification } from "@type/types";
 import { Button } from "./ui/button";
 import { useToast } from "@/hooks/use-toast";
 

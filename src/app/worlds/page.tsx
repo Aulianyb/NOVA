@@ -4,7 +4,7 @@ import { useCallback, useEffect, useState } from "react";
 import { quantico } from "../fonts";
 import { Navbar } from "@/components/navbar";
 import { WorldElement } from "@/components/worldElement";
-import { World } from "../../../types/types";
+import { World } from "@type/types";
 import Loading from "../loading";
 import { useToast } from "@/hooks/use-toast";
 

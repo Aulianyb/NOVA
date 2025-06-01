@@ -1,12 +1,10 @@
 import { Volleyball, ChevronRight } from "lucide-react";
 import { Button } from "./ui/button";
-import { NodeObject } from "../../types/types";
+import { NodeObject, RelationshipData, Tag, TagAPI } from "@type/types";
 import { Edge } from "@xyflow/react";
-import { RelationshipData } from "../../types/types";
 import RelationshipSettingDialog from "./relationshipSettingDialog";
 import { CldImage } from "next-cloudinary";
 import DeleteAlert from "./deleteAlert";
-import { Tag, TagAPI } from "../../types/types";
 import { useState, useCallback, useEffect } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { GraphTags } from "./graphTags";
@@ -141,16 +139,17 @@ export default function RelationshipDetailSheet({
             </div>
 
             <div className="flex flex-col space-y-4 p-2 flex-grow items-center">
-              <div className="flex gap-2">
-              {tagsList.map((tag) => {
-                return (
-                  <GraphTags
-                    key={tag._id}
-                    color={tag.tagColor}
-                    tagName={tag.tagName}
-                  />
-                );
-              })}
+              <div className="flex flex-wrap justify-center gap-2">
+                {tagsList.map((tag) => {
+                  return (
+                    <GraphTags
+                      key={tag._id}
+                      color={tag.tagColor}
+                      tagName={tag.tagName}
+                      isReadOnly={true}
+                    />
+                  );
+                })}
               </div>
               {relationshipData.data && (
                 <p className="italic">

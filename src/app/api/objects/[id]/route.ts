@@ -1,12 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
 import { errorHandling, verifyObject, verifyUser, verifyWorld} from "../../function";
-import World from "../../../../../model/World";
-import Object from "../../../../../model/Object"
+import World from "@model/World";
+import Object from "@model/Object"
 import cloudinary from "@/app/lib/connect";
-import Relationship from "../../../../../model/Relationship";
-import User from "../../../../../model/User";
+import Relationship from "@model/Relationship";
+import User from "@model/User";
 import { UploadApiResponse } from "cloudinary";
-import { RelationshipJSON } from "../../../../../types/types";
+import { RelationshipJSON } from "@type/types";
 
 export async function DELETE(
 req: NextRequest, 

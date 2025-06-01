@@ -21,7 +21,7 @@ import { Button } from "@/components/ui/button";
 import { useCallback } from "react";
 import { useEffect } from "react";
 import { Edge } from "@xyflow/react";
-import { RelationshipData } from "../../types/types";
+import { RelationshipData } from "@type/types";
 import { useToast } from "@/hooks/use-toast";
 
 const formSchema = z.object({

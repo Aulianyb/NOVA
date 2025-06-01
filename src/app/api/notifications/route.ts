@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { errorHandling, verifyUser, verifyWorld } from "../function";
-import User from "../../../../model/User";
-import World from "../../../../model/World";
-import { Notification } from "../../../../types/types";
+import User from "@model/User";
+import World from "@model/World";
+import { Notification } from "@type/types";
 
 export async function GET(){
     try{

@@ -2,7 +2,7 @@
 import React, { useCallback } from "react";
 import { useParams } from "next/navigation";
 import { useState, useEffect } from "react";
-import { World, NodeObject, RelationshipJSON } from "../../../../types/types";
+import { World, NodeObject, RelationshipJSON } from "@type/types";
 import { ReactFlowProvider } from "@xyflow/react";
 import { FlowContent } from "./flowContent";
 import Loading from "@/app/loading";

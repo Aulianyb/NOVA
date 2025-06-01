@@ -9,7 +9,7 @@ import { Button } from "./ui/button";
 import { Bell, BellDot } from "lucide-react";
 import { ScrollArea } from "./ui/scroll-area";
 import NotificationElement from "./notificationElement";
-import { Notification } from "../../types/types";
+import { Notification } from "@type/types";
 import { useState, useCallback } from "react";
 import React from "react";
 import { useToast } from "@/hooks/use-toast";

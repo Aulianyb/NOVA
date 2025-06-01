@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
-import Tag from "../../../../../../model/Tag";
+import Tag from "@model/Tag";
 import { errorHandling, verifyUser, verifyRelationship } from "@/app/api/function";
-import Relationship from "../../../../../../model/Relationship";
+import Relationship from "@model/Relationship";
 
 export async function GET(
     req: NextRequest, 

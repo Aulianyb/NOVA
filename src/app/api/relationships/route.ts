@@ -1,9 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
 import { verifyUser, errorHandling, verifyWorld} from "../function";
-import Relationship from "../../../../model/Relationship";
-import Object from "../../../../model/Object";
-import World from "../../../../model/World";
-import User from "../../../../model/User";
+import Relationship from "@model/Relationship";
+import Object from "@model/Object";
+import World from "@model/World";
+import User from "@model/User";
 
 export async function POST(req:NextRequest){
     try{

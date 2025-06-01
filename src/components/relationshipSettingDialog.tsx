@@ -25,7 +25,7 @@ import { PencilLine } from "lucide-react";
 import { useCallback, useState } from "react";
 import { useEffect } from "react";
 import { Edge } from "@xyflow/react";
-import { RelationshipData } from "../../types/types";
+import { RelationshipData, Tag, TagAPI } from "@type/types";
 import { useToast } from "@/hooks/use-toast";
 import {
   Select,
@@ -36,7 +36,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Tag, TagAPI } from "../../types/types";
 import { GraphTags } from "./graphTags";
 
 const formSchema = z.object({
@@ -310,6 +309,7 @@ export default function RelationshipSettingDialog({
                     key={tag._id}
                     color={tag.tagColor}
                     tagName={tag.tagName}
+                    isReadOnly={false}
                   />
                 );
               })}

@@ -2,12 +2,11 @@ import { CldImage } from "next-cloudinary";
 import { Volleyball, ChevronRight } from "lucide-react";
 import { Button } from "./ui/button";
 import { Node } from "@xyflow/react";
-import { NodeData } from "../../types/types";
+import { NodeData, Tag, TagAPI } from "@type/types";
 import ObjectSettingDialog from "./objectSettingDialog";
 import DeleteAlert from "./deleteAlert";
 import { useCallback, useEffect, useState } from "react";
 import { useToast } from "@/hooks/use-toast";
-import { Tag, TagAPI } from "../../types/types";
 import { GraphTags } from "./graphTags";
 
 export default function ObjectDetailSheet({
@@ -132,6 +131,7 @@ export default function ObjectDetailSheet({
                     key={tag._id}
                     color={tag.tagColor}
                     tagName={tag.tagName}
+                    isReadOnly={true}
                   />
                 );
               })}

@@ -1,9 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
-import World from "../../../../../model/World";
-import User from "../../../../../model/User";
+import World from "@model/World";
+import User from "@model/User";
 import { errorHandling, verifyWorld, verifyUser} from "../../function";
-import Object from "../../../../../model/Object";
-import Relationship from "../../../../../model/Relationship";
+import Object from "@model/Object";
+import Relationship from "@model/Relationship";
 import cloudinary from "@/app/lib/connect";
 import { verifyObject } from "../../function";
 import { UploadApiResponse } from "cloudinary";

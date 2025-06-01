@@ -1,11 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
-import Object from "../../../../model/Object";
+import Object from "@model/Object";
 import { errorHandling, verifyWorld, verifyUser} from "../function";
-import Relationship from "../../../../model/Relationship";
+import Relationship from "@model/Relationship";
 import cloudinary from "@/app/lib/connect";
 import { UploadApiResponse } from "cloudinary";
-import World from "../../../../model/World";
-import User from "../../../../model/User";
+import World from "@model/World";
+import User from "@model/User";
 
 export async function GET(req:NextRequest){
     try {

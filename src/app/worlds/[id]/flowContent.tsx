@@ -12,7 +12,7 @@ import {
   NodeObject,
   World,
   RelationshipJSON,
-} from "../../../../types/types";
+} from "@type/types";
 import {
   ReactFlow,
   useNodesState,

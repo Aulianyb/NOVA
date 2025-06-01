@@ -1,4 +1,4 @@
-import { Change } from "../../types/types";
+import { Change } from "@type/types";
 
 export default function ChangeElement({ changeData }: { changeData: Change }) {
   return (

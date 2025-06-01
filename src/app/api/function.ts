@@ -1,8 +1,8 @@
 import { NextResponse } from "next/server";
-import World from "../../../model/World";
+import World from "@model/World";
 import mongoose from "mongoose";
-import Object from "../../../model/Object";
-import Relationship from "../../../model/Relationship";
+import Object from "@model/Object";
+import Relationship from "@model/Relationship";
 import { connectToMongoDB } from "@/app/lib/connect";
 import jwt from "jsonwebtoken";
 import { getSession } from "./auth/session";

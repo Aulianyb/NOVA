@@ -25,7 +25,7 @@ import { Button } from "@/components/ui/button";
 import { PencilLine } from "lucide-react";
 import { useCallback, useState } from "react";
 import { Node } from "@xyflow/react";
-import { NodeData } from "../../types/types";
+import { NodeData, Tag, TagAPI } from "@type/types";
 import { useEffect } from "react";
 import { useToast } from "@/hooks/use-toast";
 import {
@@ -37,7 +37,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Tag, TagAPI } from "../../types/types";
 import { GraphTags } from "./graphTags";
 
 const MAX_FILE_SIZE = 5000000;
@@ -356,6 +355,7 @@ export default function ObjectSettingDialog({
                     key={tag._id}
                     color={tag.tagColor}
                     tagName={tag.tagName}
+                    isReadOnly={true}
                   />
                 );
               })}

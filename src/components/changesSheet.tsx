@@ -3,7 +3,7 @@ import { ChevronRight } from "lucide-react";
 import { ScrollArea } from "./ui/scroll-area";
 import ChangeElement from "./changeElement";
 import { useCallback, useState, useEffect } from "react";
-import { Change, ChangeAPI } from "../../types/types";
+import { Change, ChangeAPI } from "@type/types";
 import { useToast } from "@/hooks/use-toast";
 
 function convertDate(ISODate: string) {

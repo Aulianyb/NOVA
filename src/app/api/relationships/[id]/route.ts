@@ -1,10 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
-import Relationship from "../../../../../model/Relationship";
+import Relationship from "@model/Relationship";
 import { errorHandling} from "../../function";
 import { verifyRelationship, verifyUser } from "../../function";
-import World from "../../../../../model/World";
-import Object from "../../../../../model/Object";
-import User from "../../../../../model/User";
+import World from "@model/World";
+import Object from "@model/Object";
+import User from "@model/User";
 
 export async function PUT(req: NextRequest, 
     { params }: { params: Promise<{ id: string }> }){
