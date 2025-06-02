@@ -14,9 +14,12 @@ export async function DELETE(
         if (!userID) {
             throw new Error("No Session Found"); 
         }
-        await verifyRelationship(id);
-        Tag.updateOne({_id : tagID}, {$pull : {tagRelationships : id}})
+        const updatedRelationship = await verifyRelationship(id);
+        if (updatedRelationship.mainTag == tagID){ 
+            await Relationship.updateOne({_id : id}, {mainTag : undefined})
+        }
         const result = await Relationship.updateOne({_id : id}, {$pull : {tags : tagID}})
+        Tag.updateOne({_id : tagID}, {$pull : {tagRelationships : id}})
         return NextResponse.json({data : result, message : "Tag has been removed from Relationship!"}, {status : 200})
     } catch(error){
         return errorHandling(error);

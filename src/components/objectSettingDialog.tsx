@@ -351,7 +351,14 @@ export default function ObjectSettingDialog({
             <div className="flex flex-wrap gap-2">
               {currentTags.map((tag: Tag) => {
                 return (
-                  <GraphTags key={tag._id} tagData={tag} isReadOnly={false} />
+                  <GraphTags
+                    key={tag._id}
+                    tagData={tag}
+                    isReadOnly={false}
+                    id={nodeData.id}
+                    type={"objects"}
+                    fetchData={fetchData}
+                  />
                 );
               })}
             </div>

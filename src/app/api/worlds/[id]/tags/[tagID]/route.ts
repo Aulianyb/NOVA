@@ -23,7 +23,8 @@ export async function DELETE(
         const deletedTag = await Tag.findById(tagID);
         await World.updateMany({_id : id}, {$pull : {tags : tagID}});
         await Relationship.updateMany({_id : {$in : deletedTag.tagRelationships}}, {$pull : {tags : tagID}})
-        await Object.updateMany({_id : {$in : deletedTag.tagObjects}}, {$pull : {tags : tagID}})
+        await Relationship.updateMany({ _id: { $in: deletedTag.tagRelationships }, mainTag: tagID }, {mainTag : undefined});  
+        await Object.updateMany({_id : {$in : deletedTag.tagObjects}}, {$pull : {tags : tagID}});
         const res = await Tag.findByIdAndDelete(tagID); 
         return NextResponse.json({data : res, message : "Tag has been deleted"}, {status : 200})
     } catch(error){

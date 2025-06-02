@@ -152,7 +152,7 @@ export default function RelationshipDetailSheet({
               <div className="flex flex-wrap justify-center gap-2">
                 {tagsList.map((tag) => {
                   return (
-                    <GraphTags key={tag._id} tagData={tag} isReadOnly={true} />
+                    <GraphTags key={tag._id} tagData={tag} isReadOnly={true}/>
                   );
                 })}
               </div>

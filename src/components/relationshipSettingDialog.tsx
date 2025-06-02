@@ -262,9 +262,7 @@ export default function RelationshipSettingDialog({
                         </SelectTrigger>
                         <SelectContent>
                           <SelectGroup>
-                            <SelectLabel>
-                            Select Tag
-                            </SelectLabel>
+                            <SelectLabel>Select Tag</SelectLabel>
                             {currentTags.map((tag) => {
                               return (
                                 <SelectItem value={tag._id} key={tag._id}>
@@ -329,7 +327,14 @@ export default function RelationshipSettingDialog({
             <div className="flex flex-wrap gap-2">
               {currentTags.map((tag: Tag) => {
                 return (
-                  <GraphTags key={tag._id} tagData={tag} isReadOnly={false} />
+                  <GraphTags
+                    key={tag._id}
+                    tagData={tag}
+                    isReadOnly={false}
+                    type={"relationships"}
+                    id={relationshipData.id}
+                    fetchData={fetchData}
+                  />
                 );
               })}
             </div>

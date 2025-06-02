@@ -28,12 +28,34 @@ const TextColorMap: Record<string, string> = {
 export function GraphTags({
   tagData,
   isReadOnly,
+  type,
+  id,
+  fetchData,
 }: {
   tagData: Tag;
   isReadOnly: boolean;
+  type?: string;
+  id?: string;
+  fetchData?: () => Promise<void>;
 }) {
-  function onRemoveTag() {
-    console.log(tagData._id);
+  async function onRemoveTag() {
+    try {
+      const res = await fetch(`/api/${type}/${id}/tags/${tagData._id}`, {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      if (!res.ok) {
+        const errorData = await res.json();
+        throw new Error(errorData.error || "Something went wrong.");
+      }
+      if (fetchData) {
+        fetchData();
+      }
+    } catch (error) {
+      console.log(error);
+    }
   }
 
   return (

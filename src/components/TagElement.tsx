@@ -30,19 +30,42 @@ const TextColorMap: Record<string, string> = {
 export default function TagElement({
   worldID,
   tagData,
+  fetchData,
 }: {
   worldID: string;
   tagData: Tag;
+  fetchData: () => Promise<void>;
 }) {
   const [tagColor, setTagColor] = useState<string>(tagData.tagColor);
   const [tagName, setTagName] = useState<string>(tagData.tagName);
+
+  async function onDelete() {
+    try {
+      const res = await fetch(`/api/worlds/${worldID}/tags/${tagData._id}`, {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      if (!res.ok) {
+        const errorData = await res.json();
+        throw new Error(errorData.error || "Something went wrong.");
+      }
+      if (fetchData) {
+        fetchData();
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
   return (
     <div
       className={`p-1 px-2 ${BackgroundColorMap[tagColor]} ${TextColorMap[tagColor]}
       w-fit rounded-sm flex gap-1 items-center`}
     >
       <span className="mr-2">{tagName}</span>
-      <X size={18} />
+      <X size={18} onClick={() => onDelete()} />
       <TagEditingPopover
         tagData={tagData}
         worldID={worldID}
