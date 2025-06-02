@@ -19,7 +19,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Hash } from "lucide-react";
-import TagElement from "./TagElement";
+import TagElement from "./tagElement";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useCallback, useState, useEffect } from "react";
 import { useToast } from "@/hooks/use-toast";
@@ -32,7 +32,15 @@ const formSchema = z.object({
     .max(20, "Tag name must be at most 20 characters long"),
 });
 
-export default function WorldTagsDialog({ worldID }: { worldID: string }) {
+export default function WorldTagsDialog({
+  worldID,
+  hiddenTags,
+  setHiddenTags,
+}: {
+  worldID: string;
+  hiddenTags: string[];
+  setHiddenTags: React.Dispatch<React.SetStateAction<string[]>>;
+}) {
   const [tagsList, setTagsList] = useState<Tag[]>([]);
   const [isOpen, setIsOpen] = useState(false);
   const form = useForm<z.infer<typeof formSchema>>({
@@ -140,7 +148,7 @@ export default function WorldTagsDialog({ worldID }: { worldID: string }) {
           <DialogTitle>World Tags</DialogTitle>
         </DialogHeader>
         <DialogDescription>
-          Tags can be used to categorize objects and relationships
+          Tags can be used to categorize objects and relationships. Do note that if you hide any object, any relationship connected to it will also be hidden. 
         </DialogDescription>
         <div>
           <div className="mt-2 flex">
@@ -177,6 +185,8 @@ export default function WorldTagsDialog({ worldID }: { worldID: string }) {
                     worldID={worldID}
                     tagData={tag}
                     fetchData={fetchData}
+                    isHidden={hiddenTags.includes(tag._id)}
+                    setHiddenTags={setHiddenTags}
                   />
                 );
               })}

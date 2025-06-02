@@ -1,4 +1,4 @@
-import { X } from "lucide-react";
+import { X, Eye, EyeClosed } from "lucide-react";
 import TagEditingPopover from "./tagEditingPopover";
 import { Tag } from "@shared/types";
 import { useState } from "react";
@@ -31,13 +31,38 @@ export default function TagElement({
   worldID,
   tagData,
   fetchData,
+  isHidden,
+  setHiddenTags,
 }: {
   worldID: string;
   tagData: Tag;
   fetchData: () => Promise<void>;
+  isHidden: boolean;
+  setHiddenTags: React.Dispatch<React.SetStateAction<string[]>>;
 }) {
+  const [hidden, setHidden] = useState<boolean>(isHidden);
   const [tagColor, setTagColor] = useState<string>(tagData.tagColor);
   const [tagName, setTagName] = useState<string>(tagData.tagName);
+
+  async function onHide() {
+    try {
+      setHiddenTags((prevTags) => [...prevTags, tagData._id]);
+      setHidden(true);
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  async function onShow() {
+    try {
+      setHiddenTags((prevTags) =>
+        prevTags.filter((_id) => _id !== tagData._id)
+      );
+      setHidden(false);
+    } catch (error) {
+      console.log(error);
+    }
+  }
 
   async function onDelete() {
     try {
@@ -65,6 +90,11 @@ export default function TagElement({
       w-fit rounded-sm flex gap-1 items-center`}
     >
       <span className="mr-2">{tagName}</span>
+      {hidden ? (
+        <EyeClosed size={18} onClick={() => onShow()} />
+      ) : (
+        <Eye size={18} onClick={() => onHide()} />
+      )}
       <X size={18} onClick={() => onDelete()} />
       <TagEditingPopover
         tagData={tagData}

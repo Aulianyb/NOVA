@@ -209,7 +209,15 @@ export default function RelationshipSettingDialog({
   }
 
   return (
-    <Dialog open={isOpen} onOpenChange={setIsOpen}>
+    <Dialog
+      open={isOpen}
+      onOpenChange={(open) => {
+        setIsOpen(open);
+        if (!open) {
+          graphRefresh();
+        }
+      }}
+    >
       <DialogTrigger asChild>
         <Button
           variant="ghost"

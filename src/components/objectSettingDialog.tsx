@@ -229,7 +229,15 @@ export default function ObjectSettingDialog({
   }
 
   return (
-    <Dialog open={isOpen} onOpenChange={setIsOpen}>
+    <Dialog
+      open={isOpen}
+      onOpenChange={(open) => {
+        setIsOpen(open);
+        if (!open) {
+          graphRefresh();
+        }
+      }}
+    >
       <DialogTrigger asChild>
         <Button
           variant="ghost"

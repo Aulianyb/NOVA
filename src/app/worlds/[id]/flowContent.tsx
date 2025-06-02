@@ -90,6 +90,7 @@ export function FlowContent({
     undefined
   );
   const [isAddingEdge, setIsAddingEdge] = useState(false);
+  const [hiddenTags, setHiddenTags] = useState<string[]>([]);
 
   const router = useRouter();
   const { toast } = useToast();
@@ -187,6 +188,8 @@ export function FlowContent({
         target: edge.target,
         data: {
           relationshipDescription: edge.relationshipDescription,
+          tags: edge.tags,
+          mainTag: edge.mainTag,
         },
         type: "custom-edge",
         style: {
@@ -268,6 +271,44 @@ export function FlowContent({
   useEffect(() => {
     fetchData();
   }, [fetchData]);
+
+  const hideNode = (hidden: boolean) => (node: Node) => {
+    return {
+      ...node,
+      hidden,
+    };
+  };
+  const hideEdge = (hidden: boolean) => (edge: Edge) => {
+    return {
+      ...edge,
+      hidden,
+    };
+  };
+
+  useEffect(() => {
+    setNodes((nds) =>
+      nds.map((node) => {
+        const nodeTags: string[] = Array.isArray(node.data?.tags)
+          ? node.data.tags
+          : [];
+        const hiddenNodes = nodeTags.some((tagId: string) =>
+          hiddenTags.includes(tagId)
+        );
+        return hideNode(hiddenNodes)(node);
+      })
+    );
+    setEdges((eds) =>
+      eds.map((edge) => {
+        const edgeTags: string[] = Array.isArray(edge.data?.tags)
+          ? edge.data.tags
+          : [];
+        const hiddenEdges = edgeTags.some((tagId: string) =>
+          hiddenTags.includes(tagId)
+        );
+        return hideEdge(hiddenEdges)(edge);
+      })
+    );
+  }, [hiddenTags, setEdges, setNodes]);
 
   const addNode = useCallback(
     ({
@@ -389,7 +430,11 @@ export function FlowContent({
                   worldID={worldData._id}
                   position={getCenterScreen()}
                 />
-                <WorldTagsDialog worldID={worldData._id} />
+                <WorldTagsDialog
+                  worldID={worldData._id}
+                  hiddenTags={hiddenTags}
+                  setHiddenTags={setHiddenTags}
+                />
                 <RelationshipCreationDialog
                   setIsAddingEdge={setIsAddingEdge}
                   isAddingEdge={isAddingEdge}
