@@ -60,7 +60,8 @@ export type RelationshipJSON = {
     source : string,
     target : string,
     tags : string[],
-    type : string
+    type : string,
+    mainTag : string,
     relationshipDescription : string
 }
 
