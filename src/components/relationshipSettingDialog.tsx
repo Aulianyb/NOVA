@@ -124,24 +124,25 @@ export default function RelationshipSettingDialog({
     }
     try {
       const res = await fetch(`/api/worlds/${worldID}/tags`);
-      if (!res.ok) {
-        const errorData = await res.json();
-        console.log(errorData);
-        throw new Error(errorData.error || "Something went wrong.");
-      }
       const tagData = await res.json();
-      const tags: Tag[] = tagData.data.map((tag: TagAPI) => ({
-        _id: tag._id,
-        tagName: tag.tagName,
-        tagColor: tag.tagColor,
-      }));
+      if (!res.ok) {
+        console.log(tagData);
+        throw new Error(tagData.error || "Something went wrong.");
+      }
+      const tags: Tag[] = tagData.data
+        .filter((tag: TagAPI) => !currentTags.some((t) => t._id === tag._id))
+        .map((tag: TagAPI) => ({
+          _id: tag._id,
+          tagName: tag.tagName,
+          tagColor: tag.tagColor,
+        }));
       setTagsList(tags);
     } catch (error) {
       if (error instanceof Error) {
         showError(error.message);
       }
     }
-  }, [worldID, toast]);
+  }, [worldID, toast, currentTags]);
 
   useEffect(() => {
     if (isOpen) {

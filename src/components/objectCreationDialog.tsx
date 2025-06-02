@@ -107,13 +107,11 @@ export default function ObjectCreationDialog({
         method: "POST",
         body: formData,
       });
-      if (!res.ok) {
-        const errorData = await res.json();
-        console.log(errorData)
-        throw new Error(errorData.error || "Something went wrong");
-      }
-
       const responseData = await res.json();
+      if (!res.ok) {
+        console.log(responseData);
+        throw new Error(responseData.error || "Something went wrong");
+      }
       const newNode = responseData.data;
       createFunction({
         objectID: newNode._id,

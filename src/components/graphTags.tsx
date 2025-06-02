@@ -48,6 +48,7 @@ export function GraphTags({
       });
       if (!res.ok) {
         const errorData = await res.json();
+        console.log(errorData);
         throw new Error(errorData.error || "Something went wrong.");
       }
       if (fetchData) {

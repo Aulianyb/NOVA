@@ -69,12 +69,11 @@ export default function WorldTagsDialog({
     }
     try {
       const res = await fetch(`/api/worlds/${worldID}/tags`);
-      if (!res.ok) {
-        const errorData = await res.json();
-        console.log(errorData);
-        throw new Error(errorData.error || "Something went wrong.");
-      }
       const tagData = await res.json();
+      if (!res.ok) {
+        console.log(tagData);
+        throw new Error(tagData.error || "Something went wrong.");
+      }
       const tags: Tag[] = tagData.data.map((tag: TagAPI) => ({
         _id: tag._id,
         tagName: tag.tagName,
@@ -148,7 +147,9 @@ export default function WorldTagsDialog({
           <DialogTitle>World Tags</DialogTitle>
         </DialogHeader>
         <DialogDescription>
-          Tags can be used to categorize objects and relationships. Do note that if you hide any object, any relationship connected to it will also be hidden. 
+          Tags can be used to categorize objects and relationships. Do note that
+          if you hide any object, any relationship connected to it will also be
+          hidden.
         </DialogDescription>
         <div>
           <div className="mt-2 flex">

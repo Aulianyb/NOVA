@@ -37,12 +37,11 @@ export default function NotificationDropdown({
     }
     try {
       const res = await fetch("/api/notifications");
-      if (!res.ok) {
-        const errorData = await res.json();
-        console.log(errorData);
-        throw new Error(errorData.error || "Something went wrong");
-      }
       const notifRes = await res.json();
+      if (!res.ok) {
+        console.log(notifRes);
+        throw new Error(notifRes.error || "Something went wrong");
+      }
       const notifData = notifRes.data;
       console.log(notifData);
       setNotifications(notifData);

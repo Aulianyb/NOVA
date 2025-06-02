@@ -65,12 +65,12 @@ export default function RelationshipDetailSheet({
         throw new Error("relationshipData not found");
       }
       const res = await fetch(`/api/relationships/${relationshipData.id}/tags`);
-      if (!res.ok) {
-        const errorData = await res.json();
-        console.log(errorData);
-        throw new Error(errorData.error || "Something went wrong.");
-      }
       const tagData = await res.json();
+      if (!res.ok) {
+        const tagData = await res.json();
+        console.log(tagData);
+        throw new Error(tagData.error || "Something went wrong.");
+      }
       const tags: Tag[] = tagData.tags.map((tag: TagAPI) => ({
         _id: tag._id,
         tagName: tag.tagName,
@@ -152,7 +152,7 @@ export default function RelationshipDetailSheet({
               <div className="flex flex-wrap justify-center gap-2">
                 {tagsList.map((tag) => {
                   return (
-                    <GraphTags key={tag._id} tagData={tag} isReadOnly={true}/>
+                    <GraphTags key={tag._id} tagData={tag} isReadOnly={true} />
                   );
                 })}
               </div>

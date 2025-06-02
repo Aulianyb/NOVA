@@ -7,7 +7,6 @@ import { Ellipsis } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "./ui/button";
 import { Tag } from "@shared/types";
-import { Dispatch, SetStateAction } from "react";
 import {
   Form,
   FormControl,
@@ -60,8 +59,8 @@ export default function TagEditingPopover({
 }: {
   worldID: string;
   tagData: Tag;
-  setTagColor: Dispatch<SetStateAction<string>>;
-  setTagName: Dispatch<SetStateAction<string>>;
+  setTagColor: React.Dispatch<React.SetStateAction<string>>;
+  setTagName: React.Dispatch<React.SetStateAction<string>>;
 }) {
   const form = useForm<z.infer<typeof tagSchema>>({
     resolver: zodResolver(tagSchema),
