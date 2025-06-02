@@ -26,6 +26,18 @@ const tagSchema = z.object({
     .max(20, "Tag name must be at most 20 characters long"),
 });
 
+const ColorMap: Record<string, string> = {
+  red: "bg-red-500",
+  orange: "bg-orange-500",
+  yellow: "bg-yellow-500",
+  green: "bg-green-500",
+  cyan: "bg-cyan-500",
+  blue: "bg-blue-500",
+  violet: "bg-violet-500",
+  pink: "bg-pink-500",
+  zinc: "bg-zinc-500",
+};
+
 const Colors: string[] = [
   "red",
   "orange",
@@ -37,18 +49,6 @@ const Colors: string[] = [
   "pink",
   "zinc",
 ];
-
-const colorMap: Record<string, string> = {
-  red: "bg-red-500",
-  orange: "bg-orange-500",
-  yellow: "bg-yellow-500",
-  green: "bg-green-500",
-  cyan: "bg-cyan-500",
-  blue: "bg-blue-500",
-  violet: "bg-violet-500",
-  pink: "bg-pink-500",
-  zinc: "bg-zinc-500",
-};
 
 // NOTE : ADD ERROR HANDLING WITH TOAST HERE
 
@@ -158,7 +158,7 @@ export default function TagEditingPopover({
               return (
                 <Button
                   key={color}
-                  className={`rounded-full ${colorMap[color]} hover:bg-opacity-70 h-9 w-9`}
+                  className={`rounded-full ${ColorMap[color]} hover:bg-opacity-70 h-9 w-9`}
                   onClick={() => handleColorChange(color)}
                 ></Button>
               );

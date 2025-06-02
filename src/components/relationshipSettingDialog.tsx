@@ -42,6 +42,7 @@ const formSchema = z.object({
   relationshipDescription: z
     .string()
     .max(240, "Description must be under 240 characters long"),
+  mainTag: z.string().optional().nullable(),
 });
 
 const tagSchema = z.object({
@@ -53,12 +54,14 @@ export default function RelationshipSettingDialog({
   graphRefresh,
   worldID,
   currentTags,
+  mainTag,
   fetchData,
 }: {
   relationshipData: Edge<RelationshipData>;
   graphRefresh: () => void;
   worldID: string;
   currentTags: Tag[];
+  mainTag: Tag | undefined;
   fetchData: () => Promise<void>;
 }) {
   const [isOpen, setIsOpen] = useState(false);
@@ -68,6 +71,7 @@ export default function RelationshipSettingDialog({
     resolver: zodResolver(formSchema),
     defaultValues: {
       relationshipDescription: relationshipData.data!.relationshipDescription,
+      mainTag: mainTag ? mainTag._id : undefined,
     },
   });
 
@@ -149,6 +153,7 @@ export default function RelationshipSettingDialog({
     try {
       const reqBody = {
         relationshipDescription: values.relationshipDescription,
+        mainTag: values.mainTag,
       };
       const res = await fetch(`/api/relationships/${relationshipData.id}`, {
         method: "PUT",
@@ -240,19 +245,38 @@ export default function RelationshipSettingDialog({
                 />
                 <div className="space-y-2 mt-4">
                   <Label htmlFor="name">Main Tag</Label>
-                  <Select>
-                    <SelectTrigger className="w-[180px]">
-                      <SelectValue placeholder="Select Tag" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectGroup>
-                        <SelectLabel>Select Tag</SelectLabel>
-                        <SelectItem value="apple">Doomed</SelectItem>
-                        <SelectItem value="banana">Toxic</SelectItem>
-                        <SelectItem value="blueberry">Parent</SelectItem>
-                      </SelectGroup>
-                    </SelectContent>
-                  </Select>
+                  <FormField
+                    control={form.control}
+                    name="mainTag"
+                    render={({ field }) => (
+                      <Select
+                        disabled={currentTags.length == 0}
+                        onValueChange={field.onChange}
+                      >
+                        <SelectTrigger className="w-[180px]">
+                          <SelectValue
+                            placeholder={
+                              mainTag ? mainTag.tagName : "Select Tag"
+                            }
+                          />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectGroup>
+                            <SelectLabel>
+                            Select Tag
+                            </SelectLabel>
+                            {currentTags.map((tag) => {
+                              return (
+                                <SelectItem value={tag._id} key={tag._id}>
+                                  {tag.tagName}
+                                </SelectItem>
+                              );
+                            })}
+                          </SelectGroup>
+                        </SelectContent>
+                      </Select>
+                    )}
+                  />
                   <FormDescription>
                     This will shown in the graph
                   </FormDescription>

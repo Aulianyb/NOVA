@@ -29,6 +29,7 @@ export default function RelationshipDetailSheet({
   worldID: string;
 }) {
   const [tagsList, setTagsList] = useState<Tag[]>([]);
+  const [mainTag, setMainTag] = useState<Tag | undefined>(undefined);
 
   const { toast } = useToast();
 
@@ -58,11 +59,11 @@ export default function RelationshipDetailSheet({
       };
       notify();
     }
+    setMainTag(undefined);
     try {
       if (!relationshipData) {
         throw new Error("relationshipData not found");
       }
-      console.log(relationshipData.id);
       const res = await fetch(`/api/relationships/${relationshipData.id}/tags`);
       if (!res.ok) {
         const errorData = await res.json();
@@ -70,11 +71,19 @@ export default function RelationshipDetailSheet({
         throw new Error(errorData.error || "Something went wrong.");
       }
       const tagData = await res.json();
-      const tags: Tag[] = tagData.data.map((tag: TagAPI) => ({
+      const tags: Tag[] = tagData.tags.map((tag: TagAPI) => ({
         _id: tag._id,
         tagName: tag.tagName,
         tagColor: tag.tagColor,
       }));
+      if (tagData.mainTag) {
+        const mainTag: Tag = {
+          _id: tagData.mainTag._id,
+          tagName: tagData.mainTag.tagName,
+          tagColor: tagData.mainTag.tagColor,
+        };
+        setMainTag(mainTag);
+      }
       setTagsList(tags);
     } catch (error) {
       if (error instanceof Error) {
@@ -114,6 +123,7 @@ export default function RelationshipDetailSheet({
                 worldID={worldID}
                 currentTags={tagsList}
                 fetchData={fetchData}
+                mainTag={mainTag}
               />
               <DeleteAlert
                 id={relationshipData.id}

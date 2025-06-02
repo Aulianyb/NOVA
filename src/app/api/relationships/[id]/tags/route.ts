@@ -18,8 +18,14 @@ export async function GET(
             throw new Error("Relationship not Found"); 
         }
         const relationshipTags = await Tag.find({_id : {$in : relationship.tags}})
+        let mainTag = undefined;
+        if (relationship.mainTag){
+            mainTag = relationshipTags.find(tag => tag._id.toString() === relationship.mainTag.toString());
+        }
+        
         return NextResponse.json({
-            data : relationshipTags,
+            tags : relationshipTags,
+            mainTag : mainTag,
             message : "Tags Fetched!"
         }, {status : 200})
     } catch(error){

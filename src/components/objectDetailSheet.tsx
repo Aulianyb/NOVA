@@ -124,7 +124,7 @@ export default function ObjectDetailSheet({
           <div className="space-y-2 p-2">
             <h2 className="font-bold"> {nodeData.data.objectName} </h2>
             <p className="italic"> {nodeData.data.objectDescription} </p>
-            <div className="flex gap-1">
+            <div className="flex gap-1 flex-wrap">
               {tagsList.map((tag) => {
                 return (
                   <GraphTags key={tag._id} tagData={tag} isReadOnly={true} />
