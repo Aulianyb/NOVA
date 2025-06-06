@@ -3,7 +3,7 @@ const { Schema } = mongoose;
 
 const image = new Schema({
     imageLink : {type : String, required: [true, "Image link required"]},
-    imageDesc : {type : String},
+    imageTitle : {type : String},
     objects : [{ type: Schema.Types.ObjectId, ref: 'Object' }],
 }, { timestamps: true });
 

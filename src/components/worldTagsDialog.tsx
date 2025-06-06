@@ -36,10 +36,12 @@ export default function WorldTagsDialog({
   worldID,
   hiddenTags,
   setHiddenTags,
+  graphRefresh,
 }: {
   worldID: string;
   hiddenTags: string[];
   setHiddenTags: React.Dispatch<React.SetStateAction<string[]>>;
+  graphRefresh: () => void;
 }) {
   const [tagsList, setTagsList] = useState<Tag[]>([]);
   const [isOpen, setIsOpen] = useState(false);
@@ -188,6 +190,7 @@ export default function WorldTagsDialog({
                     fetchData={fetchData}
                     isHidden={hiddenTags.includes(tag._id)}
                     setHiddenTags={setHiddenTags}
+                    graphRefresh={graphRefresh}
                   />
                 );
               })}

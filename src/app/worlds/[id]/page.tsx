@@ -96,6 +96,7 @@ export default function Page() {
           source: relation.source,
           target: relation.target,
           tags: relation.tags,
+          mainTag: relation.mainTag,
           relationshipDescription: relation.relationshipDescription,
         })
       );

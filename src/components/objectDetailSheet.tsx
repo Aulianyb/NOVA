@@ -1,5 +1,5 @@
 import { CldImage } from "next-cloudinary";
-import { Volleyball, ChevronRight } from "lucide-react";
+import { ChevronRight } from "lucide-react";
 import { Button } from "./ui/button";
 import { Node } from "@xyflow/react";
 import { NodeData, Tag, TagAPI } from "@shared/types";
@@ -8,6 +8,9 @@ import DeleteAlert from "./deleteAlert";
 import { useCallback, useEffect, useState } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { GraphTags } from "./graphTags";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import ImageElement from "./imageElement";
+import { ScrollArea } from "./ui/scroll-area";
 
 export default function ObjectDetailSheet({
   isNodeClicked,
@@ -138,11 +141,28 @@ export default function ObjectDetailSheet({
       <hr className="border-gray-300 flex-grow" />
 
       <div className="h-full">
-        <div className="flex flex-col text-center justify-center items-center h-full text-slate-400">
-          <Volleyball size={50} className="mb-2" />
-          <p>We're working on this feature!</p>
-          <p>Pages coming soon</p>
-        </div>
+        <Tabs defaultValue="account" className="w-full">
+          <TabsList>
+            <TabsTrigger value="account">Info</TabsTrigger>
+            <TabsTrigger value="password">Gallery</TabsTrigger>
+          </TabsList>
+          <TabsContent value="account">
+            Put Information for your character here
+          </TabsContent>
+          <TabsContent value="password">
+            <ScrollArea className="h-[60vh]">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2 pb-4">
+                <ImageElement placeholder="/cat-emo.jpg" />
+                <ImageElement placeholder="/cat-fish.png" />
+                <ImageElement placeholder="/cat-nerd.jpg" />
+                <ImageElement placeholder="/placeholder-art.png" />
+                <ImageElement placeholder="/cat-emo.jpg" />
+                <ImageElement placeholder="/nova-greet.png" />
+                <ImageElement placeholder="/cat-emo.jpg" />
+              </div>
+            </ScrollArea>
+          </TabsContent>
+        </Tabs>
       </div>
     </div>
   );

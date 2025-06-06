@@ -6,6 +6,7 @@ import cloudinary from "@/app/lib/connect";
 import { UploadApiResponse } from "cloudinary";
 import World from "@model/World";
 import User from "@model/User";
+import Tag from "@model/Tag";
 
 export async function GET(req:NextRequest){
     try {
@@ -18,10 +19,11 @@ export async function GET(req:NextRequest){
         if (!worldID){
             throw new Error("World ID is missing");
         }
+        await Tag.countDocuments();
         const world = await verifyWorld(worldID, userID);
-        
         const worldObjects = await Object.find({ _id: { $in: world.objects } })
-        const worldRelationships = await Relationship.find({ _id: { $in: world.relationships } })
+        const worldRelationships = await Relationship.find({ _id: { $in: world.relationships } }).populate("mainTag", "tagName tagColor")
+        console.log(worldRelationships); 
         return NextResponse.json({ data : {
             worldObjects : worldObjects,
             worldRelationships : worldRelationships

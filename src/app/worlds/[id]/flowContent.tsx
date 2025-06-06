@@ -187,14 +187,14 @@ export function FlowContent({
         source: edge.source,
         target: edge.target,
         data: {
+          tagName: edge.mainTag ? edge.mainTag.tagName : undefined,
+          tagColor: edge.mainTag ? edge.mainTag.tagColor : undefined,
           relationshipDescription: edge.relationshipDescription,
           tags: edge.tags,
-          mainTag: edge.mainTag,
         },
         type: "custom-edge",
         style: {
           strokeWidth: 2,
-          stroke: "#791dab",
         },
       }));
       setEdges(currentEdges);
@@ -434,6 +434,7 @@ export function FlowContent({
                   worldID={worldData._id}
                   hiddenTags={hiddenTags}
                   setHiddenTags={setHiddenTags}
+                  graphRefresh={graphRefresh}
                 />
                 <RelationshipCreationDialog
                   setIsAddingEdge={setIsAddingEdge}

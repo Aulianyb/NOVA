@@ -33,12 +33,14 @@ export default function TagElement({
   fetchData,
   isHidden,
   setHiddenTags,
+  graphRefresh,
 }: {
   worldID: string;
   tagData: Tag;
   fetchData: () => Promise<void>;
   isHidden: boolean;
   setHiddenTags: React.Dispatch<React.SetStateAction<string[]>>;
+  graphRefresh: () => void;
 }) {
   const [hidden, setHidden] = useState<boolean>(isHidden);
   const [tagColor, setTagColor] = useState<string>(tagData.tagColor);
@@ -76,9 +78,8 @@ export default function TagElement({
         const errorData = await res.json();
         throw new Error(errorData.error || "Something went wrong.");
       }
-      if (fetchData) {
-        fetchData();
-      }
+      fetchData();
+      graphRefresh();
     } catch (error) {
       console.log(error);
     }
