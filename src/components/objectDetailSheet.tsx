@@ -83,8 +83,8 @@ export default function ObjectDetailSheet({
   return (
     <div
       className={`
-          fixed flex flex-col gap-4 z-50 bg-white p-6 inset-y-0 right-0 h-full shadow-lg border-l-2 w-2/4
-          transform transition-transform duration-300 ease-in-out
+          fixed flex flex-col gap-4 z-50 bg-white p-6 inset-y-0 right-0 h-full shadow-lg border-l-2
+          transform transition-transform duration-300 ease-in-out w-[550px]
           ${isNodeClicked ? "translate-x-0" : "translate-x-full"}
         `}
     >
@@ -116,7 +116,7 @@ export default function ObjectDetailSheet({
       </div>
 
       {nodeData && (
-        <div className="flex gap-4">
+        <div className="flex flex-wrap gap-4">
           <CldImage
             src={usedPicture}
             alt="NOVA, the mascot, greeting you"
@@ -143,15 +143,61 @@ export default function ObjectDetailSheet({
       <div className="h-full">
         <Tabs defaultValue="account" className="w-full">
           <TabsList>
-            <TabsTrigger value="account">Info</TabsTrigger>
-            <TabsTrigger value="password">Gallery</TabsTrigger>
+            <TabsTrigger value="info">Info</TabsTrigger>
+            <TabsTrigger value="story">Story</TabsTrigger>
+            <TabsTrigger value="gallery">Gallery</TabsTrigger>
           </TabsList>
-          <TabsContent value="account">
-            Put Information for your character here
+          <TabsContent value="info">
+            <ScrollArea className="h-[60vh] ">
+              <div className="space-y-2 pb-10">
+                <h3 className="bg-zinc-100 py-1 px-2 rounded-lg text-lg">
+                  Basic Info
+                </h3>
+                <div className="flex justify-between px-2">
+                  <span className="font-semibold">Name</span>
+                  <span>Lorem Ipsum</span>
+                </div>
+                <div className="flex justify-between px-2">
+                  <span className="font-semibold">Gender</span>
+                  <span>Male</span>
+                </div>
+                <div className="flex justify-between px-2">
+                  <span className="font-semibold">Age</span>
+                  <span>20</span>
+                </div>
+                <h3 className="bg-zinc-100 py-1 px-2 rounded-lg text-lg">
+                  Description
+                </h3>
+                <p className="px-2">
+                  Lorem ipsum dolor sit amet, consectetur adipiscing elit. In
+                  eget malesuada ante. Suspendisse vitae nisl quis mi venenatis
+                  ornare. Nulla tincidunt euismod suscipit. Fusce molestie
+                  placerat odio, sit amet dignissim dolor lobortis mattis.
+                  Curabitur eget turpis a metus sodales condimentum. Aliquam
+                  erat volutpat.
+                </p>
+              </div>
+            </ScrollArea>
           </TabsContent>
-          <TabsContent value="password">
+          <TabsContent value="story">
+            <p>
+              Lorem ipsum dolor sit amet, consectetur adipiscing elit. In eget
+              malesuada ante. Suspendisse vitae nisl quis mi venenatis ornare.
+              Nulla tincidunt euismod suscipit. Fusce molestie placerat odio,
+              sit amet dignissim dolor lobortis mattis. Curabitur eget turpis a
+              metus sodales condimentum. Aliquam erat volutpat.
+              <br />
+              <br />
+              Lorem ipsum dolor sit amet, consectetur adipiscing elit. In eget
+              malesuada ante. Suspendisse vitae nisl quis mi venenatis ornare.
+              Nulla tincidunt euismod suscipit. Fusce molestie placerat odio,
+              sit amet dignissim dolor lobortis mattis. Curabitur eget turpis a
+              metus sodales condimentum. Aliquam erat volutpat.
+            </p>
+          </TabsContent>
+          <TabsContent value="gallery">
             <ScrollArea className="h-[60vh]">
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2 pb-4">
+              <div className="grid grid-cols-3 gap-2 pb-4">
                 <ImageElement placeholder="/cat-emo.jpg" />
                 <ImageElement placeholder="/cat-fish.png" />
                 <ImageElement placeholder="/cat-nerd.jpg" />

@@ -1,4 +1,4 @@
-import { Volleyball, ChevronRight } from "lucide-react";
+import { ChevronRight } from "lucide-react";
 import { Button } from "./ui/button";
 import { NodeObject, RelationshipData, Tag, TagAPI } from "@shared/types";
 import { Edge } from "@xyflow/react";
@@ -8,6 +8,7 @@ import DeleteAlert from "./deleteAlert";
 import { useState, useCallback, useEffect } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { GraphTags } from "./graphTags";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 export default function RelationshipDetailSheet({
   isEdgeClicked,
@@ -102,7 +103,7 @@ export default function RelationshipDetailSheet({
     <div>
       <div
         className={`
-          fixed flex flex-col gap-4 z-50 bg-white p-6 inset-y-0 right-0 h-full shadow-lg border-l-2 w-2/4
+          fixed flex flex-col gap-4 z-50 bg-white p-6 inset-y-0 right-0 h-full shadow-lg border-l-2 w-[550px]
           transform transition-transform duration-300 ease-in-out
           ${isEdgeClicked ? "translate-x-0" : "translate-x-full"}
         `}
@@ -136,53 +137,100 @@ export default function RelationshipDetailSheet({
         </div>
 
         {sourceNode && targetNode && relationshipData && (
-          <div className="flex gap-4">
-            <div className="text-center">
-              <CldImage
-                src={usedSourcePicture}
-                alt="NOVA, the mascot, greeting you"
-                width="100"
-                height="100"
-                className="rounded-md"
-              />
-              <p>{sourceNode.objectName}</p>
+          <div className="flex flex-col items-center gap-2">
+            <div className="flex flex-wrap justify-center gap-2">
+              {tagsList.map((tag) => {
+                return (
+                  <GraphTags key={tag._id} tagData={tag} isReadOnly={true} />
+                );
+              })}
             </div>
-
-            <div className="flex flex-col space-y-4 p-2 flex-grow items-center">
-              <div className="flex flex-wrap justify-center gap-2">
-                {tagsList.map((tag) => {
-                  return (
-                    <GraphTags key={tag._id} tagData={tag} isReadOnly={true} />
-                  );
-                })}
+            <div className="flex gap-2">
+              <div className="text-center">
+                <CldImage
+                  src={usedSourcePicture}
+                  alt="NOVA, the mascot, greeting you"
+                  width="100"
+                  height="100"
+                  className="rounded-md object-cover"
+                />
+                <p>{sourceNode.objectName}</p>
               </div>
-              {relationshipData.data && (
-                <p className="italic">
-                  {relationshipData.data.relationshipDescription}
-                </p>
-              )}
-              <div className="flex gap-1"></div>
+              <div className="text-center ">
+                <CldImage
+                  src={usedTargetPicture}
+                  alt="NOVA, the mascot, greeting you"
+                  width="100"
+                  height="100"
+                  className="rounded-md"
+                />
+                <p>{targetNode.objectName}</p>
+              </div>
             </div>
-            <div className="text-center">
-              <CldImage
-                src={usedTargetPicture}
-                alt="NOVA, the mascot, greeting you"
-                width="100"
-                height="100"
-                className="rounded-md"
-              />
-              <p>{targetNode.objectName}</p>
-            </div>
+            {relationshipData.data && (
+              <p className="italic text-center">
+                {relationshipData.data.relationshipDescription}
+              </p>
+            )}
+            <div className="flex gap-1"></div>
           </div>
         )}
 
         <hr className="border-gray-300 flex-grow" />
 
         <div className="h-full">
-          <div className="flex flex-col text-center justify-center items-center h-full text-slate-400">
-            <Volleyball size={50} className="mb-2" />
-            <p>We're working on this feature!</p>
-            <p>Pages coming soon</p>
+          <div>
+            <Tabs defaultValue="account" className="w-full">
+              <TabsList>
+                <TabsTrigger value="info">Info</TabsTrigger>
+                <TabsTrigger value="story">Story</TabsTrigger>
+              </TabsList>
+              <TabsContent value="info">
+                <div className="space-y-2">
+                  <h3 className="bg-zinc-100 py-1 px-2 rounded-lg text-lg">
+                    Thoughts
+                  </h3>
+                  <div className="space-y-2">
+                    <p className="font-semibold">
+                      What source thinks of target?
+                    </p>
+                    <p className="border-l-2 border-zinc-300 pl-4 italic text-zinc-500">
+                      Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+                      In eget malesuada ante. Suspendisse vitae nisl quis mi
+                      venenatis ornare.
+                    </p>
+                  </div>
+                  <div className="space-y-2">
+                    <p className="font-semibold">
+                      What source thinks of target?
+                    </p>
+                    <p className="border-l-2 border-zinc-300 pl-4 italic text-zinc-500">
+                      Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+                      In eget malesuada ante. Suspendisse vitae nisl quis mi
+                      venenatis ornare.
+                    </p>
+                  </div>
+                </div>
+              </TabsContent>
+              <TabsContent value="story">
+                <p>
+                  Lorem ipsum dolor sit amet, consectetur adipiscing elit. In
+                  eget malesuada ante. Suspendisse vitae nisl quis mi venenatis
+                  ornare. Nulla tincidunt euismod suscipit. Fusce molestie
+                  placerat odio, sit amet dignissim dolor lobortis mattis.
+                  Curabitur eget turpis a metus sodales condimentum. Aliquam
+                  erat volutpat.
+                  <br />
+                  <br />
+                  Lorem ipsum dolor sit amet, consectetur adipiscing elit. In
+                  eget malesuada ante. Suspendisse vitae nisl quis mi venenatis
+                  ornare. Nulla tincidunt euismod suscipit. Fusce molestie
+                  placerat odio, sit amet dignissim dolor lobortis mattis.
+                  Curabitur eget turpis a metus sodales condimentum. Aliquam
+                  erat volutpat.
+                </p>
+              </TabsContent>
+            </Tabs>
           </div>
         </div>
       </div>
