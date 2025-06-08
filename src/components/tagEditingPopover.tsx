@@ -76,7 +76,7 @@ export default function TagEditingPopover({
       const res = await fetch(
         `http://localhost:3000/api/worlds/${worldID}/tags/${tagData._id}`,
         {
-          method: "PUT",
+          method: "PATCH",
           headers: {
             "Content-Type": "application/json",
           },
@@ -103,7 +103,7 @@ export default function TagEditingPopover({
         const res = await fetch(
           `http://localhost:3000/api/worlds/${worldID}/tags/${tagData._id}`,
           {
-            method: "PUT",
+            method: "PATCH",
             headers: {
               "Content-Type": "application/json",
             },

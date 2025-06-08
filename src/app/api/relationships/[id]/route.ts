@@ -6,7 +6,7 @@ import World from "@model/World";
 import Object from "@model/Object";
 import User from "@model/User";
 
-export async function PUT(req: NextRequest, 
+export async function PATCH(req: NextRequest, 
     { params }: { params: Promise<{ id: string }> }){
     try {
         const userID = await verifyUser();

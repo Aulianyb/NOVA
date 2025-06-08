@@ -32,7 +32,7 @@ import {
 import { useState, useEffect } from "react";
 import { Node } from "@xyflow/react";
 import { NodeData } from "@shared/types";
-import { X } from "lucide-react";
+import { X, ImagePlus } from "lucide-react";
 
 const MAX_FILE_SIZE = 5000000;
 const ACCEPTED_IMAGE_TYPES = [
@@ -150,8 +150,8 @@ export default function ImageCreationDialog({
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
-        <Button variant="outline" className="rounded-md w-full mb-2">
-          Add Image
+        <Button variant="ghost" size="iconSm" className="rounded-md mb-2">
+          <ImagePlus />
         </Button>
       </DialogTrigger>
       <DialogContent>

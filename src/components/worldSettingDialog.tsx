@@ -149,7 +149,7 @@ export default function WorldSettingDialog({
       formData.append("worldDescription", values.worldDescription);
       formData.append("worldCover", values.worldCover);
       const res = await fetch(`/api/worlds/${worldData._id}`, {
-        method: "PUT",
+        method: "PATCH",
         body: formData,
       });
       if (!res.ok) {

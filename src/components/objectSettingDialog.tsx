@@ -189,7 +189,7 @@ export default function ObjectSettingDialog({
       formData.append("objectDescription", values.objectDescription);
       formData.append("objectPicture", values.objectPicture);
       const res = await fetch(`/api/objects/${nodeData.id}`, {
-        method: "PUT",
+        method: "PATCH",
         body: formData,
       });
       if (!res.ok) {

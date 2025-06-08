@@ -157,7 +157,7 @@ export default function RelationshipSettingDialog({
         mainTag: values.mainTag,
       };
       const res = await fetch(`/api/relationships/${relationshipData.id}`, {
-        method: "PUT",
+        method: "PATCH",
         headers: {
           "Content-Type": "application/json",
         },

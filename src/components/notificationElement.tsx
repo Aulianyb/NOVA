@@ -38,7 +38,7 @@ export default function NotificationElement({
         status: response,
       };
       const res = await fetch(`/api/notifications/${notificationData._id}`, {
-        method: "PUT",
+        method: "PATCH",
         headers: {
           "Content-Type": "application/json",
         },

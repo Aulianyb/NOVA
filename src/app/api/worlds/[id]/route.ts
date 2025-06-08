@@ -77,7 +77,7 @@ export async function DELETE(req: NextRequest, { params }: { params: Promise<{ i
 }
 
 
-export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: string }> }){
+export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id: string }> }){
     try {
         const userID = await verifyUser();
         if (!userID) {

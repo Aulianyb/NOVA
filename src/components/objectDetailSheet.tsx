@@ -112,6 +112,11 @@ export default function ObjectDetailSheet({
               openFunction={openFunction}
               type="object"
             />
+            <ImageCreationDialog
+              existingNodes={existingNodes}
+              currentObject={nodeData}
+              graphRefresh={graphRefresh}
+            />
           </>
         )}
       </div>
@@ -201,13 +206,6 @@ export default function ObjectDetailSheet({
           value="gallery"
           className="flex flex-col flex-1 overflow-hidden"
         >
-          {nodeData && (
-            <ImageCreationDialog
-              existingNodes={existingNodes}
-              currentObject={nodeData}
-              graphRefresh={graphRefresh}
-            />
-          )}
           <ScrollArea className="h-full">
             {nodeData && (
               <div className="grid grid-cols-3 gap-2 pb-5">
