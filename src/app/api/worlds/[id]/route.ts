@@ -119,8 +119,6 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
             {new: true}
         );
 
-        console.log(oldData.worldName);
-        console.log(newWorldName);
         if (oldData.worldName != newWorldName) {
             message.push("Changed name of " + oldData.worldName + " into " + newWorldName);
         }

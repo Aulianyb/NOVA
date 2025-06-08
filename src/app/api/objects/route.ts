@@ -23,7 +23,6 @@ export async function GET(req:NextRequest){
         const world = await verifyWorld(worldID, userID);
         const worldObjects = await Object.find({ _id: { $in: world.objects } })
         const worldRelationships = await Relationship.find({ _id: { $in: world.relationships } }).populate("mainTag", "tagName tagColor")
-        console.log(worldRelationships); 
         return NextResponse.json({ data : {
             worldObjects : worldObjects,
             worldRelationships : worldRelationships
@@ -47,8 +46,6 @@ export async function POST(req:NextRequest){
             throw new Error("World ID is missing");
         }
         await verifyWorld(worldID, userID);
-
-        console.log(objectPictureRaw);
         if (objectPictureRaw instanceof File &&
             objectPictureRaw .size > 0
         ){
