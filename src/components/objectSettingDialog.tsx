@@ -145,6 +145,8 @@ export default function ObjectSettingDialog({
     },
   });
 
+  const selectedTagID = tagForm.watch("tagID");
+
   const resetForm = useCallback(() => {
     form.reset({
       objectName: nodeData.data.objectName,
@@ -352,7 +354,12 @@ export default function ObjectSettingDialog({
                     </Select>
                   )}
                 />
-                <Button type="submit" variant="outline" className="rounded-md">
+                <Button
+                  type="submit"
+                  variant="outline"
+                  className="rounded-md"
+                  disabled={!selectedTagID}
+                >
                   Add
                 </Button>
               </form>

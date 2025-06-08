@@ -84,7 +84,7 @@ export default function ObjectDetailSheet({
   return (
     <div
       className={`
-          fixed flex flex-col gap-4 z-50 bg-white p-6 inset-y-0 right-0 h-full shadow-lg border-l-2
+          fixed flex flex-col gap-4 z-50 bg-white p-6 pb-0 inset-y-0 right-0 h-[100vh] shadow-lg border-l-2
           transform transition-transform duration-300 ease-in-out w-[550px]
           ${isNodeClicked ? "translate-x-0" : "translate-x-full"}
         `}
@@ -121,9 +121,9 @@ export default function ObjectDetailSheet({
           <CldImage
             src={usedPicture}
             alt="NOVA, the mascot, greeting you"
-            width="150"
-            height="150"
-            className="rounded-md"
+            width="125"
+            height="125"
+            className="rounded-md object-cover"
           />
           <div className="space-y-2 p-2">
             <h2 className="font-bold"> {nodeData.data.objectName} </h2>
@@ -139,48 +139,48 @@ export default function ObjectDetailSheet({
         </div>
       )}
 
-      <hr className="border-gray-300 flex-grow" />
-
-      <div className="h-full">
-        <Tabs defaultValue="info" className="w-full">
-          <TabsList>
-            <TabsTrigger value="info">Info</TabsTrigger>
-            <TabsTrigger value="story">Story</TabsTrigger>
-            <TabsTrigger value="gallery">Gallery</TabsTrigger>
-          </TabsList>
-          <TabsContent value="info">
-            <ScrollArea className="h-[60vh] ">
-              <div className="space-y-2 pb-10">
-                <h3 className="bg-zinc-100 py-1 px-2 rounded-lg text-lg">
-                  Basic Info
-                </h3>
-                <div className="flex justify-between px-2">
-                  <span className="font-semibold">Name</span>
-                  <span>Lorem Ipsum</span>
-                </div>
-                <div className="flex justify-between px-2">
-                  <span className="font-semibold">Gender</span>
-                  <span>Male</span>
-                </div>
-                <div className="flex justify-between px-2">
-                  <span className="font-semibold">Age</span>
-                  <span>20</span>
-                </div>
-                <h3 className="bg-zinc-100 py-1 px-2 rounded-lg text-lg">
-                  Description
-                </h3>
-                <p className="px-2">
-                  Lorem ipsum dolor sit amet, consectetur adipiscing elit. In
-                  eget malesuada ante. Suspendisse vitae nisl quis mi venenatis
-                  ornare. Nulla tincidunt euismod suscipit. Fusce molestie
-                  placerat odio, sit amet dignissim dolor lobortis mattis.
-                  Curabitur eget turpis a metus sodales condimentum. Aliquam
-                  erat volutpat.
-                </p>
+      <Tabs
+        defaultValue="info"
+        className="w-full h-full flex flex-col flex-1 overflow-hidden"
+      >
+        <TabsList>
+          <TabsTrigger value="info">Info</TabsTrigger>
+          <TabsTrigger value="story">Story</TabsTrigger>
+          <TabsTrigger value="gallery">Gallery</TabsTrigger>
+        </TabsList>
+        <TabsContent value="info" className="flex-0 overflow-hidden">
+          <ScrollArea className="h-full">
+            <div className="space-y-2 pb-10">
+              <h3 className="bg-zinc-100 py-1 px-2 rounded-lg text-lg">
+                Basic Info
+              </h3>
+              <div className="flex justify-between px-2">
+                <span className="font-semibold">Name</span>
+                <span>Lorem Ipsum</span>
               </div>
-            </ScrollArea>
-          </TabsContent>
-          <TabsContent value="story">
+              <div className="flex justify-between px-2">
+                <span className="font-semibold">Gender</span>
+                <span>Male</span>
+              </div>
+              <div className="flex justify-between px-2">
+                <span className="font-semibold">Age</span>
+                <span>20</span>
+              </div>
+              <h3 className="bg-zinc-100 py-1 px-2 rounded-lg text-lg">
+                Description
+              </h3>
+              <p className="px-2">
+                Lorem ipsum dolor sit amet, consectetur adipiscing elit. In eget
+                malesuada ante. Suspendisse vitae nisl quis mi venenatis ornare.
+                Nulla tincidunt euismod suscipit. Fusce molestie placerat odio,
+                sit amet dignissim dolor lobortis mattis. Curabitur eget turpis
+                a metus sodales condimentum. Aliquam erat volutpat.
+              </p>
+            </div>
+          </ScrollArea>
+        </TabsContent>
+        <TabsContent value="story" className="flex-0 overflow-hidden">
+          <ScrollArea className="h-full">
             <p>
               Lorem ipsum dolor sit amet, consectetur adipiscing elit. In eget
               malesuada ante. Suspendisse vitae nisl quis mi venenatis ornare.
@@ -195,35 +195,38 @@ export default function ObjectDetailSheet({
               sit amet dignissim dolor lobortis mattis. Curabitur eget turpis a
               metus sodales condimentum. Aliquam erat volutpat.
             </p>
-          </TabsContent>
-          <TabsContent value="gallery">
+          </ScrollArea>
+        </TabsContent>
+        <TabsContent
+          value="gallery"
+          className="flex flex-col flex-1 overflow-hidden"
+        >
+          {nodeData && (
+            <ImageCreationDialog
+              existingNodes={existingNodes}
+              currentObject={nodeData}
+              graphRefresh={graphRefresh}
+            />
+          )}
+          <ScrollArea className="h-full">
             {nodeData && (
-              <ImageCreationDialog
-                existingNodes={existingNodes}
-                currentObject={nodeData}
-                graphRefresh={graphRefresh}
-              />
+              <div className="grid grid-cols-3 gap-2 pb-5">
+                {GalleryList.map((image) => {
+                  return (
+                    <ImageElement
+                      imageData={image}
+                      key={image._id}
+                      existingNodes={existingNodes}
+                      currentObject={nodeData}
+                      graphRefresh={graphRefresh}
+                    />
+                  );
+                })}
+              </div>
             )}
-            <ScrollArea className="h-[60vh]">
-              {nodeData && (
-                <div className="grid grid-cols-3 gap-2 pb-4">
-                  {GalleryList.map((image) => {
-                    return (
-                      <ImageElement
-                        imageData={image}
-                        key={image._id}
-                        existingNodes={existingNodes}
-                        currentObject={nodeData}
-                        graphRefresh={graphRefresh}
-                      />
-                    );
-                  })}
-                </div>
-              )}
-            </ScrollArea>
-          </TabsContent>
-        </Tabs>
-      </div>
+          </ScrollArea>
+        </TabsContent>
+      </Tabs>
     </div>
   );
 }

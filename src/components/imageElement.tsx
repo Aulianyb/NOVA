@@ -155,9 +155,8 @@ export default function ImageElement({
           <CldImage
             src={imageData.imageID}
             alt="NOVA, the mascot, greeting you"
-            width="150"
-            height="150"
-            className="rounded-md"
+            fill
+            className="rounded-md object-cover"
           />
         </div>
       </DialogTrigger>
