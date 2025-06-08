@@ -7,6 +7,7 @@ import Relationship from "@model/Relationship";
 import cloudinary from "@/app/lib/connect";
 import { verifyObject } from "../../function";
 import { UploadApiResponse } from "cloudinary";
+import Image from "@model/Image";
 
 export async function GET(req: NextRequest, { params }: { params: Promise<{ id: string }> }){
     try {
@@ -24,56 +25,78 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ id: 
     }
 }
 
-export async function DELETE(req: NextRequest, { params }: { params: Promise<{ id: string }> }){
-    try {
-        const userID = await verifyUser();
-        if (!userID) {
-            throw new Error("No Session Found"); 
-        }
-        const { id } = await params;
-        const world = await verifyWorld(id, userID); 
-        
-        await User.updateMany(
-            { _id: { $in: world.owners } },
-            { $pull: { ownedWorlds: id } }
-        );
-                
-        await User.updateMany(
-            { _id: { $in: world.collaborators } },
-            { $pull: { ownedWorlds: id } }
-        );
-
-        // Note to self : after Image is added : 
-        // Don't forget to cascade images that is connected to said object.
-        // Delete every images
-
-        if (world.worldCover && world.worldCover != "worldCover/gn9gyt4gxzebqb6icrwj"){
-            await cloudinary.uploader.destroy(world.worldCover);
-        }
-
-        const deletablePublicIDs: string[] = [];
-        for (const objectID of world.objects){
-            const object = await verifyObject(objectID);
-            if (
-                object.objectPicture &&
-                object.objectPicture !== "objectPicture/fuetkmzyox2su7tfkib3"
-              ) {
-                deletablePublicIDs.push(object.objectPicture);
-              }
-        }
-
-        if (deletablePublicIDs.length > 0) {
-            await cloudinary.api.delete_resources(deletablePublicIDs);
-        }
-        await Object.deleteMany({_id : {$in : world.objects}});
-        await Relationship.deleteMany({_id : {$in : world.relationships}});
-
-        const deletedWorld = await World.findByIdAndDelete({'_id' : id});
-        return NextResponse.json({ data : deletedWorld, message : "World Deleted!"}, { status: 200 });
-
-    } catch(error){
-        return errorHandling(error);
+export async function DELETE(
+  req: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  try {
+    const userID = await verifyUser();
+    if (!userID) {
+      throw new Error("No Session Found");
     }
+
+    const { id } = await params;
+    const world = await verifyWorld(id, userID);
+
+    // Remove world ID from all users who own/collab
+    await User.updateMany(
+      { _id: { $in: world.owners } },
+      { $pull: { ownedWorlds: id } }
+    );
+    await User.updateMany(
+      { _id: { $in: world.collaborators } },
+      { $pull: { ownedWorlds: id } }
+    );
+
+    const deletableCoverPublicIDs: string[] = [];
+    const deletableGalleryImagePublicIDs: string[] = [];
+    const deletableImageDocIDs: string[] = [];
+
+    for (const objectID of world.objects) {
+      const object = await verifyObject(objectID);
+
+      if (
+        object.objectPicture &&
+        object.objectPicture !== "objectPicture/fuetkmzyox2su7tfkib3"
+      ) {
+        deletableCoverPublicIDs.push(object.objectPicture);
+      }
+
+      const images = await Image.find({ _id: { $in: object.images } });
+
+      for (const image of images) {
+        if (image.imageID) {
+          deletableGalleryImagePublicIDs.push(image.imageID); // Cloudinary
+        }
+        deletableImageDocIDs.push(image._id.toString()); // MongoDB
+      }
+    }
+
+    const allPublicIDsToDelete = [
+      ...deletableCoverPublicIDs,
+      ...deletableGalleryImagePublicIDs,
+    ];
+
+    if (allPublicIDsToDelete.length > 0) {
+      await cloudinary.api.delete_resources(allPublicIDsToDelete);
+    }
+
+    if (deletableImageDocIDs.length > 0) {
+      await Image.deleteMany({ _id: { $in: deletableImageDocIDs } });
+    }
+
+    await Object.deleteMany({ _id: { $in: world.objects } });
+    await Relationship.deleteMany({ _id: { $in: world.relationships } });
+
+    const deletedWorld = await World.findByIdAndDelete({ _id: id });
+
+    return NextResponse.json(
+      { data: deletedWorld, message: "World Deleted!" },
+      { status: 200 }
+    );
+  } catch (error) {
+    return errorHandling(error);
+  }
 }
 
 

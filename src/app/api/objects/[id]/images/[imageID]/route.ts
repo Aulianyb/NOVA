@@ -23,7 +23,7 @@ export async function DELETE(
         let message : string;
         const deletedImage = await Object.updateOne({"_id" : id}, {$pull : {images : imageID}})
         await Image.updateOne({"_id" : imageID}, {$pull : {objects : id}})
-        if (toBeDeletedImage.objects.length == 1 && toBeDeletedImage.objects[0] == id){
+        if (toBeDeletedImage.objects.length === 1 && toBeDeletedImage.objects.includes(id)){
             await cloudinary.uploader.destroy(toBeDeletedImage.imageID);
             await Image.findByIdAndDelete({'_id' : imageID});
             message = "Image is taken from the object and deleted from database!"
