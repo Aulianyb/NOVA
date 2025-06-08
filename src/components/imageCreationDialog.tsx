@@ -20,6 +20,18 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectLabel,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { useState, useEffect } from "react";
+import { Node } from "@xyflow/react";
+import { NodeData } from "@shared/types";
 
 const MAX_FILE_SIZE = 5000000;
 const ACCEPTED_IMAGE_TYPES = [
@@ -59,10 +71,32 @@ const imageSchema = z.object({
           message: "Only .jpg, .jpeg, .png and .webp formats are supported.",
         });
       }
-    })
+    }),
 });
 
-export default function ImageCreationDialog() {
+export default function ImageCreationDialog({
+  currentObject,
+  existingNodes,
+  graphRefresh,
+}: {
+  currentObject: Node<NodeData>;
+  existingNodes: Node<NodeData>[];
+  graphRefresh: () => void;
+}) {
+  const [addedObjects, setAddedObjects] = useState<string[]>([]);
+  const [existingObjects, setExistingObjects] = useState<Node<NodeData>[]>([]);
+  const [selectedObjectId, setSelectedObjectId] = useState<string>("");
+  const [isOpen, setIsOpen] = useState(false);
+
+  useEffect(() => {
+    setAddedObjects([currentObject.id]);
+
+    const filteredNodes = existingNodes.filter(
+      (node) => node.id !== currentObject.id
+    );
+    setExistingObjects(filteredNodes);
+  }, [currentObject, existingNodes]);
+
   const form = useForm<z.infer<typeof imageSchema>>({
     resolver: zodResolver(imageSchema),
     defaultValues: {
@@ -72,11 +106,39 @@ export default function ImageCreationDialog() {
   });
 
   async function onSubmit(values: z.infer<typeof imageSchema>) {
-    console.log(values.imageTitle);
+    try {
+      const formData = new FormData();
+      formData.append("imageTitle", values.imageTitle);
+      formData.append("imageFile", values.imageFile);
+      for (const id of addedObjects) {
+        formData.append("objects", id);
+      }
+      const res = await fetch("/api/images", {
+        method: "POST",
+        body: formData,
+      });
+      if (!res.ok) {
+        const errorData = await res.json();
+        console.log(errorData);
+        throw new Error(errorData.error || "Something went wrong");
+      }
+      graphRefresh();
+      setIsOpen(false);
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  function addObject(newObjectID: string) {
+    setAddedObjects((prev) => [...prev, newObjectID]);
+    setExistingObjects((prev) =>
+      prev.filter((node) => node.id !== newObjectID)
+    );
+    setSelectedObjectId("");
   }
 
   return (
-    <Dialog>
+    <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
         <Button variant="outline" className="rounded-md w-full mb-2">
           Add Image
@@ -122,6 +184,56 @@ export default function ImageCreationDialog() {
                 </FormItem>
               )}
             />
+
+            <div className="space-y-2">
+              <Label htmlFor="name" className="text-right">
+                Objects
+              </Label>
+              <div className="flex gap-2">
+                <Select
+                  value={selectedObjectId}
+                  onValueChange={setSelectedObjectId}
+                >
+                  <SelectTrigger className="w-[180px]">
+                    <SelectValue placeholder="Select Object" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectGroup>
+                      <SelectLabel>Add Object</SelectLabel>
+                      {existingObjects.map((node) => {
+                        return (
+                          <SelectItem key={node.id} value={node.id}>
+                            {node.data.objectName}
+                          </SelectItem>
+                        );
+                      })}
+                    </SelectGroup>
+                  </SelectContent>
+                </Select>
+                <Button
+                  variant="outline"
+                  className="rounded-md"
+                  onClick={() => addObject(selectedObjectId)}
+                  disabled={!selectedObjectId}
+                >
+                  Add
+                </Button>
+              </div>
+
+              <div className="flex flex-wrap gap-1">
+                {addedObjects.map((object) => {
+                  const node = existingNodes.find((n) => n.id === object);
+                  return (
+                    <div
+                      key={object}
+                      className="text-sm text-zinc-500 bg-zinc-200 border-2 border-zinc-300 rounded-full py-1 px-2 w-fit"
+                    >
+                      {node?.data.objectName}
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
 
             <DialogFooter>
               <Button type="submit" className="rounded-lg mt-4">

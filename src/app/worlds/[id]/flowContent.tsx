@@ -472,6 +472,7 @@ export function FlowContent({
                 deleteNodeFunction={deleteNode}
                 graphRefresh={graphRefresh}
                 worldID={worldData._id}
+                existingNodes={nodes as Node<NodeData>[]}
               />
               <RelationshipDetailSheet
                 isEdgeClicked={isEdgeClicked}

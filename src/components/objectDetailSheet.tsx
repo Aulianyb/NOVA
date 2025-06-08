@@ -20,6 +20,7 @@ export default function ObjectDetailSheet({
   deleteNodeFunction,
   graphRefresh,
   worldID,
+  existingNodes,
 }: {
   isNodeClicked: boolean;
   openFunction: React.Dispatch<React.SetStateAction<boolean>>;
@@ -27,6 +28,7 @@ export default function ObjectDetailSheet({
   deleteNodeFunction: (objectID: string) => void;
   graphRefresh: () => void;
   worldID: string;
+  existingNodes: Node<NodeData>[];
 }) {
   const [tagsList, setTagsList] = useState<Tag[]>([]);
   const [GalleryList, setGalleryList] = useState<GalleryImage[]>([]);
@@ -195,7 +197,13 @@ export default function ObjectDetailSheet({
             </p>
           </TabsContent>
           <TabsContent value="gallery">
-            <ImageCreationDialog />
+            {nodeData && (
+              <ImageCreationDialog
+                existingNodes={existingNodes}
+                currentObject={nodeData}
+                graphRefresh={graphRefresh}
+              />
+            )}
             <ScrollArea className="h-[60vh]">
               <div className="grid grid-cols-3 gap-2 pb-4">
                 {GalleryList.map((image) => {
