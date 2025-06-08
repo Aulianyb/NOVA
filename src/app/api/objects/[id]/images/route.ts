@@ -16,7 +16,7 @@ export async function GET(
         if (!object) {
             throw new Error("Object not Found"); 
         }
-        const objectImages = await Image.find({_id : {$in : object.images}})
+        const objectImages = await Image.find({_id : {$in : object.images}}).populate("objects", "objectName")
         return NextResponse.json({
             data : objectImages,
             message : "Images Fetched!"

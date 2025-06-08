@@ -17,6 +17,18 @@ export type Collaborator = {
     username : string
 }
 
+export type GalleryObject = {
+    _id : string,
+    objectName : string
+}
+
+export type GalleryImage = {
+    _id : string,
+    imageID : string,
+    imageTitle : string,
+    objects : GalleryObject[];
+}
+
 export type Tag = {
     _id : string,
     tagName : string,

@@ -1,48 +1,50 @@
-import Image from "next/image";
+import { CldImage } from "next-cloudinary";
 import {
   Dialog,
   DialogContent,
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-export default function ImageElement({ placeholder }: { placeholder: string }) {
+import { GalleryImage } from "@shared/types";
+export default function ImageElement({
+  imageData,
+}: {
+  imageData: GalleryImage;
+}) {
   return (
     <Dialog>
       <DialogTrigger>
         <div className="relative aspect-square transition ease-in-out hover:opacity-80">
-          <Image
-            src={placeholder}
-            alt="placeholder"
-            fill
-            className="object-cover rounded-xl"
+          <CldImage
+            src={imageData.imageID}
+            alt="NOVA, the mascot, greeting you"
+            width="150"
+            height="150"
+            className="rounded-md"
           />
         </div>
       </DialogTrigger>
       <DialogContent>
-        {/* <DialogHeader></DialogHeader> */}
         <div className="relative aspect-square">
-          <Image
-            src={placeholder}
+          <CldImage
+            src={imageData.imageID}
             alt="placeholder"
             className="object-contain rounded-lg"
             fill
           />
         </div>
-        <DialogTitle>Image Title</DialogTitle>
-
+        <DialogTitle>{imageData.imageTitle}</DialogTitle>
         <div className="flex flex-wrap gap-1">
-          <div className="text-sm text-zinc-500 bg-zinc-200 border-2 border-zinc-300 rounded-full py-1 px-2 w-fit">
-            Character 1
-          </div>
-          <div className="text-sm text-zinc-500 bg-zinc-200 border-2 border-zinc-300 rounded-full py-1 px-2 w-fit">
-            Character 1
-          </div>
-          <div className="text-sm text-zinc-500 bg-zinc-200 border-2 border-zinc-300 rounded-full py-1 px-2 w-fit">
-            Character 1
-          </div>
-          <div className="text-sm text-zinc-500 bg-zinc-200 border-2 border-zinc-300 rounded-full py-1 px-2 w-fit">
-            Character 1
-          </div>
+          {imageData.objects.map((obj) => {
+            return (
+              <div
+                key={obj._id}
+                className="text-sm text-zinc-500 bg-zinc-200 border-2 border-zinc-300 rounded-full py-1 px-2 w-fit"
+              >
+                {obj.objectName}
+              </div>
+            );
+          })}
         </div>
       </DialogContent>
     </Dialog>

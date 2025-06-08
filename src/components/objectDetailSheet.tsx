@@ -2,7 +2,7 @@ import { CldImage } from "next-cloudinary";
 import { ChevronRight } from "lucide-react";
 import { Button } from "./ui/button";
 import { Node } from "@xyflow/react";
-import { NodeData, Tag, TagAPI } from "@shared/types";
+import { NodeData, Tag, GalleryImage } from "@shared/types";
 import ObjectSettingDialog from "./objectSettingDialog";
 import DeleteAlert from "./deleteAlert";
 import { useCallback, useEffect, useState } from "react";
@@ -11,6 +11,7 @@ import { GraphTags } from "./graphTags";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import ImageElement from "./imageElement";
 import { ScrollArea } from "./ui/scroll-area";
+import ImageCreationDialog from "./imageCreationDialog";
 
 export default function ObjectDetailSheet({
   isNodeClicked,
@@ -28,6 +29,7 @@ export default function ObjectDetailSheet({
   worldID: string;
 }) {
   const [tagsList, setTagsList] = useState<Tag[]>([]);
+  const [GalleryList, setGalleryList] = useState<GalleryImage[]>([]);
 
   let usedPicture = "objectPicture/fuetkmzyox2su7tfkib3";
   if (nodeData) {
@@ -53,20 +55,17 @@ export default function ObjectDetailSheet({
       if (!nodeData) {
         throw new Error("nodeData not found");
       }
-      console.log(nodeData.id);
+      const ImageRes = await fetch(`/api/objects/${nodeData.id}/images`);
       const res = await fetch(`/api/objects/${nodeData.id}/tags`);
-      if (!res.ok) {
+      if (!res.ok || !ImageRes.ok) {
         const errorData = await res.json();
         console.log(errorData);
         throw new Error(errorData.error || "Something went wrong.");
       }
       const tagData = await res.json();
-      const tags: Tag[] = tagData.data.map((tag: TagAPI) => ({
-        _id: tag._id,
-        tagName: tag.tagName,
-        tagColor: tag.tagColor,
-      }));
-      setTagsList(tags);
+      setTagsList(tagData.data);
+      const galleryData = await ImageRes.json();
+      setGalleryList(galleryData.data);
     } catch (error) {
       if (error instanceof Error) {
         showError(error.message);
@@ -196,15 +195,12 @@ export default function ObjectDetailSheet({
             </p>
           </TabsContent>
           <TabsContent value="gallery">
+            <ImageCreationDialog />
             <ScrollArea className="h-[60vh]">
               <div className="grid grid-cols-3 gap-2 pb-4">
-                <ImageElement placeholder="/cat-emo.jpg" />
-                <ImageElement placeholder="/cat-fish.png" />
-                <ImageElement placeholder="/cat-nerd.jpg" />
-                <ImageElement placeholder="/placeholder-art.png" />
-                <ImageElement placeholder="/cat-emo.jpg" />
-                <ImageElement placeholder="/nova-greet.png" />
-                <ImageElement placeholder="/cat-emo.jpg" />
+                {GalleryList.map((image) => {
+                  return <ImageElement imageData={image} key={image._id} />;
+                })}
               </div>
             </ScrollArea>
           </TabsContent>

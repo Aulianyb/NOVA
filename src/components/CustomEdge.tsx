@@ -73,7 +73,6 @@ export default function CustomEdge({
     targetY,
   });
 
-  console.log(data.tagColor);
   return (
     <>
       <BaseEdge
