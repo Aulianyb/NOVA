@@ -180,7 +180,7 @@ export default function RelationshipDetailSheet({
 
         <div className="h-full">
           <div>
-            <Tabs defaultValue="account" className="w-full">
+            <Tabs defaultValue="info" className="w-full">
               <TabsList>
                 <TabsTrigger value="info">Info</TabsTrigger>
                 <TabsTrigger value="story">Story</TabsTrigger>

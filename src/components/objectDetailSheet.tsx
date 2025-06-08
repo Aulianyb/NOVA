@@ -142,7 +142,7 @@ export default function ObjectDetailSheet({
       <hr className="border-gray-300 flex-grow" />
 
       <div className="h-full">
-        <Tabs defaultValue="account" className="w-full">
+        <Tabs defaultValue="info" className="w-full">
           <TabsList>
             <TabsTrigger value="info">Info</TabsTrigger>
             <TabsTrigger value="story">Story</TabsTrigger>
@@ -205,11 +205,21 @@ export default function ObjectDetailSheet({
               />
             )}
             <ScrollArea className="h-[60vh]">
-              <div className="grid grid-cols-3 gap-2 pb-4">
-                {GalleryList.map((image) => {
-                  return <ImageElement imageData={image} key={image._id} />;
-                })}
-              </div>
+              {nodeData && (
+                <div className="grid grid-cols-3 gap-2 pb-4">
+                  {GalleryList.map((image) => {
+                    return (
+                      <ImageElement
+                        imageData={image}
+                        key={image._id}
+                        existingNodes={existingNodes}
+                        currentObject={nodeData}
+                        graphRefresh={graphRefresh}
+                      />
+                    );
+                  })}
+                </div>
+              )}
             </ScrollArea>
           </TabsContent>
         </Tabs>

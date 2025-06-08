@@ -32,6 +32,7 @@ import {
 import { useState, useEffect } from "react";
 import { Node } from "@xyflow/react";
 import { NodeData } from "@shared/types";
+import { X } from "lucide-react";
 
 const MAX_FILE_SIZE = 5000000;
 const ACCEPTED_IMAGE_TYPES = [
@@ -45,7 +46,7 @@ const imageSchema = z.object({
   imageTitle: z
     .string()
     .min(1, "Your image must have a title")
-    .max(20, "Image title name must be at most 20 characters long"),
+    .max(36, "Image title name must be at most 36 characters long"),
   imageFile: z
     .any()
     .transform((val) => (val instanceof FileList ? val[0] : val))
@@ -137,6 +138,15 @@ export default function ImageCreationDialog({
     setSelectedObjectId("");
   }
 
+  function deleteObject(newObjectID: string) {
+    setAddedObjects((prev) => prev.filter((id) => id !== newObjectID));
+
+    const node = existingNodes.find((n) => n.id === newObjectID);
+    if (node) {
+      setExistingObjects((prev) => [...prev, node]);
+    }
+  }
+
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
@@ -226,9 +236,12 @@ export default function ImageCreationDialog({
                   return (
                     <div
                       key={object}
-                      className="text-sm text-zinc-500 bg-zinc-200 border-2 border-zinc-300 rounded-full py-1 px-2 w-fit"
+                      className="text-sm text-zinc-500 bg-zinc-200 border-2 border-zinc-300 rounded-full py-1 px-2 w-fit flex gap-2 items-center"
                     >
                       {node?.data.objectName}
+                      {object != currentObject.id && (
+                        <X size={18} onClick={() => deleteObject(object)} />
+                      )}
                     </div>
                   );
                 })}
