@@ -250,7 +250,9 @@ export default function WorldSettingDialog({
           </div>
           <div className="space-y-2 mt-10">
             <div className="flex justify-between items-center">
-              <h2>Manage Collaborators</h2>
+              <h2>{
+                worldData.owners.includes(currentUser) ? "Manage Collaborators" : "View Collaborators"
+                }</h2>
             </div>
             <hr />
             <div className="flex flex-col gap-5">
@@ -287,11 +289,15 @@ export default function WorldSettingDialog({
                   </div>
                 </div>
               )}
-
               <div>
                 <Label>Collaborators in this world</Label>
                 <DataTable
-                  columns={columns(worldData._id, notifyDeleted)}
+                  columns={columns(
+                    worldData._id,
+                    notifyDeleted,
+                    !worldData.owners.includes(currentUser),
+                    graphRefresh
+                  )}
                   data={worldData.collaborators}
                 />
               </div>

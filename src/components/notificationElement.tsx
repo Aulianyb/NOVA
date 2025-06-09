@@ -5,9 +5,11 @@ import { useToast } from "@/hooks/use-toast";
 export default function NotificationElement({
   notificationData,
   worldRefresh,
+  fetchNotification,
 }: {
   notificationData: Notification;
   worldRefresh: () => void;
+  fetchNotification: () => Promise<void>;
 }) {
   const { toast } = useToast();
 
@@ -50,6 +52,7 @@ export default function NotificationElement({
         throw new Error(errorData.error || "Something went wrong");
       }
       worldRefresh();
+      fetchNotification();
       showNotification(response);
     } catch (error) {
       if (error instanceof Error) {
