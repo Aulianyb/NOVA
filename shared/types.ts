@@ -64,7 +64,12 @@ export type NodeObject = {
     relationships : string[],
     tags : string[],
     positionX : number,
-    positionY : number
+    positionY : number,
+    story : string,
+    info :  {
+        bio :  { [key: string]: string };
+        description:  string;
+    }
 }
 
 export type RelationshipJSON = {
@@ -97,7 +102,12 @@ export type NodeData = {
     objectDescription?: string;
     images : string[],
     tags : string[],
-    relationships : string[]
+    relationships : string[],
+    story : string,
+    info :  {
+    bio : { [key: string]: string };
+    description:  string;
+    }
 };
 
 export type EdgeJSON = {

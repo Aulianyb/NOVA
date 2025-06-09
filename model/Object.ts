@@ -10,7 +10,12 @@ const object = new Schema({
     tags : [{type: Schema.Types.ObjectId, ref: 'Tag'}],
     positionX : {type : Number, required:[true, "X position required"]},
     positionY : {type : Number, required:[true, "Y position required"]},
-    worldID : {type : Schema.Types.ObjectId, ref : 'World'}
+    worldID : {type : Schema.Types.ObjectId, ref : 'World'},
+    story: { type: String },
+    info: {
+        bio: { type: Map, of: String }, 
+        description: { type: String } 
+    },
 }, { timestamps: true });
 
 export default mongoose.models.Object || mongoose.model("Object", object);

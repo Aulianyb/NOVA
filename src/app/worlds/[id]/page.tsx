@@ -23,6 +23,7 @@ export default function Page() {
   const params = useParams();
   const { toast } = useToast();
   const router = useRouter();
+  const [currentUser, setCurrentUser] = useState<string>("");
 
   const fetchSession = useCallback(async () => {
     function showError(message: string) {
@@ -42,6 +43,8 @@ export default function Page() {
         console.log(errorData.error);
         throw new Error(errorData.error || "Something went wrong");
       }
+      const resData = await res.json();
+      setCurrentUser(resData.session.id);
       const world = await fetch(`/api/worlds/${params.id}`);
       if (!world.ok) {
         console.log(world.status);
@@ -86,6 +89,8 @@ export default function Page() {
           tags: object.tags,
           positionX: object.positionX,
           positionY: object.positionY,
+          info: object.info,
+          story: object.story,
         })
       );
       setObjects(objectArray);
@@ -158,6 +163,7 @@ export default function Page() {
         objectData={objects}
         relationshipData={relationships}
         graphRefresh={fetchSession}
+        currentUser={currentUser}
       />
     </ReactFlowProvider>
   );

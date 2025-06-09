@@ -242,11 +242,7 @@ export default function ObjectSettingDialog({
       }}
     >
       <DialogTrigger asChild>
-        <Button
-          variant="ghost"
-          size="iconSm"
-          onClick={() => console.log("Edit")}
-        >
+        <Button variant="ghost" size="iconSm">
           <PencilLine />
         </Button>
       </DialogTrigger>

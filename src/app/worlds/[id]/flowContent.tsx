@@ -64,11 +64,13 @@ export function FlowContent({
   objectData,
   relationshipData,
   graphRefresh,
+  currentUser,
 }: {
   worldData: World | null;
   objectData: NodeObject[] | null;
   relationshipData: RelationshipJSON[] | null;
   graphRefresh: () => void;
+  currentUser: string;
 }) {
   const flow = useReactFlow();
   const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
@@ -91,7 +93,6 @@ export function FlowContent({
   );
   const [isAddingEdge, setIsAddingEdge] = useState(false);
   const [hiddenTags, setHiddenTags] = useState<string[]>([]);
-
   const router = useRouter();
   const { toast } = useToast();
 
@@ -172,6 +173,8 @@ export function FlowContent({
           images: object.images,
           tags: object.tags,
           relationships: object.relationships,
+          info: object.info,
+          story: object.story,
         },
         type: "customNode",
       }));
@@ -424,6 +427,7 @@ export function FlowContent({
                 <WorldSettingDialog
                   worldData={worldData}
                   graphRefresh={graphRefresh}
+                  currentUser={currentUser}
                 />
                 <ObjectCreationDialog
                   createFunction={addNode}

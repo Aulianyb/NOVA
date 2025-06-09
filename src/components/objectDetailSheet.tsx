@@ -12,6 +12,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import ImageElement from "./imageElement";
 import { ScrollArea } from "./ui/scroll-area";
 import ImageCreationDialog from "./imageCreationDialog";
+import { BookOpenText, ImagePlus } from "lucide-react";
+import ObjectDetailSettingDialogue from "./objectDetailSettingDialog";
 
 export default function ObjectDetailSheet({
   isNodeClicked,
@@ -117,114 +119,144 @@ export default function ObjectDetailSheet({
               currentObject={nodeData}
               graphRefresh={graphRefresh}
             />
+            <ObjectDetailSettingDialogue
+              graphRefresh={graphRefresh}
+              nodeData={nodeData}
+            />
           </>
         )}
       </div>
 
       {nodeData && (
-        <div className="flex flex-wrap gap-4">
-          <CldImage
-            src={usedPicture}
-            alt="NOVA, the mascot, greeting you"
-            width="125"
-            height="125"
-            className="rounded-md object-cover"
-          />
-          <div className="space-y-2 p-2">
-            <h2 className="font-bold"> {nodeData.data.objectName} </h2>
-            <p className="italic"> {nodeData.data.objectDescription} </p>
-            <div className="flex gap-1 flex-wrap">
-              {tagsList.map((tag) => {
-                return (
-                  <GraphTags key={tag._id} tagData={tag} isReadOnly={true} />
-                );
-              })}
-            </div>
-          </div>
-        </div>
-      )}
-
-      <Tabs
-        defaultValue="info"
-        className="w-full h-full flex flex-col flex-1 overflow-hidden"
-      >
-        <TabsList>
-          <TabsTrigger value="info">Info</TabsTrigger>
-          <TabsTrigger value="story">Story</TabsTrigger>
-          <TabsTrigger value="gallery">Gallery</TabsTrigger>
-        </TabsList>
-        <TabsContent value="info" className="flex-0 overflow-hidden">
-          <ScrollArea className="h-full">
-            <div className="space-y-2 pb-10">
-              <h3 className="bg-zinc-100 py-1 px-2 rounded-lg text-lg">
-                Basic Info
-              </h3>
-              <div className="flex justify-between px-2">
-                <span className="font-semibold">Name</span>
-                <span>Lorem Ipsum</span>
-              </div>
-              <div className="flex justify-between px-2">
-                <span className="font-semibold">Gender</span>
-                <span>Male</span>
-              </div>
-              <div className="flex justify-between px-2">
-                <span className="font-semibold">Age</span>
-                <span>20</span>
-              </div>
-              <h3 className="bg-zinc-100 py-1 px-2 rounded-lg text-lg">
-                Description
-              </h3>
-              <p className="px-2">
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit. In eget
-                malesuada ante. Suspendisse vitae nisl quis mi venenatis ornare.
-                Nulla tincidunt euismod suscipit. Fusce molestie placerat odio,
-                sit amet dignissim dolor lobortis mattis. Curabitur eget turpis
-                a metus sodales condimentum. Aliquam erat volutpat.
-              </p>
-            </div>
-          </ScrollArea>
-        </TabsContent>
-        <TabsContent value="story" className="flex-0 overflow-hidden">
-          <ScrollArea className="h-full">
-            <p>
-              Lorem ipsum dolor sit amet, consectetur adipiscing elit. In eget
-              malesuada ante. Suspendisse vitae nisl quis mi venenatis ornare.
-              Nulla tincidunt euismod suscipit. Fusce molestie placerat odio,
-              sit amet dignissim dolor lobortis mattis. Curabitur eget turpis a
-              metus sodales condimentum. Aliquam erat volutpat.
-              <br />
-              <br />
-              Lorem ipsum dolor sit amet, consectetur adipiscing elit. In eget
-              malesuada ante. Suspendisse vitae nisl quis mi venenatis ornare.
-              Nulla tincidunt euismod suscipit. Fusce molestie placerat odio,
-              sit amet dignissim dolor lobortis mattis. Curabitur eget turpis a
-              metus sodales condimentum. Aliquam erat volutpat.
-            </p>
-          </ScrollArea>
-        </TabsContent>
-        <TabsContent
-          value="gallery"
-          className="flex flex-col flex-1 overflow-hidden"
-        >
-          <ScrollArea className="h-full">
-            {nodeData && (
-              <div className="grid grid-cols-3 gap-2 pb-5">
-                {GalleryList.map((image) => {
+        <>
+          <div className="flex flex-wrap gap-4">
+            <CldImage
+              src={usedPicture}
+              alt="NOVA, the mascot, greeting you"
+              width="125"
+              height="125"
+              className="rounded-md object-cover"
+            />
+            <div className="space-y-2 p-2">
+              <h2 className="font-bold"> {nodeData.data.objectName} </h2>
+              <p className="italic"> {nodeData.data.objectDescription} </p>
+              <div className="flex gap-1 flex-wrap">
+                {tagsList.map((tag) => {
                   return (
-                    <ImageElement
-                      imageData={image}
-                      key={image._id}
-                      existingNodes={existingNodes}
-                      currentObject={nodeData}
-                      graphRefresh={graphRefresh}
-                    />
+                    <GraphTags key={tag._id} tagData={tag} isReadOnly={true} />
                   );
                 })}
               </div>
-            )}
-          </ScrollArea>
-        </TabsContent>
-      </Tabs>
+            </div>
+          </div>
+          <Tabs
+            defaultValue="info"
+            className="w-full h-full flex flex-col flex-1 overflow-hidden"
+          >
+            <TabsList>
+              <TabsTrigger value="info">Info</TabsTrigger>
+              <TabsTrigger value="story">Story</TabsTrigger>
+              <TabsTrigger value="gallery">Gallery</TabsTrigger>
+            </TabsList>
+            <TabsContent value="info" className="flex-0 overflow-hidden">
+              <ScrollArea className="h-full">
+                <div className="space-y-2 pb-10">
+                  {nodeData.data.info ? (
+                    <>
+                      <h3 className="bg-zinc-100 py-1 px-2 rounded-lg text-lg">
+                        Basic Info
+                      </h3>
+                      {nodeData.data.info.bio && (
+                        <>
+                          {Object.entries(nodeData.data.info.bio).map(
+                            ([key, value]) => (
+                              <div
+                                key={key}
+                                className="flex justify-between px-2"
+                              >
+                                <span className="font-semibold">{key}</span>
+                                <span>{value}</span>
+                              </div>
+                            )
+                          )}
+                        </>
+                      )}
+                      <h3 className="bg-zinc-100 py-1 px-2 rounded-lg text-lg">
+                        Description
+                      </h3>
+                      <p className="px-2">{nodeData.data.info.description}</p>
+                    </>
+                  ) : (
+                    <>
+                      <div className="text-center flex flex-col justify-center items-center text-zinc-500">
+                        <h2 className="italic">WHOOPS!</h2>
+                        <p>Seems like there's nothing here.</p>
+                        <div className="flex gap-2 items-center">
+                          <span>Write your information on</span>
+                          <BookOpenText size={18} strokeWidth={2} />
+                        </div>
+                      </div>
+                    </>
+                  )}
+                </div>
+              </ScrollArea>
+            </TabsContent>
+            <TabsContent value="story" className="flex-0 overflow-hidden">
+              {nodeData.data.story ? (
+                <ScrollArea className="h-full">
+                  <p>{nodeData.data.story}</p>
+                </ScrollArea>
+              ) : (
+                <>
+                  <div className="text-center flex flex-col justify-center items-center text-zinc-500">
+                    <h2 className="italic">WHOOPS!</h2>
+                    <p>Seems like there's nothing here.</p>
+                    <div className="flex gap-2 items-center">
+                      <span>Write your story on</span>
+                      <BookOpenText size={18} strokeWidth={2} />
+                    </div>
+                  </div>
+                </>
+              )}
+            </TabsContent>
+            <TabsContent
+              value="gallery"
+              className="flex flex-col flex-1 overflow-hidden"
+            >
+              {nodeData.data.images.length > 0 ? (
+                <>
+                  <ScrollArea className="h-full">
+                    <div className="grid grid-cols-3 gap-2 pb-5">
+                      {GalleryList.map((image) => {
+                        return (
+                          <ImageElement
+                            imageData={image}
+                            key={image._id}
+                            existingNodes={existingNodes}
+                            currentObject={nodeData}
+                            graphRefresh={graphRefresh}
+                          />
+                        );
+                      })}
+                    </div>
+                  </ScrollArea>
+                </>
+              ) : (
+                <>
+                  <div className="text-center flex flex-col justify-center items-center text-zinc-500">
+                    <h2 className="italic">WHOOPS!</h2>
+                    <p>Seems like there's nothing here.</p>
+                    <div className="flex gap-2 items-center">
+                      <span>Add images on</span>
+                      <ImagePlus size={18} strokeWidth={2} />
+                    </div>
+                  </div>
+                </>
+              )}
+            </TabsContent>
+          </Tabs>
+        </>
+      )}
     </div>
   );
 }
