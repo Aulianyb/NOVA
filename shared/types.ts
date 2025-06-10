@@ -82,7 +82,12 @@ export type RelationshipJSON = {
         tagName : string,
         tagColor : string
     },
-    relationshipDescription : string
+    relationshipDescription : string,
+    story : string,
+    info : {
+        sourceToTarget : string,
+        targetToSource : string
+    }
 }
 
 export type Position = {
@@ -119,6 +124,11 @@ export type EdgeJSON = {
 
 export type RelationshipData = {
     relationshipDescription : string; 
+    story : string,
+    info : {
+        sourceToTarget : string,
+        targetToSource : string
+    }
 };
 
 export type Notification = {

@@ -204,7 +204,7 @@ export default function ObjectDetailSheet({
             <TabsContent value="story" className="flex-0 overflow-hidden">
               {nodeData.data.story ? (
                 <ScrollArea className="h-full">
-                  <p>{nodeData.data.story}</p>
+                  <p className="whitespace-pre-wrap">{nodeData.data.story}</p>
                 </ScrollArea>
               ) : (
                 <>

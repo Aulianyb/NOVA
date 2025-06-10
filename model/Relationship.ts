@@ -6,7 +6,12 @@ const relationship = new Schema({
     source : {type : Schema.Types.ObjectId, ref: 'Object'},
     target : {type : Schema.Types.ObjectId, ref: 'Object'},
     tags : [{type : Schema.Types.ObjectId, ref: 'Tag'}],
-    mainTag : {type : Schema.Types.ObjectId, ref: 'Tag'}
+    mainTag : {type : Schema.Types.ObjectId, ref: 'Tag'},
+    story: { type: String },
+    info: {
+        sourceToTarget: { type: String }, 
+        targetToSource: { type: String } 
+    },
 }, { timestamps: true });
 
 export default mongoose.models.Relationship || mongoose.model("Relationship", relationship);

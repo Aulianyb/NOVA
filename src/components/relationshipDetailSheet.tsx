@@ -1,4 +1,4 @@
-import { ChevronRight } from "lucide-react";
+import { ChevronRight, BookOpenText } from "lucide-react";
 import { Button } from "./ui/button";
 import { NodeObject, RelationshipData, Tag, TagAPI } from "@shared/types";
 import { Edge } from "@xyflow/react";
@@ -9,6 +9,8 @@ import { useState, useCallback, useEffect } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { GraphTags } from "./graphTags";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { ScrollArea } from "./ui/scroll-area";
+import RelationshipDetailSettingDialogue from "./relationshipDetailSettingDialog";
 
 export default function RelationshipDetailSheet({
   isEdgeClicked,
@@ -116,7 +118,7 @@ export default function RelationshipDetailSheet({
           >
             <ChevronRight />
           </Button>
-          {relationshipData && (
+          {relationshipData && targetNode && sourceNode && (
             <>
               <RelationshipSettingDialog
                 relationshipData={relationshipData}
@@ -132,107 +134,146 @@ export default function RelationshipDetailSheet({
                 openFunction={openFunction}
                 type="relationship"
               />
+              <RelationshipDetailSettingDialogue 
+              relationshipData={relationshipData} 
+              graphRefresh={graphRefresh}
+              targetName={targetNode?.objectName}
+              sourceName={sourceNode?.objectName}/>
             </>
           )}
         </div>
 
         {sourceNode && targetNode && relationshipData && (
-          <div className="flex flex-col items-center gap-2">
-            <div className="flex flex-wrap justify-center gap-2">
-              {tagsList.map((tag) => {
-                return (
-                  <GraphTags key={tag._id} tagData={tag} isReadOnly={true} />
-                );
-              })}
-            </div>
-            <div className="flex gap-2">
-              <div className="text-center">
-                <CldImage
-                  src={usedSourcePicture}
-                  alt="NOVA, the mascot, greeting you"
-                  width="100"
-                  height="100"
-                  className="rounded-md object-cover"
-                />
-                <p>{sourceNode.objectName}</p>
-              </div>
-              <div className="text-center ">
-                <CldImage
-                  src={usedTargetPicture}
-                  alt="NOVA, the mascot, greeting you"
-                  width="100"
-                  height="100"
-                  className="rounded-md"
-                />
-                <p>{targetNode.objectName}</p>
-              </div>
-            </div>
-            {relationshipData.data && (
-              <p className="italic text-center">
-                {relationshipData.data.relationshipDescription}
-              </p>
-            )}
-            <div className="flex gap-1"></div>
-          </div>
-        )}
-
-        <hr className="border-gray-300 flex-grow" />
-
-        <div className="h-full">
-          <div>
-            <Tabs defaultValue="info" className="w-full">
-              <TabsList>
-                <TabsTrigger value="info">Info</TabsTrigger>
-                <TabsTrigger value="story">Story</TabsTrigger>
-              </TabsList>
-              <TabsContent value="info">
-                <div className="space-y-2">
-                  <h3 className="bg-zinc-100 py-1 px-2 rounded-lg text-lg">
-                    Thoughts
-                  </h3>
-                  <div className="space-y-2">
-                    <p className="font-semibold">
-                      What source thinks of target?
-                    </p>
-                    <p className="border-l-2 border-zinc-300 pl-4 italic text-zinc-500">
-                      Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-                      In eget malesuada ante. Suspendisse vitae nisl quis mi
-                      venenatis ornare.
-                    </p>
+          <>
+            <>
+              <div className="flex flex-col items-center gap-2">
+                <div className="flex flex-wrap justify-center gap-2">
+                  {tagsList.map((tag) => {
+                    return (
+                      <GraphTags
+                        key={tag._id}
+                        tagData={tag}
+                        isReadOnly={true}
+                      />
+                    );
+                  })}
+                </div>
+                <div className="flex gap-2">
+                  <div className="text-center">
+                    <CldImage
+                      src={usedSourcePicture}
+                      alt="NOVA, the mascot, greeting you"
+                      width="100"
+                      height="100"
+                      className="rounded-md object-cover"
+                    />
+                    <p>{sourceNode.objectName}</p>
                   </div>
-                  <div className="space-y-2">
-                    <p className="font-semibold">
-                      What source thinks of target?
-                    </p>
-                    <p className="border-l-2 border-zinc-300 pl-4 italic text-zinc-500">
-                      Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-                      In eget malesuada ante. Suspendisse vitae nisl quis mi
-                      venenatis ornare.
-                    </p>
+                  <div className="text-center ">
+                    <CldImage
+                      src={usedTargetPicture}
+                      alt="NOVA, the mascot, greeting you"
+                      width="100"
+                      height="100"
+                      className="rounded-md"
+                    />
+                    <p>{targetNode.objectName}</p>
                   </div>
                 </div>
-              </TabsContent>
-              <TabsContent value="story">
-                <p>
-                  Lorem ipsum dolor sit amet, consectetur adipiscing elit. In
-                  eget malesuada ante. Suspendisse vitae nisl quis mi venenatis
-                  ornare. Nulla tincidunt euismod suscipit. Fusce molestie
-                  placerat odio, sit amet dignissim dolor lobortis mattis.
-                  Curabitur eget turpis a metus sodales condimentum. Aliquam
-                  erat volutpat.
-                  <br />
-                  <br />
-                  Lorem ipsum dolor sit amet, consectetur adipiscing elit. In
-                  eget malesuada ante. Suspendisse vitae nisl quis mi venenatis
-                  ornare. Nulla tincidunt euismod suscipit. Fusce molestie
-                  placerat odio, sit amet dignissim dolor lobortis mattis.
-                  Curabitur eget turpis a metus sodales condimentum. Aliquam
-                  erat volutpat.
-                </p>
-              </TabsContent>
-            </Tabs>
-          </div>
-        </div>
+                {relationshipData.data && (
+                  <p className="italic text-center">
+                    {relationshipData.data.relationshipDescription}
+                  </p>
+                )}
+                <div className="flex gap-1"></div>
+              </div>
+            </>
+
+            <hr className="border-gray-300 flex-grow" />
+
+            <div className="h-full">
+              <div>
+                {relationshipData.data && (
+                  <Tabs
+                    defaultValue="info"
+                    className="w-full h-full flex flex-col flex-1 overflow-hidden"
+                  >
+                    <TabsList>
+                      <TabsTrigger value="info">Info</TabsTrigger>
+                      <TabsTrigger value="story">Story</TabsTrigger>
+                    </TabsList>
+                    <TabsContent
+                      value="info"
+                      className="flex-0 overflow-hidden"
+                    >
+                      <ScrollArea className="h-full">
+                        <div className="space-y-2 pb-10">
+                          {relationshipData.data.info ? (
+                            <>
+                              <h3 className="bg-zinc-100 py-1 px-2 rounded-lg text-lg">
+                                Thoughts
+                              </h3>
+                              <div className="space-y-2">
+                                <p className="font-semibold">
+                                  What source thinks of target?
+                                </p>
+                                <p className="border-l-2 border-zinc-300 pl-4 italic text-zinc-500">
+                                  {relationshipData.data.info.sourceToTarget}
+                                </p>
+                              </div>
+                              <div className="space-y-2">
+                                <p className="font-semibold">
+                                  What source thinks of target?
+                                </p>
+                                <p className="border-l-2 border-zinc-300 pl-4 italic text-zinc-500">
+                                  {relationshipData.data.info.targetToSource}
+                                </p>
+                              </div>
+                            </>
+                          ) : (
+                            <>
+                              <div className="text-center flex flex-col justify-center items-center text-zinc-500">
+                                <h2 className="italic">WHOOPS!</h2>
+                                <p>Seems like there's nothing here.</p>
+                                <div className="flex gap-2 items-center">
+                                  <span>Write your information on</span>
+                                  <BookOpenText size={18} strokeWidth={2} />
+                                </div>
+                              </div>
+                            </>
+                          )}
+                        </div>
+                      </ScrollArea>
+                    </TabsContent>
+                    <TabsContent
+                      value="story"
+                      className="flex-0 overflow-hidden"
+                    >
+                      {relationshipData.data.story ? (
+                        <ScrollArea className="h-full">
+                          <p className="whitespace-pre-wrap">
+                            {relationshipData.data.story}
+                          </p>
+                        </ScrollArea>
+                      ) : (
+                        <>
+                          <div className="text-center flex flex-col justify-center items-center text-zinc-500">
+                            <h2 className="italic">WHOOPS!</h2>
+                            <p>Seems like there's nothing here.</p>
+                            <div className="flex gap-2 items-center">
+                              <span>Write your story on</span>
+                              <BookOpenText size={18} strokeWidth={2} />
+                            </div>
+                          </div>
+                        </>
+                      )}
+                    </TabsContent>
+                  </Tabs>
+                )}
+              </div>
+            </div>
+          </>
+        )}
       </div>
     </div>
   );

@@ -103,6 +103,8 @@ export default function Page() {
           tags: relation.tags,
           mainTag: relation.mainTag,
           relationshipDescription: relation.relationshipDescription,
+          info : relation.info,
+          story : relation.story
         })
       );
       setObjects(objectArray);

@@ -194,6 +194,8 @@ export function FlowContent({
           tagColor: edge.mainTag ? edge.mainTag.tagColor : undefined,
           relationshipDescription: edge.relationshipDescription,
           tags: edge.tags,
+          story: edge.story,
+          info: edge.info,
         },
         type: "custom-edge",
         style: {
