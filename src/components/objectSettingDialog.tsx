@@ -331,7 +331,7 @@ export default function ObjectSettingDialog({
                   control={tagForm.control}
                   name="tagID"
                   render={({ field }) => (
-                    <Select onValueChange={field.onChange}>
+                    <Select onValueChange={field.onChange} value={field.value}>
                       <SelectTrigger className="w-[180px]">
                         <SelectValue placeholder="Select Tag" />
                       </SelectTrigger>
