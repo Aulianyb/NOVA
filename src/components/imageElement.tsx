@@ -74,18 +74,15 @@ export default function ImageElement({
 
   async function onSubmit(values: z.infer<typeof imageSchema>) {
     try {
-      const res = await fetch(
-        `http://localhost:3000/api/images/${imageData._id}`,
-        {
-          method: "PATCH",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            imageTitle: values.imageTitle,
-          }),
-        }
-      );
+      const res = await fetch(`/api/images/${imageData._id}`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          imageTitle: values.imageTitle,
+        }),
+      });
       if (!res.ok) {
         const errorData = await res.json();
         console.log(errorData);
