@@ -5,6 +5,7 @@ import { verifyRelationship, verifyUser } from "../../function";
 import World from "@model/World";
 import Object from "@model/Object";
 import User from "@model/User";
+import Tag from "@model/Tag";
 
 export async function PATCH(req: NextRequest, 
     { params }: { params: Promise<{ id: string }> }){
@@ -29,10 +30,12 @@ export async function PATCH(req: NextRequest,
             updateFields.relationshipDescription = data.relationshipDescription;
             description.push("Changed description for the relationship between " + sourceNode.objectName + " and " + targetNode.objectName + " to '" + data.relationshipDescription + "'")
         }
+
         // Handle mainTag changes
         // Note : add whether the tag exists on not on the relationship
         if (!oldRelationship.mainTag || oldRelationship.mainTag != data.mainTag){
-            description.push("Changed main tag of the relationship between " + sourceNode.objectName + " and " + targetNode.objectName + " to '" + data.relationshipDescription + "'")
+            const mainTag = await Tag.findById(data.mainTag);
+            description.push("Changed main tag of the relationship between " + sourceNode.objectName + " and " + targetNode.objectName + " to '" + mainTag.tagName + "'")
             updateFields.mainTag = data.mainTag;
         }
         const editedRelationship = await Relationship.findByIdAndUpdate(id,updateFields, {new : true});

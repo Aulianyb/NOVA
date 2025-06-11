@@ -150,11 +150,11 @@ export default function RelationshipDetailSettingDialogue({
               <div>
                 <div>
                   <label className="block font-semibold mb-1 mt-4">
-                    What do they think about each other?
+                    {`What ${sourceName} thinks of ${targetName}`}
                   </label>
                   <Textarea
                     {...register("sourceToTarget")}
-                    placeholder={`What ${sourceName} thinks of ${targetName}`}
+                    placeholder="Write their thoughts here..."
                   />
                   {errors.sourceToTarget && (
                     <p className="text-sm text-red-500">
@@ -164,11 +164,11 @@ export default function RelationshipDetailSettingDialogue({
                 </div>
                 <div>
                   <label className="block font-semibold mb-1 mt-4">
-                    Description
+                    {`What ${targetName} thinks of ${sourceName}`}
                   </label>
                   <Textarea
                     {...register("targetToSource")}
-                    placeholder={`What ${sourceName} thinks of ${targetName}`}
+                    placeholder="Write their thoughts here..."
                   />
                   {errors.targetToSource && (
                     <p className="text-sm text-red-500">
