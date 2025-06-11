@@ -98,18 +98,15 @@ export default function ImageElement({
 
   async function addObject() {
     try {
-      const res = await fetch(
-        `http://localhost:3000/api/images/${imageData._id}`,
-        {
-          method: "PATCH",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            addedObject: selectedObjectId,
-          }),
-        }
-      );
+      const res = await fetch(`/api/images/${imageData._id}`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          addedObject: selectedObjectId,
+        }),
+      });
       if (!res.ok) {
         const errorData = await res.json();
         console.log(errorData);
@@ -124,7 +121,7 @@ export default function ImageElement({
   async function deleteImage() {
     try {
       const res = await fetch(
-        `http://localhost:3000/api/objects/${currentObject.id}/images/${imageData._id}`,
+        `/api/objects/${currentObject.id}/images/${imageData._id}`,
         {
           method: "DELETE",
           headers: {

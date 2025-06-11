@@ -73,16 +73,13 @@ export default function TagEditingPopover({
       const reqBody = {
         tagColor: color,
       };
-      const res = await fetch(
-        `http://localhost:3000/api/worlds/${worldID}/tags/${tagData._id}`,
-        {
-          method: "PATCH",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(reqBody),
-        }
-      );
+      const res = await fetch(`/api/worlds/${worldID}/tags/${tagData._id}`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(reqBody),
+      });
       const resData = await res.json();
       if (!res.ok) {
         throw new Error(resData.error || "Something went wrong");
@@ -100,16 +97,13 @@ export default function TagEditingPopover({
         const reqBody = {
           tagName: values.tagName,
         };
-        const res = await fetch(
-          `http://localhost:3000/api/worlds/${worldID}/tags/${tagData._id}`,
-          {
-            method: "PATCH",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify(reqBody),
-          }
-        );
+        const res = await fetch(`/api/worlds/${worldID}/tags/${tagData._id}`, {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(reqBody),
+        });
         const resData = await res.json();
         if (!res.ok) {
           throw new Error(resData.error || "Something went wrong");
