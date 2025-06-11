@@ -134,11 +134,12 @@ export default function RelationshipDetailSheet({
                 openFunction={openFunction}
                 type="relationship"
               />
-              <RelationshipDetailSettingDialogue 
-              relationshipData={relationshipData} 
-              graphRefresh={graphRefresh}
-              targetName={targetNode?.objectName}
-              sourceName={sourceNode?.objectName}/>
+              <RelationshipDetailSettingDialogue
+                relationshipData={relationshipData}
+                graphRefresh={graphRefresh}
+                targetName={targetNode?.objectName}
+                sourceName={sourceNode?.objectName}
+              />
             </>
           )}
         </div>
@@ -215,7 +216,8 @@ export default function RelationshipDetailSheet({
                               </h3>
                               <div className="space-y-2">
                                 <p className="font-semibold">
-                                  What source thinks of target?
+                                  What {sourceNode.objectName} thinks of{" "}
+                                  {targetNode.objectName}?
                                 </p>
                                 <p className="border-l-2 border-zinc-300 pl-4 italic text-zinc-500">
                                   {relationshipData.data.info.sourceToTarget}
@@ -223,7 +225,8 @@ export default function RelationshipDetailSheet({
                               </div>
                               <div className="space-y-2">
                                 <p className="font-semibold">
-                                  What source thinks of target?
+                                  What {targetNode.objectName} thinks of{" "}
+                                  {sourceNode.objectName}?
                                 </p>
                                 <p className="border-l-2 border-zinc-300 pl-4 italic text-zinc-500">
                                   {relationshipData.data.info.targetToSource}
