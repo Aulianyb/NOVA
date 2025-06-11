@@ -1,13 +1,15 @@
-import { Notification } from "../../types/types";
+import { Notification } from "@shared/types";
 import { Button } from "./ui/button";
 import { useToast } from "@/hooks/use-toast";
 
 export default function NotificationElement({
   notificationData,
   worldRefresh,
+  fetchNotification,
 }: {
   notificationData: Notification;
   worldRefresh: () => void;
+  fetchNotification: () => Promise<void>;
 }) {
   const { toast } = useToast();
 
@@ -38,7 +40,7 @@ export default function NotificationElement({
         status: response,
       };
       const res = await fetch(`/api/notifications/${notificationData._id}`, {
-        method: "PUT",
+        method: "PATCH",
         headers: {
           "Content-Type": "application/json",
         },
@@ -50,6 +52,7 @@ export default function NotificationElement({
         throw new Error(errorData.error || "Something went wrong");
       }
       worldRefresh();
+      fetchNotification();
       showNotification(response);
     } catch (error) {
       if (error instanceof Error) {

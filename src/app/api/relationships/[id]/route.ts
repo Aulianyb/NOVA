@@ -1,12 +1,13 @@
 import { NextRequest, NextResponse } from "next/server";
-import Relationship from "../../../../../model/Relationship";
+import Relationship from "@model/Relationship";
 import { errorHandling} from "../../function";
 import { verifyRelationship, verifyUser } from "../../function";
-import World from "../../../../../model/World";
-import Object from "../../../../../model/Object";
-import User from "../../../../../model/User";
+import World from "@model/World";
+import Object from "@model/Object";
+import User from "@model/User";
+import Tag from "@model/Tag";
 
-export async function PUT(req: NextRequest, 
+export async function PATCH(req: NextRequest, 
     { params }: { params: Promise<{ id: string }> }){
     try {
         const userID = await verifyUser();
@@ -15,23 +16,36 @@ export async function PUT(req: NextRequest,
         }
         const data = await req.json();
         const { id } = await params;
-        await verifyRelationship(id);
-        const editedObject = await Relationship.findByIdAndUpdate(id,
-             {
-                relationshipDescription : data.relationshipDescription
-             }, 
-             {new : true}
-        )
+        const oldRelationship = await verifyRelationship(id);
+
+
+        const description : string[] = []; 
         const currentUser = await User.findById(userID);
-        const sourceNode = await Object.findById(editedObject.source);
-        const targetNode = await Object.findById(editedObject.target);
+        const sourceNode = await Object.findById(oldRelationship.source);
+        const updateFields: { relationshipDescription?: string; mainTag?: string } = {};
+        const targetNode = await Object.findById(oldRelationship.target);
+
+        // Handle description changes
+        if (oldRelationship.relationshipDescription != data.relationshipDescription){
+            updateFields.relationshipDescription = data.relationshipDescription;
+            description.push("Changed description for the relationship between " + sourceNode.objectName + " and " + targetNode.objectName + " to '" + data.relationshipDescription + "'")
+        }
+
+        // Handle mainTag changes
+        // Note : add whether the tag exists on not on the relationship
+        if (!oldRelationship.mainTag || oldRelationship.mainTag != data.mainTag){
+            const mainTag = await Tag.findById(data.mainTag);
+            description.push("Changed main tag of the relationship between " + sourceNode.objectName + " and " + targetNode.objectName + " to '" + mainTag.tagName + "'")
+            updateFields.mainTag = data.mainTag;
+        }
+        const editedRelationship = await Relationship.findByIdAndUpdate(id,updateFields, {new : true});
         const newChange = {
-            description : ["Changed description for the relationship between " + sourceNode.objectName + " and " + targetNode.objectName + " to '" + data.relationshipDescription + "'"],
+            description : description,
             username : currentUser.username,
         }
         const worldID = sourceNode.worldID;
         await World.updateOne({_id: worldID}, { $push: { changes : newChange} });
-        return NextResponse.json({ data : editedObject, message : "Relationship Edited!"}, { status: 200 });
+        return NextResponse.json({ data : editedRelationship, message : "Relationship Edited!"}, { status: 200 });
     } catch(error){
         return errorHandling(error);
     }

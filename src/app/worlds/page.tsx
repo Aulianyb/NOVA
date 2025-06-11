@@ -4,7 +4,7 @@ import { useCallback, useEffect, useState } from "react";
 import { quantico } from "../fonts";
 import { Navbar } from "@/components/navbar";
 import { WorldElement } from "@/components/worldElement";
-import { World } from "../../../types/types";
+import { World } from "@shared/types";
 import Loading from "../loading";
 import { useToast } from "@/hooks/use-toast";
 
@@ -29,21 +29,19 @@ export default function Worlds() {
 
     try {
       const res = await fetch("/api/auth/self");
-      if (!res.ok) {
-        const errorData = await res.json();
-        console.log(errorData);
-        throw new Error(errorData.error || "Failed to get session");
-      }
       const sessionData = await res.json();
+      if (!res.ok) {
+        console.log(sessionData);
+        throw new Error(sessionData.error || "Failed to get session");
+      }
       const session = sessionData.session;
       setSession(session);
       const resWorld = await fetch(`api/worlds`);
-      if (!resWorld.ok) {
-        const errorData = await resWorld.json();
-        console.log(errorData);
-        throw new Error(errorData.error || "Something went wrong");
-      }
       const worldData = await resWorld.json();
+      if (!resWorld.ok) {
+        console.log(worldData);
+        throw new Error(worldData.error || "Something went wrong");
+      }
       const worldArray: World[] = worldData.data.map((world: World) => ({
         _id: world._id,
         worldName: world.worldName,

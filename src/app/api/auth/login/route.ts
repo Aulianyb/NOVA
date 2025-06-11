@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import User from '../../../../../model/User'
+import User from '@model/User'
 import jwt from 'jsonwebtoken'
 import { Session, setSession } from '../session';
 import * as bcrypt from 'bcrypt';  

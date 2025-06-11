@@ -22,7 +22,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Settings } from "lucide-react";
-import { World } from "../../types/types";
+import { World } from "@shared/types";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { columns } from "./columns";
 import { DataTable } from "./data-table";
@@ -67,9 +67,11 @@ const inviteSchema = z.object({
 export default function WorldSettingDialog({
   worldData,
   graphRefresh,
+  currentUser,
 }: {
   worldData: World;
   graphRefresh: () => void;
+  currentUser: string;
 }) {
   const { toast } = useToast();
 
@@ -149,7 +151,7 @@ export default function WorldSettingDialog({
       formData.append("worldDescription", values.worldDescription);
       formData.append("worldCover", values.worldCover);
       const res = await fetch(`/api/worlds/${worldData._id}`, {
-        method: "PUT",
+        method: "PATCH",
         body: formData,
       });
       if (!res.ok) {
@@ -248,62 +250,72 @@ export default function WorldSettingDialog({
           </div>
           <div className="space-y-2 mt-10">
             <div className="flex justify-between items-center">
-              <h2>Manage Collaborators</h2>
+              <h2>{
+                worldData.owners.includes(currentUser) ? "Manage Collaborators" : "View Collaborators"
+                }</h2>
             </div>
             <hr />
             <div className="flex flex-col gap-5">
-              <div>
-                <Label>Invite New Collaborators</Label>
-                <div className="mt-2 flex">
-                  <Form {...inviteForm}>
-                    <form
-                      onSubmit={inviteForm.handleSubmit(onInvite)}
-                      className="flex items-center gap-2"
-                    >
-                      <FormField
-                        control={inviteForm.control}
-                        name="receiver"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormControl>
-                              <Input {...field} placeholder="Find username" />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                      <Button
-                        type="submit"
-                        variant="outline"
-                        className="rounded-md"
+              {worldData.owners.includes(currentUser) && (
+                <div>
+                  <Label>Invite New Collaborators</Label>
+                  <div className="mt-2 flex">
+                    <Form {...inviteForm}>
+                      <form
+                        onSubmit={inviteForm.handleSubmit(onInvite)}
+                        className="flex items-center gap-2"
                       >
-                        Invite
-                      </Button>
-                    </form>
-                  </Form>
+                        <FormField
+                          control={inviteForm.control}
+                          name="receiver"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormControl>
+                                <Input {...field} placeholder="Find username" />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                        <Button
+                          type="submit"
+                          variant="outline"
+                          className="rounded-md"
+                        >
+                          Invite
+                        </Button>
+                      </form>
+                    </Form>
+                  </div>
                 </div>
-              </div>
-
+              )}
               <div>
                 <Label>Collaborators in this world</Label>
                 <DataTable
-                  columns={columns(worldData._id, notifyDeleted)}
+                  columns={columns(
+                    worldData._id,
+                    notifyDeleted,
+                    !worldData.owners.includes(currentUser),
+                    graphRefresh
+                  )}
                   data={worldData.collaborators}
                 />
               </div>
             </div>
           </div>
-          <div className="space-y-2  mt-10">
-            <h2>Danger Zone</h2>
-            <hr />
-            <div className="w-full space-y-2 p-2 border-red-200 border-2 rounded-lg">
-              <DialogDescription>
-                Delete your world and it's contents. This action is
-                irreversible.
-              </DialogDescription>
-              <WorldDeleteAlert id={worldData._id} />
+          {worldData.owners.includes(currentUser) && (
+            <div className="space-y-2  mt-10">
+              <h2>Danger Zone</h2>
+              <hr />
+              <div className="w-full space-y-2 p-2 border-red-200 border-2 rounded-lg">
+                <DialogDescription>
+                  Delete your world and it's contents. This action is
+                  irreversible.
+                </DialogDescription>
+                <WorldDeleteAlert id={worldData._id} />
+              </div>
             </div>
-          </div>
+          )}
         </ScrollArea>
       </DialogContent>
     </Dialog>

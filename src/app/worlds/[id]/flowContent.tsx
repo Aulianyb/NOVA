@@ -12,7 +12,7 @@ import {
   NodeObject,
   World,
   RelationshipJSON,
-} from "../../../../types/types";
+} from "@shared/types";
 import {
   ReactFlow,
   useNodesState,
@@ -33,6 +33,8 @@ import ChangesSheet from "@/components/changesSheet";
 import CustomNode from "@/components/CustomNode";
 import RelationshipCreationDialog from "@/components/relationshipCreationDialog";
 import WorldSavingAlert from "@/components/worldSavingAlert";
+import WorldTagsDialog from "@/components/worldTagsDialog";
+import CustomEdge from "@/components/CustomEdge";
 
 const connectionLineStyle = {
   stroke: "#791dab",
@@ -40,6 +42,10 @@ const connectionLineStyle = {
 
 const nodeTypes = {
   customNode: CustomNode,
+};
+
+const edgeTypes = {
+  "custom-edge": CustomEdge,
 };
 
 const initialEdges: Edge[] = [];
@@ -58,11 +64,13 @@ export function FlowContent({
   objectData,
   relationshipData,
   graphRefresh,
+  currentUser,
 }: {
   worldData: World | null;
   objectData: NodeObject[] | null;
   relationshipData: RelationshipJSON[] | null;
   graphRefresh: () => void;
+  currentUser: string;
 }) {
   const flow = useReactFlow();
   const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
@@ -84,7 +92,7 @@ export function FlowContent({
     undefined
   );
   const [isAddingEdge, setIsAddingEdge] = useState(false);
-
+  const [hiddenTags, setHiddenTags] = useState<string[]>([]);
   const router = useRouter();
   const { toast } = useToast();
 
@@ -145,7 +153,7 @@ export function FlowContent({
         data: {
           relationshipDescription: "Describe their relationship!",
         },
-        type: "straight",
+        type: "custom-edge",
       };
       setNewEdge(newEdge as Edge<RelationshipData>);
       setIsAddingEdge(true);
@@ -165,6 +173,8 @@ export function FlowContent({
           images: object.images,
           tags: object.tags,
           relationships: object.relationships,
+          info: object.info,
+          story: object.story,
         },
         type: "customNode",
       }));
@@ -180,13 +190,17 @@ export function FlowContent({
         source: edge.source,
         target: edge.target,
         data: {
+          tagName: edge.mainTag ? edge.mainTag.tagName : undefined,
+          tagColor: edge.mainTag ? edge.mainTag.tagColor : undefined,
           relationshipDescription: edge.relationshipDescription,
+          tags: edge.tags,
+          story: edge.story,
+          info: edge.info,
         },
-        type: "straight",
-        style:{
-          strokeWidth : 2,
-          stroke : "#791dab"
-        }
+        type: "custom-edge",
+        style: {
+          strokeWidth: 2,
+        },
       }));
       setEdges(currentEdges);
     }
@@ -263,6 +277,44 @@ export function FlowContent({
     fetchData();
   }, [fetchData]);
 
+  const hideNode = (hidden: boolean) => (node: Node) => {
+    return {
+      ...node,
+      hidden,
+    };
+  };
+  const hideEdge = (hidden: boolean) => (edge: Edge) => {
+    return {
+      ...edge,
+      hidden,
+    };
+  };
+
+  useEffect(() => {
+    setNodes((nds) =>
+      nds.map((node) => {
+        const nodeTags: string[] = Array.isArray(node.data?.tags)
+          ? node.data.tags
+          : [];
+        const hiddenNodes = nodeTags.some((tagId: string) =>
+          hiddenTags.includes(tagId)
+        );
+        return hideNode(hiddenNodes)(node);
+      })
+    );
+    setEdges((eds) =>
+      eds.map((edge) => {
+        const edgeTags: string[] = Array.isArray(edge.data?.tags)
+          ? edge.data.tags
+          : [];
+        const hiddenEdges = edgeTags.some((tagId: string) =>
+          hiddenTags.includes(tagId)
+        );
+        return hideEdge(hiddenEdges)(edge);
+      })
+    );
+  }, [hiddenTags, setEdges, setNodes]);
+
   const addNode = useCallback(
     ({
       objectID,
@@ -275,23 +327,23 @@ export function FlowContent({
       objectDescription: string;
       objectPicture: string;
     }) => {
-        const newNode = {
-          id: objectID,
-          position: flow.screenToFlowPosition({
-            x: window.innerWidth / 2,
-            y: window.innerHeight / 2,
-          }),
-          type: "customNode",
-          data: {
-            objectName: objectName,
-            objectDescription: objectDescription,
-            objectPicture: objectPicture,
-            images: [],
-            tags: [],
-            relationships: [],
-          },
-        };
-        setNodes((nds) => nds.concat(newNode));
+      const newNode = {
+        id: objectID,
+        position: flow.screenToFlowPosition({
+          x: window.innerWidth / 2,
+          y: window.innerHeight / 2,
+        }),
+        type: "customNode",
+        data: {
+          objectName: objectName,
+          objectDescription: objectDescription,
+          objectPicture: objectPicture,
+          images: [],
+          tags: [],
+          relationships: [],
+        },
+      };
+      setNodes((nds) => nds.concat(newNode));
     },
     [setNodes, flow]
   );
@@ -329,6 +381,7 @@ export function FlowContent({
       setSelectedSource(objectMap[edge.source]);
       setSelectedTarget(objectMap[edge.target]);
     }
+    console.log(selectedEdge);
     setIsEdgeClicked(true);
   };
 
@@ -344,6 +397,7 @@ export function FlowContent({
         onEdgeClick={onEdgeClick}
         onConnect={onConnect}
         nodeTypes={nodeTypes}
+        edgeTypes={edgeTypes}
         connectionLineStyle={connectionLineStyle}
         connectionMode={ConnectionMode.Loose}
         onInit={setRfInstance}
@@ -375,11 +429,18 @@ export function FlowContent({
                 <WorldSettingDialog
                   worldData={worldData}
                   graphRefresh={graphRefresh}
+                  currentUser={currentUser}
                 />
                 <ObjectCreationDialog
                   createFunction={addNode}
                   worldID={worldData._id}
                   position={getCenterScreen()}
+                />
+                <WorldTagsDialog
+                  worldID={worldData._id}
+                  hiddenTags={hiddenTags}
+                  setHiddenTags={setHiddenTags}
+                  graphRefresh={graphRefresh}
                 />
                 <RelationshipCreationDialog
                   setIsAddingEdge={setIsAddingEdge}
@@ -404,29 +465,33 @@ export function FlowContent({
             )}
           </div>
           {worldData && (
-            <ChangesSheet
-              isOpen={isSheetOpen}
-              openFunction={setIsSheetOpen}
-              worldID={worldData._id}
-            />
+            <>
+              <ChangesSheet
+                isOpen={isSheetOpen}
+                openFunction={setIsSheetOpen}
+                worldID={worldData._id}
+              />
+              <ObjectDetailSheet
+                isNodeClicked={isNodeClicked}
+                openFunction={setIsNodeClicked}
+                nodeData={selectedNode as Node<NodeData>}
+                deleteNodeFunction={deleteNode}
+                graphRefresh={graphRefresh}
+                worldID={worldData._id}
+                existingNodes={nodes as Node<NodeData>[]}
+              />
+              <RelationshipDetailSheet
+                isEdgeClicked={isEdgeClicked}
+                openFunction={setIsEdgeClicked}
+                sourceNode={selectedSource}
+                targetNode={selectedTarget}
+                relationshipData={selectedEdge as Edge<RelationshipData>}
+                graphRefresh={graphRefresh}
+                deleteEdgeFunction={deleteEdge}
+                worldID={worldData._id}
+              />
+            </>
           )}
-
-          <ObjectDetailSheet
-            isNodeClicked={isNodeClicked}
-            openFunction={setIsNodeClicked}
-            nodeData={selectedNode as Node<NodeData>}
-            deleteNodeFunction={deleteNode}
-            graphRefresh={graphRefresh}
-          />
-          <RelationshipDetailSheet
-            isEdgeClicked={isEdgeClicked}
-            openFunction={setIsEdgeClicked}
-            sourceNode={selectedSource}
-            targetNode={selectedTarget}
-            relationshipData={selectedEdge as Edge<RelationshipData>}
-            graphRefresh={graphRefresh}
-            deleteEdgeFunction={deleteEdge}
-          />
         </Panel>
         <Background gap={12} size={1} />
       </ReactFlow>

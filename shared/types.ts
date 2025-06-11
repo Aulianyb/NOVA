@@ -17,6 +17,32 @@ export type Collaborator = {
     username : string
 }
 
+export type GalleryObject = {
+    _id : string,
+    objectName : string
+}
+
+export type GalleryImage = {
+    _id : string,
+    imageID : string,
+    imageTitle : string,
+    objects : GalleryObject[];
+}
+
+export type Tag = {
+    _id : string,
+    tagName : string,
+    tagColor : string,
+}
+
+export type TagAPI = {
+    _id : string,
+    tagName : string,
+    tagColor : string,
+    tagRelationships : string[],
+    tagObjects : string[]
+}
+
 export type World = {
     _id : string,
     worldName : string, 
@@ -38,7 +64,12 @@ export type NodeObject = {
     relationships : string[],
     tags : string[],
     positionX : number,
-    positionY : number
+    positionY : number,
+    story : string,
+    info :  {
+        bio :  { [key: string]: string };
+        description:  string;
+    }
 }
 
 export type RelationshipJSON = {
@@ -46,8 +77,17 @@ export type RelationshipJSON = {
     source : string,
     target : string,
     tags : string[],
-    type : string
-    relationshipDescription : string
+    type : string,
+    mainTag : {
+        tagName : string,
+        tagColor : string
+    },
+    relationshipDescription : string,
+    story : string,
+    info : {
+        sourceToTarget : string,
+        targetToSource : string
+    }
 }
 
 export type Position = {
@@ -67,7 +107,12 @@ export type NodeData = {
     objectDescription?: string;
     images : string[],
     tags : string[],
-    relationships : string[]
+    relationships : string[],
+    story : string,
+    info :  {
+    bio : { [key: string]: string };
+    description:  string;
+    }
 };
 
 export type EdgeJSON = {
@@ -79,6 +124,11 @@ export type EdgeJSON = {
 
 export type RelationshipData = {
     relationshipDescription : string; 
+    story : string,
+    info : {
+        sourceToTarget : string,
+        targetToSource : string
+    }
 };
 
 export type Notification = {

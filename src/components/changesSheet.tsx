@@ -3,7 +3,7 @@ import { ChevronRight } from "lucide-react";
 import { ScrollArea } from "./ui/scroll-area";
 import ChangeElement from "./changeElement";
 import { useCallback, useState, useEffect } from "react";
-import { Change, ChangeAPI } from "../../types/types";
+import { Change, ChangeAPI } from "@shared/types";
 import { useToast } from "@/hooks/use-toast";
 
 function convertDate(ISODate: string) {
@@ -44,12 +44,11 @@ export default function ChangesSheet({
     }
     try {
       const res = await fetch(`/api/worlds/${worldID}/changes`);
-      if (!res.ok) {
-        const errorData = await res.json();
-        console.log(errorData);
-        throw new Error(errorData.error || "Something went wrong.");
-      }
       const changesData = await res.json();
+      if (!res.ok) {
+        console.log(changesData);
+        throw new Error(changesData.error || "Something went wrong.");
+      }
       const changes: Change[] = changesData.data.map((change: ChangeAPI) => ({
         _id: change._id,
         description: change.description,

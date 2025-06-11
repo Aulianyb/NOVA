@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { errorHandling, verifyUser } from "@/app/api/function";
-import World from "../../../../../../../model/World";
-import User from "../../../../../../../model/User";
+import World from "@model/World";
+import User from "@model/User";
 
 export async function DELETE(
         req:NextRequest,

@@ -1,22 +1,19 @@
 import { NextRequest, NextResponse } from "next/server";
 import { errorHandling, verifyObject, verifyUser, verifyWorld} from "../../function";
-import World from "../../../../../model/World";
-import Object from "../../../../../model/Object"
+import World from "@model/World";
+import Object from "@model/Object"
 import cloudinary from "@/app/lib/connect";
-import Relationship from "../../../../../model/Relationship";
-import User from "../../../../../model/User";
+import Relationship from "@model/Relationship";
+import User from "@model/User";
 import { UploadApiResponse } from "cloudinary";
-import { RelationshipJSON } from "../../../../../types/types";
+import { RelationshipJSON } from "@shared/types";
+import Image from "@model/Image";
 
 export async function DELETE(
 req: NextRequest, 
 { params }: { params: Promise<{ id: string }> }
 ){
     try {
-        // Note to self : after Image is added : 
-        // Don't forget to cascade images that is connected to said object.
-        // Delete every images
-
         const userID = await verifyUser();
         if (!userID) {
             throw new Error("No Session Found"); 
@@ -26,6 +23,15 @@ req: NextRequest,
         await verifyWorld(object.worldID, userID);
         if (object.objectPicture && object.objectPicture != "objectPicture/fuetkmzyox2su7tfkib3"){
             await cloudinary.uploader.destroy(object.objectPicture);
+        }
+        const deletedImages = await Image.find({ _id: { $in: object.images } })
+        for (const image of deletedImages){
+            await Object.updateOne({"_id" : id}, {$pull : {images : image._id}})
+            await Image.updateOne({"_id" : image._id}, {$pull : {objects : id}})
+            if (image.objects.length === 1 && image.objects.includes(id)){
+                await cloudinary.uploader.destroy(image.imageID);
+                await Image.findByIdAndDelete({'_id' : image._id});
+            }
         }
         const deletedEdges = object.relationships;
         const relationshipsToDelete = await Relationship.find({
@@ -55,7 +61,7 @@ req: NextRequest,
     }
 }
 
-export async function PUT(
+export async function PATCH(
 req: NextRequest, 
 { params }: { params: Promise<{ id: string }> })
 {

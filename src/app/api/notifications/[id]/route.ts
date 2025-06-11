@@ -1,9 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
 import { errorHandling, verifyUser} from "../../function";
-import User from "../../../../../model/User";
-import World from "../../../../../model/World";
+import User from "@model/User";
+import World from "@model/World";
 
-export async function PUT(
+export async function PATCH(
     req:NextRequest,
     { params }: { params: Promise<{ id: string }> }
 ){

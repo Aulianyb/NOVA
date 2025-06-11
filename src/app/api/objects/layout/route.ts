@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
-import { NodeJSON} from "../../../../../types/types";
+import { NodeJSON} from "@shared/types";
 import { verifyUser, errorHandling } from "../../function";
-import Object from "../../../../../model/Object";
+import Object from "@model/Object";
 
 export async function POST(req:NextRequest){
     try {

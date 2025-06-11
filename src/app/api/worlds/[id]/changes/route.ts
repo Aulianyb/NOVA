@@ -2,9 +2,8 @@ import { NextRequest, NextResponse } from "next/server";
 import { errorHandling, verifyWorld, verifyUser } from "@/app/api/function";
 
 export async function GET(
-    req: NextRequest, 
-    { params }: { params: Promise<{ id: string }> }
-    
+     req: NextRequest, 
+    { params }: { params: Promise<{ id: string }> }    
 ){
     try{
         const { id } = await params;

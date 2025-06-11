@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
-import World from "../../../../model/World"; 
-import User from "../../../../model/User"; 
+import World from "@model/World"; 
+import User from "@model/User"; 
 import { errorHandling, verifyUser} from "../function";
 import cloudinary from "@/app/lib/connect";
 import { UploadApiResponse } from "cloudinary";
@@ -12,7 +12,6 @@ export async function GET(){
             throw new Error("No Session Found"); 
         }
         const user = await User.findById(userID); 
-
         const ownedWorlds = await World.find({ _id: { $in: user.ownedWorlds } })
         return NextResponse.json({ data : ownedWorlds, message : "World Fetched!"}, { status: 200 });
     } catch(error){
@@ -61,7 +60,7 @@ export async function POST(req:NextRequest){
         });
         
         const world = await newWorld.save();
-        await User.updateOne({_id: userID}, { $push: { ownedWorlds: newWorld._id } });
+        await User.updateOne({_id: userID}, { $push: { ownedWorlds: world._id } });
         return NextResponse.json({ data : world, message : "New World Created!"}, { status: 200 });
     } catch(error){
         return errorHandling(error);
