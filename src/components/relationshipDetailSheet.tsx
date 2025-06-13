@@ -11,6 +11,7 @@ import { GraphTags } from "./graphTags";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ScrollArea } from "./ui/scroll-area";
 import RelationshipDetailSettingDialogue from "./relationshipDetailSettingDialog";
+import { Star } from "lucide-react";
 
 export default function RelationshipDetailSheet({
   isEdgeClicked,
@@ -33,6 +34,7 @@ export default function RelationshipDetailSheet({
 }) {
   const [tagsList, setTagsList] = useState<Tag[]>([]);
   const [mainTag, setMainTag] = useState<Tag | undefined>(undefined);
+  const [isFetching, setIsFetching] = useState(false);
 
   const { toast } = useToast();
 
@@ -64,6 +66,7 @@ export default function RelationshipDetailSheet({
     }
     setMainTag(undefined);
     try {
+      setIsFetching(true);
       if (!relationshipData) {
         throw new Error("relationshipData not found");
       }
@@ -88,6 +91,7 @@ export default function RelationshipDetailSheet({
         setMainTag(mainTag);
       }
       setTagsList(tags);
+      setIsFetching(false);
     } catch (error) {
       if (error instanceof Error) {
         showError(error.message);
@@ -144,7 +148,7 @@ export default function RelationshipDetailSheet({
           )}
         </div>
 
-        {sourceNode && targetNode && relationshipData && (
+        {!isFetching && sourceNode && targetNode && relationshipData ? (
           <>
             <>
               <div className="flex flex-col items-center gap-2">
@@ -276,6 +280,11 @@ export default function RelationshipDetailSheet({
               </div>
             </div>
           </>
+        ) : (
+          <div className="h-full w-full flex flex-col items-center justify-center gap-2">
+            <Star className="animate-spin" color="#c478ff" size={50} />
+            <p>I'm fetching your data!</p>
+          </div>
         )}
       </div>
     </div>

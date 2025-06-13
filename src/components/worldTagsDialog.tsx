@@ -55,7 +55,7 @@ export default function WorldTagsDialog({
   const { toast } = useToast();
 
   const handleOpenChange = (newOpenState: boolean) => {
-    graphRefresh();
+    // graphRefresh();
     setIsOpen(newOpenState);
   };
 

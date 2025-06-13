@@ -161,6 +161,18 @@ export function FlowContent({
     [handleChanges]
   );
 
+  const applyHiddenTags = useCallback(
+    <T extends Node | Edge>(items: T[]): T[] => {
+      return items.map((item) => {
+        const itemTags = Array.isArray(item.data?.tags) ? item.data.tags : [];
+        const isHidden = itemTags.some((tagId: string) =>
+          hiddenTags.includes(tagId)
+        );
+        return { ...item, hidden: isHidden };
+      });
+    },
+    [hiddenTags]
+  );
   const fetchData = useCallback(() => {
     if (objectData) {
       const currentNodes = objectData.map((object: NodeObject) => ({
@@ -277,43 +289,48 @@ export function FlowContent({
     fetchData();
   }, [fetchData]);
 
-  const hideNode = (hidden: boolean) => (node: Node) => {
-    return {
-      ...node,
-      hidden,
-    };
-  };
-  const hideEdge = (hidden: boolean) => (edge: Edge) => {
-    return {
-      ...edge,
-      hidden,
-    };
-  };
-
   useEffect(() => {
-    setNodes((nds) =>
-      nds.map((node) => {
-        const nodeTags: string[] = Array.isArray(node.data?.tags)
-          ? node.data.tags
-          : [];
-        const hiddenNodes = nodeTags.some((tagId: string) =>
-          hiddenTags.includes(tagId)
-        );
-        return hideNode(hiddenNodes)(node);
-      })
-    );
-    setEdges((eds) =>
-      eds.map((edge) => {
-        const edgeTags: string[] = Array.isArray(edge.data?.tags)
-          ? edge.data.tags
-          : [];
-        const hiddenEdges = edgeTags.some((tagId: string) =>
-          hiddenTags.includes(tagId)
-        );
-        return hideEdge(hiddenEdges)(edge);
-      })
-    );
-  }, [hiddenTags, setEdges, setNodes]);
+    setNodes((nds) => applyHiddenTags(nds));
+    setEdges((eds) => applyHiddenTags(eds));
+  }, [hiddenTags, applyHiddenTags, setEdges, setNodes]);
+
+  // const hideNode = (hidden: boolean) => (node: Node) => {
+  //   return {
+  //     ...node,
+  //     hidden,
+  //   };
+  // };
+  // const hideEdge = (hidden: boolean) => (edge: Edge) => {
+  //   return {
+  //     ...edge,
+  //     hidden,
+  //   };
+  // };pbje
+
+  // useEffect(() => {
+  //   setNodes((nds) =>
+  //     nds.map((node) => {
+  //       const nodeTags: string[] = Array.isArray(node.data?.tags)
+  //         ? node.data.tags
+  //         : [];
+  //       const hiddenNodes = nodeTags.some((tagId: string) =>
+  //         hiddenTags.includes(tagId)
+  //       );
+  //       return hideNode(hiddenNodes)(node);
+  //     })
+  //   );
+  //   setEdges((eds) =>
+  //     eds.map((edge) => {
+  //       const edgeTags: string[] = Array.isArray(edge.data?.tags)
+  //         ? edge.data.tags
+  //         : [];
+  //       const hiddenEdges = edgeTags.some((tagId: string) =>
+  //         hiddenTags.includes(tagId)
+  //       );
+  //       return hideEdge(hiddenEdges)(edge);
+  //     })
+  //   );
+  // }, [hiddenTags, setEdges, setNodes]);
 
   const addNode = useCallback(
     ({

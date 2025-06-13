@@ -62,6 +62,7 @@ export function CreateWorldDialog({
   worldRefresh: () => void;
 }) {
   const [isOpen, setIsOpen] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -93,6 +94,7 @@ export function CreateWorldDialog({
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     try {
+      setIsLoading(true); 
       const formData = new FormData();
       formData.append("worldName", values.worldName);
       formData.append("worldDescription", values.worldDescription);
@@ -114,6 +116,7 @@ export function CreateWorldDialog({
         "success"
       );
       setIsOpen(false);
+      setIsLoading(false);
     } catch (error) {
       if (error instanceof Error) {
         showError(error.message);
@@ -192,8 +195,8 @@ export function CreateWorldDialog({
               )}
             />
             <DialogFooter>
-              <Button type="submit" className="rounded-lg mt-4">
-                Create
+              <Button type="submit" className="rounded-lg mt-4" disabled={isLoading}>
+                {isLoading ? "Creating..." : "Create"}
               </Button>
             </DialogFooter>
           </form>
