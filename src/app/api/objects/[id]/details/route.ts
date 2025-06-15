@@ -16,7 +16,7 @@ export async function PATCH(
         const { id } = await params;
         const data = await req.json();
         const { bio, description, story } = data;      
-        const updateFields: Record<string, any> = {};
+        const updateFields: Record<string, string> = {};
 
         if (bio !== undefined) {
         updateFields['info.bio'] = bio;
