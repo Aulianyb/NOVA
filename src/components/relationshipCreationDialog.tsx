@@ -23,11 +23,13 @@ import { useEffect } from "react";
 import { Edge } from "@xyflow/react";
 import { RelationshipData } from "@shared/types";
 import { useToast } from "@/hooks/use-toast";
+import { useState } from "react";
 
 const formSchema = z.object({
   relationshipDescription: z
     .string()
-    .max(240, "Description must be under 240 characters long"),
+    .max(240, "Description must be under 240 characters long")
+    .min(1, "Description cannot be empty!"),
 });
 
 export default function RelationshipCreationDialog({
@@ -49,6 +51,7 @@ export default function RelationshipCreationDialog({
   graphRefresh: () => void;
   addEdgeFunction: (newEdge: Edge) => void;
 }) {
+  const [isAdding, setIsAdding] = useState(false);
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -79,13 +82,13 @@ export default function RelationshipCreationDialog({
       notify();
     }
     try {
+      setIsAdding(true);
       const reqBody = {
         relationshipDescription: values.relationshipDescription,
         target: relationshipData.target,
         source: relationshipData.source,
         worldID: worldID,
       };
-      console.log(JSON.stringify(reqBody));
       const res = await fetch(`/api/relationships/`, {
         method: "POST",
         headers: {
@@ -108,6 +111,7 @@ export default function RelationshipCreationDialog({
       }
     } finally {
       setNewEdge(undefined);
+      setIsAdding(false);
     }
   }
 
@@ -135,7 +139,7 @@ export default function RelationshipCreationDialog({
               )}
             />
             <DialogFooter>
-              <Button type="submit" className="rounded-lg mt-4">
+              <Button type="submit" className="rounded-lg mt-4" disabled={isAdding}>
                 Save
               </Button>
             </DialogFooter>

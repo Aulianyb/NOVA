@@ -34,7 +34,6 @@ export default function RelationshipDetailSheet({
 }) {
   const [tagsList, setTagsList] = useState<Tag[]>([]);
   const [mainTag, setMainTag] = useState<Tag | undefined>(undefined);
-  const [isFetching, setIsFetching] = useState(false);
 
   const { toast } = useToast();
 
@@ -66,7 +65,6 @@ export default function RelationshipDetailSheet({
     }
     setMainTag(undefined);
     try {
-      setIsFetching(true);
       if (!relationshipData) {
         throw new Error("relationshipData not found");
       }
@@ -91,7 +89,6 @@ export default function RelationshipDetailSheet({
         setMainTag(mainTag);
       }
       setTagsList(tags);
-      setIsFetching(false);
     } catch (error) {
       if (error instanceof Error) {
         showError(error.message);
@@ -148,7 +145,7 @@ export default function RelationshipDetailSheet({
           )}
         </div>
 
-        {!isFetching && sourceNode && targetNode && relationshipData ? (
+        {sourceNode && targetNode && relationshipData ? (
           <>
             <>
               <div className="flex flex-col items-center gap-2">
@@ -193,9 +190,6 @@ export default function RelationshipDetailSheet({
                 <div className="flex gap-1"></div>
               </div>
             </>
-
-            <hr className="border-gray-300 flex-grow" />
-
             <div className="h-full">
               <div>
                 {relationshipData.data && (

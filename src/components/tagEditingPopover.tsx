@@ -131,7 +131,7 @@ export default function TagEditingPopover({
       <PopoverContent>
         <div className="space-y-3">
           <Form {...form}>
-            <form>
+            <form onSubmit={form.handleSubmit(onChangeName)}>
               <FormField
                 control={form.control}
                 name="tagName"

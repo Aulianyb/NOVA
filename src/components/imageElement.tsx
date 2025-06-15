@@ -56,6 +56,8 @@ export default function ImageElement({
   const [existingObjects, setExistingObjects] = useState<Node<NodeData>[]>([]);
   const [selectedObjectId, setSelectedObjectId] = useState<string>("");
   const [isOpen, setIsOpen] = useState(false);
+  const [disableAdding, setDisableAdding] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false); 
 
   useEffect(() => {
     const imageObjectIds = new Set(imageData.objects.map((obj) => obj._id));
@@ -98,6 +100,7 @@ export default function ImageElement({
 
   async function addObject() {
     try {
+      setDisableAdding(true);
       const res = await fetch(`/api/images/${imageData._id}`, {
         method: "PATCH",
         headers: {
@@ -115,11 +118,14 @@ export default function ImageElement({
       graphRefresh();
     } catch (error) {
       console.log(error);
+    } finally {
+      setDisableAdding(false);
     }
   }
 
   async function deleteImage() {
     try {
+      setIsDeleting(true);
       const res = await fetch(
         `/api/objects/${currentObject.id}/images/${imageData._id}`,
         {
@@ -139,6 +145,8 @@ export default function ImageElement({
       setIsOpen(false);
     } catch (error) {
       console.log(error);
+    } finally {
+      setIsDeleting(false);
     }
   }
 
@@ -193,7 +201,7 @@ export default function ImageElement({
             </Form>
             <div className="space-y-2">
               <Label>Objects</Label>
-              <div className="flex gap-2">
+              <div className="flex flex-wrap gap-2">
                 <Select
                   value={selectedObjectId}
                   onValueChange={setSelectedObjectId}
@@ -218,7 +226,7 @@ export default function ImageElement({
                   variant="outline"
                   className="rounded-md"
                   onClick={() => addObject()}
-                  disabled={!selectedObjectId}
+                  disabled={!selectedObjectId || disableAdding || existingObjects.length == 0}
                 >
                   Add
                 </Button>
@@ -246,8 +254,9 @@ export default function ImageElement({
                   variant="destructive"
                   className="w-full rounded-md"
                   onClick={() => deleteImage()}
+                  disabled={isDeleting}
                 >
-                  Remove Image
+                  {isDeleting ? "Removing..." : "Remove Image"}
                 </Button>
               </div>
             </div>

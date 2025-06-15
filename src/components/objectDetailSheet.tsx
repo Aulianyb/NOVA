@@ -14,7 +14,6 @@ import { ScrollArea } from "./ui/scroll-area";
 import ImageCreationDialog from "./imageCreationDialog";
 import { BookOpenText, ImagePlus } from "lucide-react";
 import ObjectDetailSettingDialogue from "./objectDetailSettingDialog";
-import { Star } from "lucide-react";
 
 export default function ObjectDetailSheet({
   isNodeClicked,
@@ -35,7 +34,6 @@ export default function ObjectDetailSheet({
 }) {
   const [tagsList, setTagsList] = useState<Tag[]>([]);
   const [GalleryList, setGalleryList] = useState<GalleryImage[]>([]);
-  const [isFetching, setIsFetching] = useState(false);
 
   let usedPicture = "objectPicture/fuetkmzyox2su7tfkib3";
   if (nodeData) {
@@ -48,7 +46,6 @@ export default function ObjectDetailSheet({
   const { toast } = useToast();
   const fetchData = useCallback(
     async (id: string) => {
-      setIsFetching(true);
       function showError(message: string) {
         toast({
           title: "An Error has Occured!",
@@ -72,8 +69,6 @@ export default function ObjectDetailSheet({
         if (error instanceof Error) {
           showError(error.message);
         }
-      } finally {
-        setIsFetching(false);
       }
     },
     [toast]
@@ -83,7 +78,7 @@ export default function ObjectDetailSheet({
     if (nodeData?.id) {
       fetchData(nodeData.id);
     }
-  }, [nodeData?.id, fetchData]);
+  }, [nodeData?.id, nodeData?.data, fetchData, graphRefresh]);
 
   return (
     <div
@@ -129,12 +124,7 @@ export default function ObjectDetailSheet({
         )}
       </div>
 
-      {isFetching || !nodeData ? (
-        <div className="h-full w-full flex flex-col items-center justify-center gap-2">
-          <Star className="animate-spin" color="#c478ff" size={50} />
-          <p>I'm fetching your data!</p>
-        </div>
-      ) : (
+      {nodeData && (
         <>
           <div className="flex flex-wrap gap-4">
             <CldImage

@@ -56,6 +56,7 @@ export default function WorldTagsDialog({
 
   const handleOpenChange = (newOpenState: boolean) => {
     // graphRefresh();
+    fetchData(); 
     setIsOpen(newOpenState);
   };
 
