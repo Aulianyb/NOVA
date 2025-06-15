@@ -86,6 +86,7 @@ export default function ObjectSettingDialog({
   currentTags: Tag[];
   fetchData: () => Promise<void>;
 }) {
+  const [isSaving, setIsSaving] = useState(false); 
   const [isOpen, setIsOpen] = useState(false);
   const [tagsList, setTagsList] = useState<Tag[]>([]);
   const { toast } = useToast();
@@ -184,6 +185,7 @@ export default function ObjectSettingDialog({
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     try {
+      setIsSaving(true);
       const formData = new FormData();
       formData.append("objectName", values.objectName);
       formData.append("objectDescription", values.objectDescription);
@@ -205,6 +207,7 @@ export default function ObjectSettingDialog({
       }
     } finally {
       form.reset();
+      setIsSaving(false);
     }
   }
 
@@ -313,7 +316,7 @@ export default function ObjectSettingDialog({
                 />
 
                 <DialogFooter>
-                  <Button type="submit" className="rounded-lg mt-4">
+                  <Button type="submit" className="rounded-lg mt-4" disabled={isSaving}>
                     Save
                   </Button>
                 </DialogFooter>

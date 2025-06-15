@@ -3,6 +3,7 @@ import { errorHandling, verifyUser } from "@/app/api/function";
 import Object from "@model/Object";
 import User from "@model/User";
 import World from "@model/World";
+
 export async function PATCH(
     req: NextRequest, 
     { params }: { params: Promise<{ id: string }> }
@@ -14,15 +15,23 @@ export async function PATCH(
         }
         const { id } = await params;
         const data = await req.json();
-        const { bio, description, story } = data;        
+        const { bio, description, story } = data;      
+        const updateFields: Record<string, any> = {};
+
+        if (bio !== undefined) {
+        updateFields['info.bio'] = bio;
+        }
+        if (description !== undefined) {
+        updateFields['info.description'] = description;
+        }
+        if (story !== undefined) {
+        updateFields.story = story;
+        }
+        
         const existingObject = await Object.findById(id);
         const updatedObject = await Object.findByIdAndUpdate(
         id,
-        {
-            ...(bio && { 'info.bio': bio }),
-            ...(description && { 'info.description': description }),
-            ...(story && { story }),
-        },
+        updateFields,
         { new: true }
         );
         if (!updatedObject) {
