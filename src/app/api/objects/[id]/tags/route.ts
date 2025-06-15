@@ -39,8 +39,8 @@ export async function POST(
             throw new Error("No Session Found"); 
         }
         await verifyObject(id);
-        await Object.updateOne({_id : id}, {$push : {tags : data.tagID}})
-        const result = await Tag.updateOne({_id : data.tagID}, {$push : {tagObjects : id}})
+        await Object.updateOne({_id : id}, {$addToSet : {tags : data.tagID}})
+        const result = await Tag.updateOne({_id : data.tagID}, {$addToSet : {tagObjects : id}})
         return NextResponse.json({data : result, message : "Tag has been added to object!"}, {status : 200})
     } catch(error){
         return errorHandling(error);
