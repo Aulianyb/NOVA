@@ -1,17 +1,17 @@
 <p align="center">
     <picture>
       <source media="(prefers-color-scheme: dark)"
-          srcset="X"
-          width="600"
-          height="200"
+          srcset="./public/Logo.png"
+          width="550"
+          height="190"
       />
       <source media="(prefers-color-scheme: light)"
-          srcset="X"
-          width="600"
-          height="200"
+          srcset="./public/logo-light.png"
+          width="550"
+          height="190"
       />
       <img id="logo" alt="Unwind logo"
-          src="X"
+          src="./public/Logo.png"
       />
     </picture>
 </p>
@@ -20,7 +20,7 @@
   Narrative Organization and Visualization Assistant
   </p>
 <p align="center">
-      <img src="./X" style="width: 80%"></td>
+      <img src="./public/Screencaps.png" style="width: 80%"></td>
 </p>
 
 # Introducing, NOVA 🌠
