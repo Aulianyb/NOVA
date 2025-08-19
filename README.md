@@ -1,36 +1,59 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+<p align="center">
+    <picture>
+      <source media="(prefers-color-scheme: dark)"
+          srcset="X"
+          width="600"
+          height="200"
+      />
+      <source media="(prefers-color-scheme: light)"
+          srcset="X"
+          width="600"
+          height="200"
+      />
+      <img id="logo" alt="Unwind logo"
+          src="X"
+      />
+    </picture>
+</p>
 
-## Getting Started
+<p align="center">
+  Narrative Organization and Visualization Assistant
+  </p>
+<p align="center">
+      <img src="./X" style="width: 80%"></td>
+</p>
 
-First, run the development server:
+# Introducing, NOVA 🌠
+A web application that helps writer create graph visualization for their narrative entities (characters, objects, locations, etc) in collaborative worldbuilding projects
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+## Table of Contents
+- [Features](#features)
+- [How do I use it?](#howtouse)
+- [Tech stack](#techstack)
+- [Contributors](#contributors)
+- [License](#license)
+  
+## Features
+<a name="features"></a>
+* **Graph Visualization:** A drag and drop graph visualization creator
+* **Entity Details:**  Write stories and your character's profile and thoughts
+* **Tagging System:**  Give tags to your objects and filter based the tags it has! You can choose which tag to show on the graph 
+* **Collaborate** Invite other users to collaborate on your fictional world
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## How do I use it?
+<a name="howtouse"></a>
+Currently, NOVA is still under development. However, you can check out the newest build [HERE](https://nova-staging.vercel.app/)
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Tech stack
+<a name="techstack"></a>
+- **NextJS**: The core framework for building this project
+- **MongoDB**: Database chosen for this project
+- **Shadcn**: Library used to create UI for this project
+- **ReactFlow**: A library that helps the implementation of NOVA's graph visualization
 
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Contributors
+<a name="contributors"></a>
+| <img width="50" src="https://avatars.githubusercontent.com/u/42485997?v=4"/> 
+| :---: |
+| [Aulia Nadhirah Y. B.](https://github.com/Aulianyb)|
