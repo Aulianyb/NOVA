@@ -11,6 +11,7 @@ import { GraphTags } from "./graphTags";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ScrollArea } from "./ui/scroll-area";
 import RelationshipDetailSettingDialogue from "./relationshipDetailSettingDialog";
+import { Star } from "lucide-react";
 
 export default function RelationshipDetailSheet({
   isEdgeClicked,
@@ -134,16 +135,17 @@ export default function RelationshipDetailSheet({
                 openFunction={openFunction}
                 type="relationship"
               />
-              <RelationshipDetailSettingDialogue 
-              relationshipData={relationshipData} 
-              graphRefresh={graphRefresh}
-              targetName={targetNode?.objectName}
-              sourceName={sourceNode?.objectName}/>
+              <RelationshipDetailSettingDialogue
+                relationshipData={relationshipData}
+                graphRefresh={graphRefresh}
+                targetName={targetNode?.objectName}
+                sourceName={sourceNode?.objectName}
+              />
             </>
           )}
         </div>
 
-        {sourceNode && targetNode && relationshipData && (
+        {sourceNode && targetNode && relationshipData ? (
           <>
             <>
               <div className="flex flex-col items-center gap-2">
@@ -188,9 +190,6 @@ export default function RelationshipDetailSheet({
                 <div className="flex gap-1"></div>
               </div>
             </>
-
-            <hr className="border-gray-300 flex-grow" />
-
             <div className="h-full">
               <div>
                 {relationshipData.data && (
@@ -215,7 +214,8 @@ export default function RelationshipDetailSheet({
                               </h3>
                               <div className="space-y-2">
                                 <p className="font-semibold">
-                                  What source thinks of target?
+                                  What {sourceNode.objectName} thinks of{" "}
+                                  {targetNode.objectName}?
                                 </p>
                                 <p className="border-l-2 border-zinc-300 pl-4 italic text-zinc-500">
                                   {relationshipData.data.info.sourceToTarget}
@@ -223,7 +223,8 @@ export default function RelationshipDetailSheet({
                               </div>
                               <div className="space-y-2">
                                 <p className="font-semibold">
-                                  What source thinks of target?
+                                  What {targetNode.objectName} thinks of{" "}
+                                  {sourceNode.objectName}?
                                 </p>
                                 <p className="border-l-2 border-zinc-300 pl-4 italic text-zinc-500">
                                   {relationshipData.data.info.targetToSource}
@@ -273,6 +274,11 @@ export default function RelationshipDetailSheet({
               </div>
             </div>
           </>
+        ) : (
+          <div className="h-full w-full flex flex-col items-center justify-center gap-2">
+            <Star className="animate-spin" color="#c478ff" size={50} />
+            <p>I'm fetching your data!</p>
+          </div>
         )}
       </div>
     </div>

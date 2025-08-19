@@ -71,6 +71,7 @@ export default function ObjectCreationDialog({
   worldID: string;
   position: XYPosition;
 }) {
+  const [isLoading, setIsLoading] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
   const { toast } = useToast();
   function showError(message: string) {
@@ -95,6 +96,7 @@ export default function ObjectCreationDialog({
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     try {
+      setIsLoading(true);
       const formData = new FormData();
       formData.append("objectName", values.objectName);
       formData.append("objectDescription", values.objectDescription);
@@ -102,7 +104,6 @@ export default function ObjectCreationDialog({
       formData.append("positionX", String(position.x));
       formData.append("positionY", String(position.y));
       formData.append("worldID", worldID);
-
       const res = await fetch("/api/objects", {
         method: "POST",
         body: formData,
@@ -121,6 +122,7 @@ export default function ObjectCreationDialog({
       });
       form.reset();
       setIsOpen(false);
+      setIsLoading(false);
     } catch (error) {
       if (error instanceof Error) {
         showError(error.message);
@@ -201,8 +203,8 @@ export default function ObjectCreationDialog({
               )}
             />
             <DialogFooter>
-              <Button type="submit" className="rounded-lg mt-4">
-                Create
+              <Button type="submit" className="rounded-lg mt-4" disabled={isLoading}>
+                {isLoading ? "Creating..." : "Create"}
               </Button>
             </DialogFooter>
           </form>

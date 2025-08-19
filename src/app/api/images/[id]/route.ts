@@ -25,8 +25,8 @@ export async function PATCH(
         else if (data.addedObject !== undefined) { 
             const addedObject = data.addedObject
             await verifyObject(addedObject);
-            changedImage = await Image.updateOne({'_id' : id}, {$push : {objects : addedObject}});
-            await Object.updateOne({'_id' : addedObject}, {$push : {images : id}});
+      changedImage = await Image.updateOne({ _id: id },{ $addToSet: { objects: addedObject } });
+      await Object.updateOne({ _id: addedObject },{ $addToSet: { images: id } });
             message = "Added object to image!" 
         }
         return NextResponse.json({data : changedImage, message : message}, {status : 200});

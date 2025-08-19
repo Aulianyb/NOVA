@@ -182,7 +182,7 @@ export default function RelationshipSettingDialog({
       }
     }
   }
-
+  const selectedTagID = tagForm.watch("tagID");
   async function onTagging(values: z.infer<typeof tagSchema>) {
     try {
       const res = await fetch(
@@ -308,7 +308,7 @@ export default function RelationshipSettingDialog({
                   control={tagForm.control}
                   name="tagID"
                   render={({ field }) => (
-                    <Select onValueChange={field.onChange}>
+                    <Select onValueChange={field.onChange} value={field.value}>
                       <SelectTrigger className="w-[180px]">
                         <SelectValue placeholder="Select Tag" />
                       </SelectTrigger>
@@ -327,7 +327,12 @@ export default function RelationshipSettingDialog({
                     </Select>
                   )}
                 />
-                <Button type="submit" variant="outline" className="rounded-md">
+                <Button
+                  type="submit"
+                  variant="outline"
+                  className="rounded-md"
+                  disabled={!selectedTagID}
+                >
                   Add
                 </Button>
               </form>

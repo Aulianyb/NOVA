@@ -33,7 +33,7 @@ export async function PATCH(req: NextRequest,
 
         // Handle mainTag changes
         // Note : add whether the tag exists on not on the relationship
-        if (!oldRelationship.mainTag || oldRelationship.mainTag != data.mainTag){
+        if (data.mainTag && (!oldRelationship.mainTag || oldRelationship.mainTag != data.mainTag)){
             const mainTag = await Tag.findById(data.mainTag);
             description.push("Changed main tag of the relationship between " + sourceNode.objectName + " and " + targetNode.objectName + " to '" + mainTag.tagName + "'")
             updateFields.mainTag = data.mainTag;

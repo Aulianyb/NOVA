@@ -88,6 +88,7 @@ export default function ImageCreationDialog({
   const [existingObjects, setExistingObjects] = useState<Node<NodeData>[]>([]);
   const [selectedObjectId, setSelectedObjectId] = useState<string>("");
   const [isOpen, setIsOpen] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     setAddedObjects([currentObject.id]);
@@ -108,6 +109,7 @@ export default function ImageCreationDialog({
 
   async function onSubmit(values: z.infer<typeof imageSchema>) {
     try {
+      setIsLoading(true);
       const formData = new FormData();
       formData.append("imageTitle", values.imageTitle);
       formData.append("imageFile", values.imageFile);
@@ -125,6 +127,7 @@ export default function ImageCreationDialog({
       }
       graphRefresh();
       setIsOpen(false);
+      setIsLoading(false);
     } catch (error) {
       console.log(error);
     }
@@ -249,8 +252,8 @@ export default function ImageCreationDialog({
             </div>
 
             <DialogFooter>
-              <Button type="submit" className="rounded-lg mt-4">
-                Add
+              <Button type="submit" className="rounded-lg mt-4" disabled={isLoading}>
+                {isLoading ? "Uploading..." : "Add"}
               </Button>
             </DialogFooter>
           </form>

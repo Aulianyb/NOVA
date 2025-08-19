@@ -19,7 +19,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Hash } from "lucide-react";
-import TagElement from "./tagElement";
+import TagElement from "./TagElement";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useCallback, useState, useEffect } from "react";
 import { useToast } from "@/hooks/use-toast";
@@ -55,7 +55,8 @@ export default function WorldTagsDialog({
   const { toast } = useToast();
 
   const handleOpenChange = (newOpenState: boolean) => {
-    graphRefresh();
+    // graphRefresh();
+    fetchData(); 
     setIsOpen(newOpenState);
   };
 

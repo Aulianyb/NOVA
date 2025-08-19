@@ -42,6 +42,7 @@ export default function ObjectDetailSettingDialogue({
 }) {
   const [isEditingStory, setIsEditingStory] = useState<boolean>(false);
   const [isOpen, setIsOpen] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
 
   const {
     control,
@@ -52,8 +53,8 @@ export default function ObjectDetailSettingDialogue({
   } = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      story: nodeData.data.story ? nodeData.data.story : "",
-      description: nodeData.data.info?.description ?? "",
+      story: nodeData.data.story ? nodeData.data.story : undefined,
+      description: nodeData.data.info?.description ?? undefined,
       bio: nodeData.data.info?.bio
         ? Object.entries(nodeData.data.info.bio).map(([key, value]) => ({
             key,
@@ -88,31 +89,38 @@ export default function ObjectDetailSettingDialogue({
   ]);
 
   async function onSubmit(data: FormValues) {
-    const bioObject: Record<string, string> = {};
-    data.bio.forEach((pair) => {
-      bioObject[pair.key] = pair.value;
-    });
+    try {
+      setIsSaving(true);
+      const bioObject: Record<string, string> = {};
+      data.bio.forEach((pair) => {
+        bioObject[pair.key] = pair.value;
+      });
 
-    const payload = {
-      story: data.story,
-      bio: bioObject,
-      description: data.description,
-    };
-    console.log("Submitting:", payload);
-    const res = await fetch(`/api/objects/${nodeData.id}/details`, {
-      method: "PATCH",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(payload),
-    });
-    if (!res.ok) {
-      const errorData = await res.json();
-      console.log(errorData);
-      throw new Error(errorData.error || "Something went wrong");
+      const payload = {
+        story: data.story,
+        bio: bioObject,
+        description: data.description,
+      };
+      console.log("Submitting:", payload);
+      const res = await fetch(`/api/objects/${nodeData.id}/details`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(payload),
+      });
+      if (!res.ok) {
+        const errorData = await res.json();
+        console.log(errorData);
+        throw new Error(errorData.error || "Something went wrong");
+      }
+      graphRefresh();
+      setIsOpen(false);
+    } catch (error) {
+      console.log(error);
+    } finally{
+      setIsSaving(false);
     }
-    graphRefresh();
-    setIsOpen(false);
   }
 
   return (
@@ -221,8 +229,8 @@ export default function ObjectDetailSettingDialogue({
             </>
           )}
           <DialogFooter>
-            <Button type="submit" className="rounded-md">
-              Save
+            <Button type="submit" className="rounded-md" disabled={isSaving}>
+              {isSaving ? "Saving..." : "Save"}
             </Button>
           </DialogFooter>
         </form>

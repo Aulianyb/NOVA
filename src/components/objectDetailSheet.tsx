@@ -44,44 +44,41 @@ export default function ObjectDetailSheet({
   }
 
   const { toast } = useToast();
-  const fetchData = useCallback(async () => {
-    function showError(message: string) {
-      const notify = () => {
+  const fetchData = useCallback(
+    async (id: string) => {
+      function showError(message: string) {
         toast({
           title: "An Error has Occured!",
           description: message,
           variant: "destructive",
         });
-      };
-      notify();
-    }
-    try {
-      if (!nodeData) {
-        throw new Error("nodeData not found");
       }
-      const ImageRes = await fetch(`/api/objects/${nodeData.id}/images`);
-      const res = await fetch(`/api/objects/${nodeData.id}/tags`);
-      if (!res.ok || !ImageRes.ok) {
-        const errorData = await res.json();
-        console.log(errorData);
-        throw new Error(errorData.error || "Something went wrong.");
+      try {
+        const [imageRes, tagRes] = await Promise.all([
+          fetch(`/api/objects/${id}/images`),
+          fetch(`/api/objects/${id}/tags`),
+        ]);
+        if (!imageRes.ok || !tagRes.ok) {
+          throw new Error("Failed to fetch");
+        }
+        const galleryData = await imageRes.json();
+        const tagData = await tagRes.json();
+        setGalleryList(galleryData.data);
+        setTagsList(tagData.data);
+      } catch (error) {
+        if (error instanceof Error) {
+          showError(error.message);
+        }
       }
-      const tagData = await res.json();
-      setTagsList(tagData.data);
-      const galleryData = await ImageRes.json();
-      setGalleryList(galleryData.data);
-    } catch (error) {
-      if (error instanceof Error) {
-        showError(error.message);
-      }
-    }
-  }, [nodeData, toast]);
+    },
+    [toast]
+  );
 
   useEffect(() => {
-    if (isNodeClicked) {
-      fetchData();
+    if (nodeData?.id) {
+      fetchData(nodeData.id);
     }
-  }, [fetchData, isNodeClicked]);
+  }, [nodeData?.id, nodeData?.data, fetchData, graphRefresh]);
 
   return (
     <div
@@ -106,7 +103,7 @@ export default function ObjectDetailSheet({
               graphRefresh={graphRefresh}
               worldID={worldID}
               currentTags={tagsList}
-              fetchData={fetchData}
+              fetchData={() => fetchData(nodeData.id)}
             />
             <DeleteAlert
               id={nodeData.id}
@@ -257,6 +254,9 @@ export default function ObjectDetailSheet({
           </Tabs>
         </>
       )}
+      {/* {nodeData && (
+        
+      )} */}
     </div>
   );
 }
