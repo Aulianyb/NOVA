@@ -27,6 +27,7 @@ export async function GET(
     }
 }
 
+// Fix to PATCH instead?
 export async function POST(
     req: NextRequest, 
     { params }: { params: Promise<{ id: string }> }

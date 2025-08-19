@@ -41,7 +41,7 @@ export async function POST(req: NextRequest){
         token : token
         }
         await setSession(session); 
-        return NextResponse.json({ data : newUser, message : "New User Created!"}, { status: 200 });
+        return NextResponse.json({ data : user.username, message : "New User Created!"}, { status: 200 });
     } catch(error){
         return errorHandling(error);
     }
